@@ -43,3 +43,17 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Secrets & local config — see docs/architecture.md "Security"
+.env
+**/.env
+google-services.json
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Generated localization files
+lib/l10n/app_localizations.dart
+
+# Build artifacts
+.puku/
