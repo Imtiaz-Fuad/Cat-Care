@@ -66,5 +66,19 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Phase 0 baseline usage descriptions. Pair-equal to AndroidManifest.xml. -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>CatCare BD uses notifications to remind you about routines, vaccinations, and medications for your cat.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>CatCare BD accesses your photo library to add your cat's photo to the profile.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>CatCare BD uses the camera to take a photo of your cat for the profile.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>CatCare BD uses your location to find nearby veterinary clinics.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
 </dict>
 </plist>
