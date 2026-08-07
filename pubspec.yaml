@@ -46,7 +46,6 @@ dependencies:
   # Maps + location
   google_maps_flutter: ^2.12.0
   geolocator: ^13.0.2
-  geocoding: ^3.0.0
   connectivity_plus: ^6.1.0
 
   # Theming + image analysis
