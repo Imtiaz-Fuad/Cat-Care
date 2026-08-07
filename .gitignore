@@ -57,3 +57,12 @@ lib/l10n/app_localizations.dart
 
 # Build artifacts
 .puku/
+
+# Auto-generated plugin registrant files are produced by `flutter pub get`
+# and should not be committed.
+**/GeneratedPluginRegistrant.swift
+**/GeneratedPluginRegistrant.h
+**/GeneratedPluginRegistrant.m
+**/GeneratedPluginRegistrant.cs
+**/GeneratedPluginRegistrant.java
+**/GeneratedPluginRegistrant.kt
