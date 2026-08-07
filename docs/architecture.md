@@ -90,6 +90,37 @@ Do not call APIs directly from widgets.
 
 ---
 
+## Android Toolchain Baseline
+
+The Android toolchain is pinned by [`android/settings.gradle.kts`](../android/settings.gradle.kts) and [`android/app/build.gradle.kts`](../android/app/build.gradle.kts). Any third-party Flutter plugin must be compatible with **all** of these floors, or it will fail CI with a Gradle stack trace instead of a 1-line error.
+
+| Tool                 | Pinned Version | Notes                                                       |
+| -------------------- | -------------- | ----------------------------------------------------------- |
+| Flutter SDK          | 3.44.x stable  | Set in `.github/workflows/ci.yml` (`flutter-version`).      |
+| Dart SDK             | 3.12.x         | Set in `pubspec.yaml` (`environment.sdk`).                  |
+| Java JDK             | 17 (Temurin)   | Java 21 is not yet supported by AGP 8.1.1.                  |
+| Android Gradle Plugin| 8.1.1          | Plugin AGP floor: 8.0. Plugins targeting AGP 9+ will break. |
+| Gradle wrapper       | 8.10+          |                                                             |
+| Kotlin               | 1.9.10         |                                                             |
+| compileSdk / targetSdk | 36           | Plugins that hard-code `compileSdk < 34` will fail.         |
+| minSdk               | 23             | Android 6.0+.                                               |
+| Android NDK          | r26b (if used) |                                                             |
+| Core library desugaring | enabled    | Required by `flutter_local_notifications`.                  |
+
+**Plugin adoption checklist** (run before adding any plugin with native Android code):
+
+1. Pub.dev: ≥ 100 likes, last published < 6 months ago, Flutter 3.x compatible.
+2. Read its `CHANGELOG.md` — look for AGP/Kotlin/SDK upgrade notes.
+3. Read its `android/build.gradle` — check the AGP version it pins. If it is
+   ≥ 2 majors ahead of our 8.1.1, skip it or fork it.
+4. Pin the version **exact** (`pkg: 11.0.3`, not `^11.0.3`) until you know it
+   works, then loosen the pin.
+5. Add the plugin **in the same commit as its first Dart import**. No
+   speculative deps — the `tools/check_native_plugin_sdk_floor.dart` CI guard
+   will flag plugins that pin a stale `compileSdk` even if unused.
+
+---
+
 ## Logging
 
 Use the `logger` package.

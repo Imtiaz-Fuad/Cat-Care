@@ -6,10 +6,55 @@ on:
   pull_request:
     branches: [master]
 
+# Two-job split instead of one monolithic job. Why:
+#   - `analyze + test` runs in <4 min and gives the PR-author the same
+#     signal they would see locally with `flutter analyze && flutter test`.
+#   - `android-build` runs in parallel and gates the merge. It compiles
+#     the full Gradle project, which is the place where plugin SDK floor
+#     mismatches (file_picker 11, geocoding 3.0, etc.) surface. Catching
+#     them here is far cheaper than waiting for a release smoke test.
+#   - `ios-build` runs only on master / feature-branch pushes (not PRs)
+#     because iOS builds need a macOS runner and spend ~10 min.
 jobs:
-  analyze-test-build:
-    name: analyze · test · build (android + ios)
+  analyze-test:
+    name: analyze · test · layering
     runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze --no-pub
+
+      - name: Unit + widget tests
+        run: flutter test --no-pub --coverage
+
+      - name: Architectural layering guard
+        # Defends docs/architecture.md "UI never imports Firebase directly".
+        # Mirrors the assertion in test/app_smoke_test.dart's layering group so
+        # the rule holds even when test files are skipped.
+        run: dart run tools/check_layering.dart
+
+      - name: Native plugin SDK-floor guard
+        # Defends against the file_picker 11 / geocoding 3.0 class of failure
+        # where a plugin's android/build.gradle pins compileSdk < 34 but its
+        # AndroidX transitive deps require >= 34. Fails fast in plain Dart
+        # with a 1-line message per offender instead of a Gradle stack trace.
+        run: dart run tools/check_native_plugin_sdk_floor.dart
+
+  android-build:
+    name: build · android (debug apks built against compileSdk 36)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -35,20 +80,28 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Static analysis
-        run: flutter analyze --no-pub
-
-      - name: Unit + widget tests
-        run: flutter test --no-pub --coverage
-
-      - name: Architectural layering guard
-        # Defends docs/architecture.md "UI never imports Firebase directly".
-        # Mirrors the assertion in test/app_smoke_test.dart's layering group so
-        # the rule holds even when test files are skipped.
-        run: dart run tools/check_layering.dart
-
       - name: Build Android debug APK
+        # This is the smoke build that catches plugin-AGP / Kotlin / SDK
+        # collisions before push. `--no-pub` is intentional: it uses the
+        # lockfile produced by `flutter pub get` above.
         run: flutter build apk --debug --no-pub
+
+  ios-build:
+    name: build · ios (debug, no codesign)
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/feature/'))
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
 
       - name: Build iOS debug (no codesign)
         run: flutter build ios --debug --no-codesign --no-pub
