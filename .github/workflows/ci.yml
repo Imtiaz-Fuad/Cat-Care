@@ -19,6 +19,19 @@ jobs:
           channel: stable
           cache: true
 
+      # Pin the Android SDK platforms/build-tools so AGP 8.1.1 can resolve
+      # `compileSdk = 36` (see android/build.gradle.kts). Without this,
+      # Gradle silently auto-downloads the SDK but the resolution can race
+      # with the plugin order and produce a "SDK location not found" error
+      # on cold-cache runs.
+      - name: Set up Android SDK 36
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK platform 36 + build-tools
+        run: |
+          yes | sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
+          yes | sdkmanager --licenses
+
       - name: Install dependencies
         run: flutter pub get
 
