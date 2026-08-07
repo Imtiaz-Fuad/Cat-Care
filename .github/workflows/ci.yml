@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [master, feature/**, fix/**]
+  pull_request:
+    branches: [master]
+
+jobs:
+  analyze-test-build:
+    name: analyze · test · build (android + ios)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.x'
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze --no-pub
+
+      - name: Unit + widget tests
+        run: flutter test --no-pub --coverage
+
+      - name: Architectural layering guard
+        # Defends docs/architecture.md "UI never imports Firebase directly".
+        # Mirrors the assertion in test/app_smoke_test.dart's layering group so
+        # the rule holds even when test files are skipped.
+        run: dart run tools/check_layering.dart
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug --no-pub
+
+      - name: Build iOS debug (no codesign)
+        run: flutter build ios --debug --no-codesign --no-pub
+        env:
+          IMAGE_PLACEHOLDER: '1'
