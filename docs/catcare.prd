@@ -1,0 +1,730 @@
+# PRD - CatCare BD
+
+# 1. Product Vision
+
+Build the best digital companion for cat owners in Bangladesh.
+
+Unlike existing pet marketplace apps, CatCare BD focuses on **one cat's daily life**, helping owners manage health, nutrition, routines, medical history, and behavior while using AI to provide personalized insights—not diagnoses.
+            					
+The goal is for the app to become more valuable the longer it is used.
+
+---
+                                              
+# 2. Problem Statement                          
+
+Cat ownership in Bangladesh is growing, but owners face fragmented services.
+
+Current issues include:
+
+- No centralized medical records
+- Forgotten vaccinations and medicines
+- Poor nutrition knowledge
+- Difficulty finding trusted vets
+- No behavior history
+- Medical papers scattered
+- No personalized recommendations
+- Existing apps focus more on services than long-term health tracking
+
+---
+
+# 3. Goals
+
+Primary Goals
+
+- Become the personal health companion for every cat
+- Simplify cat care
+- Increase owner awareness
+- Build long-term engagement
+- Create valuable lifetime health records
+
+
+# 4. Core Principles
+
+- Cat-first
+- Kitten-first where age-specific care is required
+- Bangladesh-first
+- AI assists, never diagnoses
+- Simple UX
+- Offline-friendly where possible
+- Trustworthy information
+- Personalized
+
+---
+
+# 5. MVP Scope
+
+Included
+
+✅ Cat profiles
+
+✅ Daily routine tracking
+
+✅ Feeding tracker
+
+✅ Water tracker
+
+✅ Medicine reminders
+
+✅ Vaccination reminders
+
+✅ Deworming reminders
+
+✅ Weight tracking
+
+✅ Medical record storage
+
+✅ Nutrition tracking
+
+✅ AI Assistant
+
+✅ AI Weekly Summary
+
+✅ Behavior tracking
+
+✅ Vet Finder
+
+---
+
+# 6. Features
+
+## 6.1 Authentication
+
+Email
+
+Google
+
+Guest Mode (optional)
+
+---
+
+## 6.2 Cat Profiles
+
+Each user may own multiple cats.
+
+Fields
+
+- Name
+- Photo
+- Age
+- Birthday
+- Breed
+- Gender
+- Weight
+- Color
+- Neutered
+- Indoor/Outdoor
+- Allergies
+- Existing diseases
+- Medications
+- Notes
+
+---
+
+## 6.3 Dashboard
+
+Displays
+
+Today's Care
+
+
+Upcoming Vaccination
+
+Upcoming Medicine
+
+Water Goal
+
+Food Goal
+
+Recent Weight
+
+AI Insight
+
+Nearest Vet
+
+---
+
+## 6.4 Daily Routine
+
+User creates routines.
+
+Categories
+
+Feeding
+
+Medicine
+
+Water
+
+Play
+
+Brushing
+
+Litter Cleaning
+
+Exercise
+
+Sleep
+
+Each task has
+
+- Time
+- Repeat
+- Reminder
+- Completion status
+
+---
+
+## 6.5 Feeding Tracker
+
+Track
+
+Food
+
+Quantity
+
+Time
+
+Brand
+
+Food Type - Add Bangladeshi standard food recipes for cat
+
+Dry
+
+Wet
+
+Homemade
+
+AI generates insights over time.
+
+---
+
+## 6.6 Water Tracker
+
+Log
+
+Water amount
+
+AI notices trends.
+
+---
+
+## 6.7 Weight Tracking
+
+Weight history
+
+Graph
+
+Monthly trend
+
+AI summary
+
+---
+
+## 6.8 Health Records
+
+Store
+
+Diagnosis
+
+Prescription
+
+Medicines
+
+Vaccines
+
+Tests
+
+Invoices
+
+Upload
+
+Images
+
+PDF
+
+---
+
+## 6.9 Vaccination Manager
+
+Store
+
+Vaccine
+
+Date
+
+Next Due
+
+Reminder
+
+History
+
+---
+
+## 6.10 Medication Manager
+
+Store
+
+Medicine
+
+Dose
+
+Frequency
+
+Duration
+
+Reminder
+
+Completion
+
+---
+
+## 6.11 Behavior Tracker
+
+Daily observations
+
+Appetite
+
+Activity
+
+Mood
+
+Sleep
+
+Water intake
+
+Vomiting
+
+Diarrhea
+
+Urination
+
+Litter habits
+
+Aggression
+
+Hiding
+
+Notes
+
+---
+
+## 6.12 Nutrition
+
+Track
+
+Food
+
+Calories
+
+Feeding schedule
+
+Weight changes
+
+AI suggestions
+
+---
+
+## 6.13 Vet Finder
+
+Features
+
+Nearby clinics
+
+Distance
+
+Map
+
+Phone
+
+Opening hours
+
+Emergency indicator
+
+Directions
+
+---
+
+## 6.14 AI Assistant
+
+Purpose
+
+Help owners understand data already collected.
+
+Not intended to diagnose.
+
+Example
+
+User:
+
+"Milo isn't eating."
+
+AI knows
+
+Weight
+
+Age
+
+History
+
+Routine
+
+Previous symptoms
+
+Response
+
+Explain possible reasons
+
+Suggest monitoring
+
+Recommend vet if necessary
+
+---
+
+## 6.15 AI Weekly Report
+
+Every week
+
+Generate
+
+Weight trend
+
+Eating trend
+
+Activity trend
+
+Medicine adherence
+
+Behavior summary
+
+Natural language explanation
+
+---
+
+## 6.16 Kitten Care
+
+Kittens are treated as a distinct life stage with age-specific care, nutrition, health, and development requirements.
+
+The app must automatically identify a cat as a kitten based on age and adjust relevant features accordingly.
+
+### Kitten Profile
+
+Additional information:
+
+- Date of birth / estimated age
+- Vaccination history
+- Deworming history
+- Feeding method
+- Known health issues
+
+### Kitten Dashboard
+
+Prioritize:
+
+- Feeding schedule
+- Weight/growth tracking
+- Vaccination schedule
+- Deworming schedule
+- Development milestones
+- Play/activity
+- Medication
+- Upcoming care
+
+### Kitten Nutrition
+
+Provide age-appropriate feeding guidance.
+
+Track:
+
+- Number of meals
+- Food type
+- Quantity
+- Weight
+- Feeding changes
+
+The app must clearly distinguish kitten nutrition from adult-cat nutrition.
+
+Homemade/local foods should be presented with appropriate nutritional warnings and should not be treated as automatically complete or balanced diets.
+
+### Growth Tracking
+
+Track weight over time and display growth trends.
+
+The app should flag unusual changes in growth for the owner to discuss with a veterinarian.
+
+### Kitten Development
+
+Optional milestones:
+
+- Eyes opening
+- Walking
+- Weaning
+- Litter training
+- Socialization
+- Vaccination milestones
+- Spaying/neutering planning
+
+### Kitten Safety
+
+Provide age-appropriate safety guidance covering:
+
+- Unsafe foods
+- Household hazards
+- Toxic substances
+- Safe play
+- Appropriate litter
+- Environmental safety
+
+### Kitten AI
+
+The AI should use the kitten's age and developmental stage when answering questions.
+
+Example:
+
+User:
+"My 7-week-old kitten isn't eating much."
+
+The AI should recognize that the kitten is at a different developmental stage from an adult cat and provide age-appropriate guidance while applying stronger veterinary escalation rules where appropriate.
+
+# 7. AI Features
+
+## Feature 1
+
+Personalized Cat Assistant
+
+Priority
+
+★★★★★
+
+---
+
+## Feature 2
+
+Behavior Trend Explanation
+
+★★★★★
+
+---
+
+## Feature 3
+
+Medical Record Summarization
+
+★★★★☆
+
+Extract
+
+Medicine
+
+Diagnosis
+
+Follow-up
+
+---
+
+## Feature 4
+
+Food Label Analysis
+
+★★★★☆
+
+Image → structured nutrition
+
+---
+
+## Feature 5
+
+Routine Generator
+
+★★★★★
+
+---
+
+## Feature 6
+
+Weekly Reports
+
+★★★★★
+
+---
+
+## Feature 7
+
+Bangla + English Assistant
+
+★★★★★
+
+---
+
+## Feature 8
+
+Emergency Guidance
+
+★★★★☆
+
+Shows
+
+Immediate actions
+
+Find nearest vet
+
+Never diagnoses
+
+---
+
+# 8. AI Rules
+
+AI MAY
+
+Explain
+
+Summarize
+
+Translate
+
+Analyze trends
+
+Read documents
+
+Generate routines
+
+Answer care questions
+
+AI MUST consider:
+- Cat age/life stage
+- Weight
+- Relevant medical history
+- Current medications
+- Recent symptoms
+- Kitten-specific requirements where applicable
+
+AI MUST NOT give generic adult-cat advice to kittens when age-specific guidance is relevant.
+
+AI MUST NOT
+
+Diagnose disease
+
+Prescribe medicine
+
+Change dosage
+
+Replace veterinarians
+
+---
+
+
+# 9. Notifications
+
+Medicine reminders
+
+Feeding reminders
+
+Vaccination reminders
+
+Deworm reminders
+
+Weight reminders
+
+Water reminders
+
+Routine reminders
+
+---
+
+# 10. Content & Data Management
+
+CatCare BD must NOT blindly hardcode factual, medical, nutritional, veterinary, or Bangladesh-specific content into the application.
+
+Where the application displays curated information, the developer must create a clear data/content layer that allows the product owner to provide or replace the actual content later.
+
+## 10.1 Owner-Managed Content
+
+The following content should be configurable rather than permanently hardcoded:
+
+- Food recommendations
+- Food database
+- Homemade/local food information
+- Nutrition guidance
+- Grooming guidance
+- General care guidance
+- Kitten care guidance
+- Cat safety information
+- Vaccination information
+- Deworming information
+- Emergency guidance
+- Breed information
+- Vet information
+- Other educational content
+
+## 10.2 Placeholder Data
+
+During development, use clearly identifiable placeholder/sample data.
+
+Example:
+
+`[CONTENT PLACEHOLDER: Kitten feeding guidance]`
+
+or:
+
+`[ADD VERIFIED FOOD DATA HERE]`
+
+Do NOT present placeholder information as factual medical or nutritional advice.
+
+## 10.3 Content Separation
+
+Application logic must be separated from informational content.
+
+For example:
+
+The UI should consume:
+
+`FoodRecommendation`
+
+rather than having food recommendations directly embedded inside Flutter widgets.
+
+This allows the product owner to replace or update the content without rewriting the UI or business logic.
+
+## 10.4 Data Source
+
+For every factual recommendation, the final production source should be identifiable.
+
+Possible sources include:
+
+- Veterinarian-reviewed content
+- Trusted veterinary organizations
+- Verified product information
+- Official Bangladesh veterinary resources
+- Product owner-provided content
+
+The development agent must not invent authoritative sources.
+
+## 10.5 Development Rule
+
+If required factual content has not been provided, the agent should:
+
+1. Create the required data structure/model.
+2. Add clearly marked placeholder content.
+3. Make the UI functional using the placeholder.
+4. Clearly identify where the real content should be inserted.
+5. Never silently invent factual content.
+
+Example:
+
+```text
+Food Recommendation Screen
+
+[FOOD DATA WILL BE PROVIDED HERE]
+
+UI:
+- Food name
+- Food type
+- Life stage
+- Ingredients
+- Nutritional information
+- Recommended usage
+- Warnings
+- Source
+# 11. Future Vision
+
+CatCare BD becomes the trusted digital companion for cat owners in Bangladesh.
+
+Instead of simply reminding users to feed their cats, it builds a lifelong history of health, behavior, nutrition, and medical care while providing personalized AI-powered insights and connecting owners to local veterinary services.

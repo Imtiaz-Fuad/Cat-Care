@@ -1,0 +1,790 @@
+# CatCare BD — UI/UX Design Specification
+
+## 1. Design Direction
+
+CatCare BD should feel like a **personal care companion for one specific cat**, not a generic pet-management/database app.
+
+Core feeling:
+
+- Caring
+- Calm
+- Warm
+- Modern
+- Trustworthy
+- Personal
+- Simple and low-friction
+
+The user's cat should be the visual identity of the app. The interface should repeatedly reinforce that the app belongs to the cat and is helping the owner care for that individual cat.
+
+Do NOT make the UI feel like:
+- A veterinary/medical dashboard
+- A spreadsheet or data-management tool
+- A children's cartoon app
+- A generic fitness tracker
+- An overly decorative social-media app
+
+---
+
+## 2. Primary UX Principle
+
+The main question the app should answer is:
+
+> **"How is my cat doing today?"**
+
+The Home/Daily Report screen is the center of the product.
+
+All other major features should feed useful information into this daily view.
+
+Avoid showing data merely because it can be measured. Every metric must have a clear purpose for the owner.
+
+---
+
+## 3. Navigation Architecture
+
+Use a bottom navigation bar for the four highest-frequency destinations:
+
+1. Home
+2. Routine
+3. Nutrition
+4. Profile
+
+### Bottom navigation
+
+```text
+Home       Routine       Nutrition       Profile
+  🏠          ✓             🍽              👤
+```
+
+Keep labels visible.
+
+Do not add more destinations to the bottom navigation unless there is a strong UX reason.
+
+### Navigation Drawer / Sidebar
+
+Use a hamburger menu for secondary features.
+
+Suggested structure:
+
+```text
+CAT
+  Cat profile / switch cat
+
+CARE
+  Health Records
+  Medications
+  Vaccinations
+  Grooming
+  Vet Visits
+
+GUIDES
+  Food Guide
+  Cat Safety
+  Care Guides
+  Kitten Care
+
+TOOLS
+  AI Assistant
+  Notifications
+  Settings
+  Help
+```
+
+The exact feature list can evolve with the PRD.
+
+Rule:
+
+- Bottom navigation = features used frequently
+- Sidebar = secondary/occasional features
+
+---
+
+# 4. Home / Daily Report
+
+This is the most important screen.
+
+## Purpose
+
+Give the owner a quick understanding of the cat's current day without requiring them to inspect multiple screens.
+
+## Suggested layout
+
+```text
+Good morning, [Owner] 👋
+
+[ Cat photo ]
+[ Cat name ]
+[ Age · Sex ]
+
+[ Simple daily care status ]
+
+Today's Overview
+--------------------------------
+Routine       Nutrition       Activity
+5 / 7         On track        Needs attention
+
+
+Today's Schedule
+--------------------------------
+✓ Breakfast
+✓ Fresh Water
+○ Play Time
+○ Grooming
+○ Dinner
+○ Litter Check
+
+
+Daily Insight
+--------------------------------
+A short natural-language summary
+generated from today's recorded data.
+
+
+Upcoming
+--------------------------------
+Grooming
+Vaccination
+Medication
+etc.
+```
+
+### Important
+
+Do NOT create a graph-heavy dashboard.
+
+The Home screen should prioritize:
+- Status
+- Progress
+- Actions
+- Short insights
+- Upcoming events
+
+It should not look like an analytics dashboard.
+
+---
+
+# 5. Cat Photo System
+
+The user's cat photo is a core design element.
+
+The user should upload a cat photo during onboarding.
+
+Use the photo in:
+
+- Home hero section
+- Cat profile
+- Navigation header/avatar
+- Routine header
+- Nutrition header
+- Empty states
+- Completion/success states
+- Daily report where appropriate
+
+Do not put a large photo on every screen.
+
+Use three levels:
+
+### Hero image
+Used for:
+- Home
+- Profile
+- Onboarding
+
+### Avatar
+Used for:
+- Navigation
+- Routine
+- Nutrition
+- Secondary screens
+
+### Personality image
+Used occasionally for:
+- Empty states
+- Completion states
+- Daily insight
+- Encouragement
+
+The photo should make the user feel:
+
+> "This is Mishu's care space."
+
+rather than:
+
+> "This is a generic cat app."
+
+---
+
+# 6. Dynamic Theme From Cat Photo
+
+The cat photo may influence the app's accent color.
+
+However, do NOT completely recolor the UI based on the photo.
+
+Use a stable base theme and derive only a subtle accent.
+
+Example:
+
+```text
+Cat photo
+    ↓
+Dominant / representative color
+    ↓
+Convert to soft pastel/muted tone
+    ↓
+Use as accent
+```
+
+Examples:
+
+- Orange cat → soft peach/terracotta accent
+- Gray cat → muted blue/gray accent
+- Brown cat → warm brown/cream accent
+- Black cat → muted purple/slate accent
+- White cat → soft blue/green accent
+
+The theme must remain accessible and readable regardless of the cat's colors.
+
+The cat-derived color should mainly affect:
+- Highlights
+- Progress indicators
+- Selected navigation item
+- Small decorative accents
+- Buttons where appropriate
+
+Do not allow photo-derived colors to control body text, important status colors, or accessibility-critical contrast.
+
+---
+
+# 7. Color System
+
+Recommended base direction:
+
+### Light theme
+
+- Background: warm off-white / ivory
+- Surface: white or slightly warm white
+- Primary: muted sage / teal
+- Secondary: warm peach
+- Text: deep charcoal
+- Secondary text: warm gray
+- Cat-derived accent: subtle personalized accent
+
+Avoid:
+- Neon colors
+- Extremely saturated green
+- Excessive purple
+- Excessive gradients
+- Strong glassmorphism
+- Too many accent colors
+
+### Semantic colors
+
+Keep semantic colors independent from the cat-derived theme:
+
+- Success = green
+- Warning = amber/orange
+- Error = red
+- Informational = blue
+
+These should remain recognizable and consistent.
+
+---
+
+# 8. Typography
+
+Use a clean, modern sans-serif with good readability.
+
+Hierarchy:
+
+- Large friendly screen titles
+- Medium section headings
+- Clear body text
+- Small supporting metadata
+
+Avoid excessive font weights and decorative typography.
+
+The UI should feel friendly through spacing, imagery and language rather than cartoonish typography.
+
+---
+
+# 9. Shape, Spacing and Components
+
+Recommended design language:
+
+- Card radius: approximately 16–24px
+- Button radius: approximately 12–16px
+- Generous padding
+- Large touch targets
+- Soft borders
+- Very subtle shadows
+- Rounded progress indicators
+- Simple line/filled icons
+
+Avoid excessive nested cards.
+
+Do not create:
+
+```text
+Card
+  -> Card
+      -> Card
+          -> Card
+```
+
+Use whitespace and sections to separate content when a card is unnecessary.
+
+---
+
+# 10. Routine Screen
+
+## Purpose
+
+Make daily care tasks extremely easy to understand and complete.
+
+Example:
+
+```text
+Routine
+
+        [ Cat avatar ]  Mishu
+
+Today · 7 Aug
+
+Morning
+--------------------------------
+✓ Breakfast             8:00 AM
+✓ Fresh Water           8:15 AM
+✓ Litter Check          8:30 AM
+
+Afternoon
+--------------------------------
+✓ Play Time             12:00 PM
+○ Grooming              2:00 PM
+
+Evening
+--------------------------------
+○ Dinner                8:00 PM
+○ Litter Check          9:00 PM
+```
+
+Use a timeline/checklist structure rather than a data table.
+
+Completing an item should require minimal interaction.
+
+Example:
+
+```text
+○ Breakfast
+```
+
+tap →
+
+```text
+✓ Breakfast
+Completed at 8:12 AM
+```
+
+Completion can have a subtle animation/haptic response.
+
+---
+
+# 11. Nutrition — Important Product Decision
+
+Nutrition should NOT primarily be a graph/analytics page.
+
+The owner should be able to record:
+
+> **"What did I feed my cat?"**
+
+with minimal friction.
+
+## Nutrition home
+
+Suggested layout:
+
+```text
+Nutrition
+
+[ Cat avatar ]  Mishu
+
+Today's Food
+--------------------------------
+
+[ + Add what I fed ]
+
+Today's meals
+--------------------------------
+08:00
+Wet food · 60g
+✓ Recorded
+
+13:00
+Dry food · 50g
+✓ Recorded
+
+20:00
+Not recorded yet
+```
+
+The main CTA should be prominent:
+
+> **+ Add what I fed**
+
+---
+
+# 12. Feeding Entry
+
+The user should be able to record food naturally.
+
+Possible fields:
+
+- Food type
+- Food/product name
+- Amount
+- Unit
+- Time
+- Optional photo
+- Optional note
+
+Do not force unnecessary nutrition fields.
+
+Example:
+
+```text
+What did you feed Mishu?
+
+[ Food / Meal type ]
+
+[ Amount ] [ unit ]
+
+When?
+[ Now ]
+
+[ Add photo ]     optional
+
+[ Save Meal ]
+```
+
+If a user repeatedly feeds the same food, provide quick suggestions/history.
+
+Example:
+
+```text
+Recent foods
+
+Whiskas Tuna
+Royal Canin Kitten
+Boiled Chicken
+Rice + Fish
+```
+
+The user should not have to re-enter everything every time.
+
+---
+
+# 13. Nutrition Report
+
+After the user records meals, generate a **human-readable report**.
+
+Do NOT make the primary report a graph.
+
+Example:
+
+```text
+Mishu's Nutrition Today
+
+Overall
+--------------------------------
+Mishu has had 2 recorded meals
+today.
+
+🍗 Food intake
+On track
+
+💧 Water
+Below the usual amount
+
+Today's meals
+--------------------------------
+✓ Breakfast
+  Wet food · 60g
+
+✓ Lunch
+  Dry food · 50g
+
+○ Dinner
+  Not recorded yet
+
+
+Nutrition Insight
+--------------------------------
+Mishu has eaten normally today.
+Consider encouraging a little more
+water this evening.
+
+
+[ Add another meal ]
+```
+
+The report should be generated from actual recorded data.
+
+Never invent feeding data.
+
+If there is insufficient data, explicitly say so.
+
+Example:
+
+> "There isn't enough information yet to assess today's nutrition."
+
+---
+
+# 14. Nutrition Report Philosophy
+
+The app should translate data into useful language.
+
+Bad:
+
+```text
+Food: 160g
+Water: 120ml
+Calories: 240
+```
+
+Better:
+
+```text
+Mishu has eaten normally today.
+Water intake is a little lower than
+usual. Consider offering fresh water.
+```
+
+The numbers can still be available under "See details", but they should not dominate the primary UX.
+
+Do not make medical or nutritional claims unless the underlying data and rules support them.
+
+---
+
+# 15. Daily Report / Insight System
+
+The daily report should combine information from:
+
+- Routine completion
+- Nutrition entries
+- Water entries
+- Activity/play
+- Grooming
+- Medication
+- Health records
+- Other relevant user-entered observations
+
+The result should read like a short summary for the owner.
+
+Example:
+
+```text
+Mishu's Day
+
+Mishu completed 5 of 7 routine tasks
+today.
+
+Meals are on schedule. Water intake
+was slightly lower than usual.
+
+Playtime is still pending.
+
+Today's focus:
+Encourage some extra water and play.
+```
+
+Keep reports short.
+
+Avoid long AI-generated paragraphs.
+
+---
+
+# 16. Profile Screen
+
+The profile is primarily the **cat's profile**.
+
+Top:
+
+```text
+[ Large Cat Photo ]
+
+Mishu
+2 years · Male
+4.2 kg
+```
+
+Sections:
+
+- Basic information
+- Breed
+- Birthday
+- Weight
+- Vaccinations
+- Medical history
+- Allergies
+- Medications
+- Preferences
+- Owner/account settings
+
+The owner account should be secondary to the cat profile.
+
+---
+
+# 17. Kitten UX
+
+Kittens require special attention.
+
+When the cat is classified as a kitten, surface relevant care more prominently.
+
+Prioritize:
+
+1. Feeding
+2. Water
+3. Vaccination
+4. Deworming
+5. Growth/weight
+6. Play
+7. Grooming
+8. Sleep/rest
+
+Do not create a completely separate visual design for kittens.
+
+Use the same design system with additional kitten-specific guidance and priorities.
+
+---
+
+# 18. Empty States
+
+Empty states should feel personal.
+
+Avoid:
+
+```text
+No data available.
+```
+
+Prefer:
+
+```text
+Mishu's first meal hasn't been recorded yet. 🐾
+
+[ Add first meal ]
+```
+
+or:
+
+```text
+Mishu is all caught up!
+
+Nothing else to do right now. 🐱
+```
+
+Use the cat photo/illustration occasionally in empty states.
+
+---
+
+# 19. Onboarding
+
+Make onboarding feel like introducing the cat rather than filling out a form.
+
+Suggested sequence:
+
+### Step 1
+
+> Let's meet your cat 🐾
+
+Upload cat photo.
+
+### Step 2
+
+> What's their name?
+
+### Step 3
+
+> Tell us about [Cat Name]
+
+Age, sex, breed, etc.
+
+### Step 4
+
+> What would you like help with?
+
+Routine / Nutrition / Grooming / Health / Vaccinations
+
+### Step 5
+
+> [Cat Name]'s care space is ready. 🐱
+
+Then take the user directly to Home.
+
+The uploaded photo should immediately appear in the app.
+
+---
+
+# 20. UX Rules for the Coding Agent
+
+When implementing the UI:
+
+1. Prioritize usability over visual decoration.
+2. Do not add graphs just because data exists.
+3. Do not add metrics without a clear user benefit.
+4. Keep the primary action obvious on every major screen.
+5. Minimize the number of taps required for routine actions.
+6. Use the user's cat photo as a recurring personalization element.
+7. Keep the base visual system consistent.
+8. Allow only subtle personalization from the cat photo.
+9. Keep important semantic colors consistent.
+10. Use human-readable summaries instead of raw data wherever possible.
+11. Never fabricate nutrition, health or activity information.
+12. Where content/data is intended to be supplied by the product owner, use clearly marked placeholder/mock data rather than inventing permanent content.
+13. Design for kittens as a first-class use case.
+14. Avoid overly dense dashboards.
+15. Avoid excessive cards and nested containers.
+16. Every screen should have a clear visual hierarchy.
+17. Build reusable components rather than duplicating UI.
+18. Maintain responsive layouts for common Android screen sizes.
+19. Accessibility and readable contrast take priority over dynamic theming.
+20. Follow the PRD and architecture documents when they conflict with assumptions in this design document.
+
+---
+
+# 21. Recommended Initial Screens to Implement
+
+For the first UI implementation, prioritize:
+
+1. Onboarding / Add Cat
+2. Home / Daily Report
+3. Routine
+4. Nutrition
+5. Add Feeding Entry
+6. Nutrition Report
+7. Cat Profile
+8. Navigation Drawer
+
+Do not implement every secondary feature before these screens feel cohesive.
+
+---
+
+# 22. Visual Reference
+
+A three-screen visual mockup was generated during design exploration showing the intended direction:
+
+- Home / Daily Report
+- Routine
+- Nutrition
+
+The mockup should be treated as **visual inspiration**, not a pixel-perfect implementation specification.
+
+The implementation should follow the principles and UX rules in this document rather than blindly copying individual mockup elements.
+
+---
+
+# 23. Final Design Principle
+
+CatCare BD should feel like:
+
+> **"A small, calm space dedicated to taking care of my cat."**
+
+Every major design decision should support that feeling.
