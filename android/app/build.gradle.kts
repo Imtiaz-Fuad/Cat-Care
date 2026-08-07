@@ -6,7 +6,10 @@ plugins {
 
 android {
     namespace = "com.example.cat_care"
-    compileSdk = flutter.compileSdkVersion
+    // Bumped to 36 because file_picker -> flutter_plugin_android_lifecycle
+    // requires it (Android 16 = API 36). Flutter 3.44.6 still defaults to
+    // 35; we override explicitly here.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
