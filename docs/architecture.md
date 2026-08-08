@@ -121,6 +121,36 @@ The Android toolchain is pinned by [`android/settings.gradle.kts`](../android/se
 
 ---
 
+## iOS Toolchain Baseline
+
+Pinned by [`ios/Podfile`](../ios/Podfile) and
+[`ios/Runner.xcodeproj/project.pbxproj`](../ios/Runner.xcodeproj/project.pbxproj).
+
+| Tool                            | Pinned Version | Notes                                                  |
+| ------------------------------- | -------------- | ------------------------------------------------------ |
+| iOS deployment target (project) | 14.0           | Required by `google_maps_flutter_ios`.                 |
+| iOS deployment target (Podfile) | 14.0           | CocoaPods would default to 13.0 if unset.              |
+| Swift                           | 5.x            | Inferred from Flutter stable toolchain.                |
+| Xcode                           | 15.x           | Required by Flutter 3.44.x.                            |
+| CocoaPods                       | 1.13+          |                                                        |
+
+**Why 14.0 and not 13.0:** `google_maps_flutter_ios` requires iOS 14+.
+CocoaPods defaults to 13.0 when `platform :ios, ...` is unset, which fails
+`pod install` with "The plugin ... requires a higher minimum iOS deployment
+version". The `Podfile` `post_install` hook also rewrites every pod target's
+`IPHONEOS_DEPLOYMENT_TARGET` to `14.0` so transitive plugins inherit the
+floor even if their podspec asks for something older.
+
+**Plugin adoption checklist (iOS):**
+
+1. Pub.dev: ≥ 100 likes, last published < 6 months ago, Flutter 3.x compatible.
+2. Read its podspec — check `platform :ios, ...`. If it requires a target
+   higher than our `14.0`, bump the project (this section) and the Podfile.
+3. Run `flutter build ios --debug --no-codesign --no-pub` locally before push
+   to catch CocoaPods / deployment-target failures.
+
+---
+
 ## Logging
 
 Use the `logger` package.
