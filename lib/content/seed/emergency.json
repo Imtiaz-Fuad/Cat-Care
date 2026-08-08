@@ -1,0 +1,14 @@
+[
+  {
+    "id": "placeholder_emergency_001",
+    "title": "[CONTENT PLACEHOLDER — verified emergency title will be provided]",
+    "severity": "urgent",
+    "summary": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "signs": [],
+    "doNow": [],
+    "doNot": [],
+    "contactVetImmediately": true,
+    "source": null,
+    "missingData": true
+  }
+]

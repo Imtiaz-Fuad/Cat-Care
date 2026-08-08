@@ -6,8 +6,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'content_backend.dart';
 
 /// Loads seed JSON from the Flutter asset bundle using `rootBundle`.
-/// Categories are mapped to `assets/content/<category>.json`; the
-/// `pubspec.yaml` is updated to bundle this directory.
+/// Categories are mapped to `lib/content/seed/<category>.json` — the
+/// single source of truth for placeholder content per the implementation
+/// plan (`[CONTENT PLACEHOLDER …]`). `pubspec.yaml` bundles this directory.
 ///
 /// This is the only place in `core/services/content/` that imports
 /// `package:flutter/services.dart` — every other consumer reaches the
@@ -18,7 +19,8 @@ class AssetContentSeedLoader implements ContentSeedLoader {
 
   @override
   Future<List<Map<String, dynamic>>?> loadCategory(String category) async {
-    final data = await rootBundle.loadString('assets/content/$category.json');
+    final data =
+        await rootBundle.loadString('lib/content/seed/$category.json');
     return _decodeList(data);
   }
 

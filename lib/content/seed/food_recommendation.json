@@ -1,0 +1,13 @@
+[
+  {
+    "id": "placeholder_rec_kitten_moderate",
+    "lifeStage": "kitten",
+    "activityLevel": "moderate",
+    "mealsPerDay": null,
+    "gramsPerDay": null,
+    "waterMlPerDay": null,
+    "notes": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "source": null,
+    "missingData": true
+  }
+]

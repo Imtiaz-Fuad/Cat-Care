@@ -1,0 +1,19 @@
+[
+  {
+    "id": "placeholder_food_001",
+    "name": "[CONTENT PLACEHOLDER — verified food item will be provided]",
+    "foodType": "dry",
+    "brand": null,
+    "description": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "suitableLifeStages": [],
+    "typicalServingGrams": null,
+    "caloriesPerServing": null,
+    "proteinPercent": null,
+    "fatPercent": null,
+    "fiberPercent": null,
+    "moisturePercent": null,
+    "notes": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "source": null,
+    "missingData": true
+  }
+]
