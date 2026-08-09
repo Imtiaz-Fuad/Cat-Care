@@ -1,0 +1,13 @@
+[
+  {
+    "code": "PLACEHOLDER-FVRCP",
+    "name": "[CONTENT PLACEHOLDER — verified vaccine name will be provided]",
+    "description": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "boosterIntervalDays": 365,
+    "minAgeWeeks": 8,
+    "core": true,
+    "speciesNotes": null,
+    "source": null,
+    "missingData": true
+  }
+]

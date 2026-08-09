@@ -1,0 +1,11 @@
+[
+  {
+    "id": "placeholder_deworming_kitten",
+    "label": "[CONTENT PLACEHOLDER — verified deworming label will be provided]",
+    "intervalDays": 30,
+    "scheduleMonths": [1, 2, 3, 6, 9, 12],
+    "notes": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "source": null,
+    "missingData": true
+  }
+]
