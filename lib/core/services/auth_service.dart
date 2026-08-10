@@ -132,6 +132,54 @@ class AuthService {
     }
   }
 
+  /// Link the current anonymous account with an email/password
+  /// credential. On success the anonymous uid is preserved (but the
+  /// active user changes) — `MigrationService` uses this to copy
+  /// guest data into the linked account before the anon user is
+  /// deleted.
+  ///
+  /// Throws [AuthFailure] when there is no signed-in user, or when
+  /// the credential is already linked to a different account
+  /// (`credential-already-in-use`).
+  Future<UserCredential> linkGuestWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    final User? current = instance.currentUser;
+    if (current == null) {
+      throw const AuthFailure(
+        'No guest session to upgrade.',
+        code: 'no-current-user',
+      );
+    }
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: email,
+        password: password,
+      );
+      return await current.linkWithCredential(credential);
+    } on FirebaseAuthException catch (error) {
+      throw _mapAuthError(error);
+    } on FirebaseException catch (error) {
+      throw _mapGenericError(error);
+    }
+  }
+
+  /// Delete the currently signed-in user (used by `MigrationService`
+  /// to remove the now-empty anonymous account after upgrade).
+  /// Throws [AuthFailure] when there is no current user.
+  Future<void> deleteCurrentUser() async {
+    final User? current = instance.currentUser;
+    if (current == null) return;
+    try {
+      await current.delete();
+    } on FirebaseAuthException catch (error) {
+      throw _mapAuthError(error);
+    } on FirebaseException catch (error) {
+      throw _mapGenericError(error);
+    }
+  }
+
   /// Sign out the current user. No-op when already signed out.
   Future<void> signOut() async {
     try {
