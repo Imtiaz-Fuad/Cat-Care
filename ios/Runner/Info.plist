@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+        <!--
+                Firebase configuration (iOS):
+                After running `flutterfire configure --platforms=android,ios`,
+                place the generated GoogleService-Info.plist at
+                ios/Runner/GoogleService-Info.plist and add it to the
+                Runner.xcodeproj as a bundle resource. The file is NOT
+                committed to source control (see .gitignore).
+        -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
