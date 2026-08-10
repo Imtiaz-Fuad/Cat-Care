@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import 'core/constants/app_constants.dart';
 import 'core/services/app_logger.dart';
+import 'core/services/firebase_bootstrap.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_router.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppLogger.i('CatCare starting…');
+  await FirebaseBootstrap.start();
   runApp(const CatCareApp());
 }
 
