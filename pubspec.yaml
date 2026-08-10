@@ -68,6 +68,11 @@ dev_dependencies:
   # rest of the Firebase stack is on 3.x in this tree.
   firebase_auth_mocks: ^0.14.2
   google_sign_in_mocks: ^0.4.1
+  # Used by the auth test files to seed `MockFirebaseAuth` failures via
+  # `whenCalling(Invocation.method(...)).on(auth).thenThrow(...)`.
+  # Re-exported as a transitive dep of firebase_auth_mocks but pinned
+  # here so the linter doesn't flag `depend_on_referenced_packages`.
+  mock_exceptions: ^0.8.2
 
 flutter:
   uses-material-design: true
