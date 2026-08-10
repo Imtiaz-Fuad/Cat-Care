@@ -1,0 +1,46 @@
+rules_version = '2';
+
+// CatCare Firestore security rules.
+//
+// Three top-level patterns cover the entire data model:
+//   1. /content/{category}/items/{id}        — curated, public read, admin-only write
+//   2. /vet_clinics/{id}                      — curated, public read, admin-only write
+//   3. /users/{uid}/...                       — owner-only (cats, routines, feedings, water,
+//                                                weights, behavior, health, vaccinations,
+//                                                medications)
+//
+// All other paths are implicitly denied (default deny-all).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Helpers ------------------------------------------------------------
+
+    // Convenience: the caller is signed in and the URL uid matches their own.
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // ---- Curated content ----------------------------------------------------
+    // Reads are public so guest/anonymous users can browse before signing up.
+    // Writes are admin-only (deployed via Firebase Admin SDK / Cloud Functions).
+    match /content/{category}/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ---- Vet clinic directory ----------------------------------------------
+    match /vet_clinics/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ---- User-owned data ---------------------------------------------------
+    // A user can read and write any document under their own `/users/{uid}`
+    // tree. The rule covers the cats subcollection and all of its
+    // subcollections (routines, feedings, water, weights, behavior, health,
+    // vaccinations, medications), plus any future per-user data we add here.
+    match /users/{uid}/{document=**} {
+      allow read, write: if isOwner(uid);
+    }
+  }
+}

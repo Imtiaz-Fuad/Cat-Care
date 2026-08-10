@@ -501,6 +501,20 @@ CatCard
 * Use Firebase Authentication for user identity.
 * Restrict Storage access through security rules.
 
+## Firestore Security Rules
+
+Source of truth: [`firestore.rules`](../firestore.rules) at the project root.
+
+The rule set is intentionally minimal and covers the whole data model with three patterns:
+
+| Path | Read | Write |
+| --- | --- | --- |
+| `/content/{category}/items/{id}` | public | admin-only (Cloud Functions / Admin SDK) |
+| `/vet_clinics/{id}` | public | admin-only |
+| `/users/{uid}/...` | owner (`request.auth.uid == uid`) | owner |
+
+Anything outside these paths is implicitly denied. The deployed `firebase.json` should declare this file via `firestore.rules`, and later phases may add composite indexes to `firestore.indexes.json` as needed.
+
 ---
 
 # Testing
