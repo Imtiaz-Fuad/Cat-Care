@@ -3,10 +3,16 @@ import 'package:go_router/go_router.dart';
 
 import '../core/widgets/app_scaffold.dart';
 import '../core/widgets/placeholder_screen.dart';
+import '../features/authentication/providers/auth_provider.dart';
+import '../features/authentication/screens/login_screen.dart';
+import '../features/authentication/screens/splash_screen.dart';
+import '../features/authentication/widgets/auth_gate.dart';
 import 'app_routes.dart';
 
-/// App router. Auth gate is added in Phase 2; placeholder routes are wired so
-/// the shell can build and the team can navigate manually.
+/// App router. Builds a `GoRouter` with the auth gate redirect and
+/// the bottom-nav shell. Providers are passed in (not read from
+/// `context`) because `GoRouter` requires a single instance and
+/// must outlive route rebuilds.
 class AppRouter {
   AppRouter._();
 
@@ -43,11 +49,24 @@ class AppRouter {
     ),
   ];
 
-  static GoRouter build() {
+  static GoRouter build({required AuthProvider authProvider}) {
     return GoRouter(
       navigatorKey: _rootKey,
-      initialLocation: AppRoutes.home,
+      initialLocation: AppRoutes.splash,
+      refreshListenable: authProvider,
+      redirect: AuthGate.buildRedirect(authProvider),
       routes: <RouteBase>[
+        // Auth-only screens (outside the shell).
+        GoRoute(
+          path: AppRoutes.splash,
+          builder: (_, _) => const SplashScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.login,
+          builder: (_, _) => const LoginScreen(),
+        ),
+
+        // Bottom-nav shell — the home destinations.
         StatefulShellRoute.indexedStack(
           builder: (BuildContext context, GoRouterState state,
               StatefulNavigationShell shell) {
@@ -58,6 +77,8 @@ class AppRouter {
           },
           branches: _buildBranches(),
         ),
+
+        // Top-level secondary destinations rendered above the shell.
         for (final _TopLevelRoute r in _topLevelRoutes) r.route,
       ],
     );
@@ -174,16 +195,6 @@ const List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     AppRoutes.kittenCare,
     'Kitten Care',
     'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.splash,
-    'CatCare',
-    'Welcome.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.login,
-    'Sign In',
-    'Coming in Phase 2.',
   ),
   _TopLevelRoute(
     AppRoutes.onboarding,

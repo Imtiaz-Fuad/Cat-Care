@@ -2,8 +2,9 @@ import 'package:logger/logger.dart';
 
 /// App-wide logger. Use ONLY this — never `print` (analysis_options.yaml).
 ///
-/// Architecture rule: print/log goes through this service so it can be routed
-/// to Crashlytics in later phases.
+/// Architecture rule: print/log goes through this service so future crash-
+/// reporting hooks (e.g. Crashlytics) can be wired in one place without
+/// sprinkling `print`/log calls across the codebase.
 class AppLogger {
   AppLogger._();
 

@@ -32,6 +32,12 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Firebase client configuration files (`lib/firebase_options.dart`,
+      # `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`)
+      # are committed to the repository, so the analyzer can resolve the
+      # `DefaultFirebaseOptions` import without any runtime generation. No
+      # `FIREBASE_TOKEN_CI` secret is required.
+
       - name: Static analysis
         run: flutter analyze --no-pub
 

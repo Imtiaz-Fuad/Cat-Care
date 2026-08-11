@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "269195385829",
+    "project_id": "catcare-bd",
+    "storage_bucket": "catcare-bd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:269195385829:android:8d52907cb533420d9b2d0c",
+        "android_client_info": {
+          "package_name": "com.example.cat_care"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6lwFOK4txMeg6NjiFzk8gSNMc5YZNH50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
