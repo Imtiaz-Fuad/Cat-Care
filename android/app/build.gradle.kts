@@ -5,6 +5,7 @@ plugins {
     // Required by firebase_* packages — reads android/app/google-services.json
     // at build time and injects the values as string resources.
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
