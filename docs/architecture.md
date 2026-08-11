@@ -53,7 +53,6 @@ Services:
 * Cloud Firestore
 * Firebase Storage
 * Firebase Cloud Messaging (Future)
-* Firebase Crashlytics
 * Firebase Analytics (Future)
 * Firebase Remote Config (Future)
 
