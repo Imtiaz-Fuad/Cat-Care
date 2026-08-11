@@ -32,6 +32,37 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      # Materialize a stub `lib/firebase_options.dart` so `flutter analyze`
+      # can resolve the import in `lib/core/services/firebase_bootstrap.dart`.
+      #
+      # The real file is produced locally by `flutterfire configure` and is
+      # gitignored (it contains platform API keys). CI never talks to Firebase,
+      # so we don't need real options — `Firebase.initializeApp` will throw on
+      # these placeholder values, which `FirebaseBootstrap.start()` already
+      # catches and logs (the app then runs in offline-only mode).
+      - name: Write firebase_options stub
+        run: |
+          cat > lib/firebase_options.dart <<'EOF'
+          // GENERATED FOR CI ONLY.
+          //
+          // The real `lib/firebase_options.dart` is produced by
+          // `flutterfire configure` and contains platform-specific API keys;
+          // it is gitignored. CI never authenticates against Firebase, so we
+          // ship a no-op stub that satisfies the static analyzer.
+          //
+          // Do not commit this file from a developer machine.
+          import 'package:firebase_core/firebase_core.dart';
+
+          class DefaultFirebaseOptions {
+            static const FirebaseOptions currentPlatform = FirebaseOptions(
+              apiKey: 'ci-stub-api-key',
+              appId: '1:0000000000:android:0000000000000000',
+              messagingSenderId: '0000000000',
+              projectId: 'cat-care-ci-stub',
+            );
+          }
+          EOF
+
       - name: Static analysis
         run: flutter analyze --no-pub
 
