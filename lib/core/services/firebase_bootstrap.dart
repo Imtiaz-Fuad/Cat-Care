@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../../firebase_options.dart';
 import '../constants/app_env.dart';
@@ -34,6 +35,14 @@ class FirebaseBootstrap {
       initialized = true;
       AppLogger.i('Firebase initialised (flavor=$activeFlavor)');
     } on FirebaseException catch (error, stack) {
+      // In production, a misconfigured Firebase bootstrap must fail fast —
+      // otherwise a shipped build silently boots with no auth, Firestore,
+      // Storage, or Messaging, and the app appears to work until the first
+      // sign-in. Debug builds keep the old swallow-and-continue behavior so
+      // the UI can still be explored before `flutterfire configure` has run.
+      if (!kDebugMode) {
+        Error.throwWithStackTrace(error, stack);
+      }
       AppLogger.w(
         'Firebase init failed — continuing in offline-only mode. '
         'Run `flutterfire configure` to wire a real project.',
