@@ -44,13 +44,16 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Secrets & local config — see docs/architecture.md "Security"
+# Local-only secrets and per-developer environment overrides.
+# Firebase client configuration files (`lib/firebase_options.dart`,
+# `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`)
+# are NOT secrets — they contain public identifiers (project id, app id,
+# Firebase API keys) that ship inside every Firebase SDK distribution. They
+# are committed so that CI, fresh checkouts, and new contributors can build
+# without running `flutterfire configure` first. See docs/architecture.md
+# "Firebase client configuration" for the rationale.
 .env
 **/.env
-google-services.json
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
-lib/firebase_options.dart
 
 # Generated localization files
 lib/l10n/app_localizations.dart

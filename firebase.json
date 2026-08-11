@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"catcare-bd","appId":"1:269195385829:android:8d52907cb533420d9b2d0c","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"catcare-bd","configurations":{"android":"1:269195385829:android:8d52907cb533420d9b2d0c","ios":"1:269195385829:ios:eb1341f3733083ab9b2d0c"}}}}}}
