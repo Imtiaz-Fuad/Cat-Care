@@ -6,6 +6,9 @@ class AppRoutes {
   static const String splash = '/';
   static const String login = '/login';
   static const String onboarding = '/onboarding';
+  static const String catSwitch = '/cats/switch';
+  static const String catProfilePattern = '/cats/:id';
+  static String catProfile(String id) => '/cats/$id';
 
   // Bottom-nav shell children.
   static const String home = '/home';

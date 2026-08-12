@@ -2,29 +2,33 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../routes/app_routes.dart';
+import '../../cats/providers/cat_provider.dart';
 import '../models/auth_state.dart';
 import '../providers/auth_provider.dart';
 
 /// Auth gate helpers. The router owns the actual redirect policy.
 ///
 /// Two pieces:
-///   * [buildRedirect] — pure function consumed by `GoRouter`'s
-///     `redirect` callback. It consults the latest [AuthState]
-///     captured in a closure (rather than reading the provider from
-///     `context`, which isn't available inside `redirect`).
-///   * [refreshListenable] — the [AuthProvider] instance, so go_router
-///     re-runs the redirect on every auth transition.
+///   * [buildRedirect] - pure function consumed by `GoRouter`'s
+///     `redirect` callback. It consults the latest [AuthState] and
+///     [CatProvider] state captured in a closure (rather than reading
+///     the providers from `context`, which isn't available inside
+///     `redirect`).
+///   * [refreshListenable] - the [AuthProvider] (and on Phase 3, the
+///     [CatProvider]) instance, so go_router re-runs the redirect on
+///     every auth / cat-list transition.
 class AuthGate {
   AuthGate._();
 
   /// Builds the redirect callback for `GoRouter.redirect`. The
-  /// provider is captured by reference so the closure always reads
+  /// providers are captured by reference so the closure always reads
   /// the latest state when go_router invokes it.
-  static String Function(BuildContext, GoRouterState) buildRedirect(
-    AuthProvider provider,
-  ) {
+  static String Function(BuildContext, GoRouterState) buildRedirect({
+    required AuthProvider authProvider,
+    required CatProvider catProvider,
+  }) {
     return (BuildContext context, GoRouterState state) {
-      final AuthState current = provider.state;
+      final AuthState current = authProvider.state;
       final String loc = state.matchedLocation;
 
       // 1. While Firebase is still resolving, force every navigation
@@ -50,6 +54,20 @@ class AuthGate {
       if (authed &&
           (loc == AppRoutes.login || loc == AppRoutes.splash)) {
         return AppRoutes.home;
+      }
+
+      // 4. First-time users with zero cats are funneled through
+      //    onboarding. The /onboarding route itself is exempt so the
+      //    flow can complete; /cats/switch and /cats/:id are also
+      //    exempt - the user may have just added a cat and the
+      //    snapshot hasn't refreshed yet.
+      if (authed &&
+          catProvider.hasLoaded &&
+          catProvider.cats.isEmpty &&
+          loc != AppRoutes.onboarding &&
+          loc != AppRoutes.catSwitch &&
+          !loc.startsWith('/cats/')) {
+        return AppRoutes.onboarding;
       }
 
       return loc;

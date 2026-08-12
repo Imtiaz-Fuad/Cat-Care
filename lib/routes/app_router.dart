@@ -7,6 +7,10 @@ import '../features/authentication/providers/auth_provider.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/splash_screen.dart';
 import '../features/authentication/widgets/auth_gate.dart';
+import '../features/cats/providers/cat_provider.dart';
+import '../features/cats/screens/cat_profile_screen.dart';
+import '../features/cats/screens/cat_switcher_screen.dart';
+import '../features/cats/screens/onboarding/onboarding_screen.dart';
 import 'app_routes.dart';
 
 /// App router. Builds a `GoRouter` with the auth gate redirect and
@@ -49,12 +53,21 @@ class AppRouter {
     ),
   ];
 
-  static GoRouter build({required AuthProvider authProvider}) {
+  static GoRouter build({
+    required AuthProvider authProvider,
+    required CatProvider catProvider,
+  }) {
     return GoRouter(
       navigatorKey: _rootKey,
       initialLocation: AppRoutes.splash,
-      refreshListenable: authProvider,
-      redirect: AuthGate.buildRedirect(authProvider),
+      refreshListenable: Listenable.merge(<Listenable>[
+        authProvider,
+        catProvider,
+      ]),
+      redirect: AuthGate.buildRedirect(
+        authProvider: authProvider,
+        catProvider: catProvider,
+      ),
       routes: <RouteBase>[
         // Auth-only screens (outside the shell).
         GoRoute(
@@ -76,6 +89,23 @@ class AppRouter {
             );
           },
           branches: _buildBranches(),
+        ),
+
+        // Phase 3 cat-management routes — top-level so they render
+        // above the bottom-nav shell and survive tab switches.
+        GoRoute(
+          path: AppRoutes.onboarding,
+          builder: (_, _) => const OnboardingScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.catSwitch,
+          builder: (_, _) => const CatSwitcherScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.catProfilePattern,
+          builder: (BuildContext context, GoRouterState state) {
+            return CatProfileScreen(catId: state.pathParameters['id']!);
+          },
         ),
 
         // Top-level secondary destinations rendered above the shell.
@@ -195,11 +225,6 @@ const List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     AppRoutes.kittenCare,
     'Kitten Care',
     'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.onboarding,
-    'Onboarding',
-    'Coming in Phase 3.',
   ),
 ];
 
