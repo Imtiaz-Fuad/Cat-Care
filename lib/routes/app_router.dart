@@ -11,6 +11,7 @@ import '../features/cats/providers/cat_provider.dart';
 import '../features/cats/screens/cat_profile_screen.dart';
 import '../features/cats/screens/cat_switcher_screen.dart';
 import '../features/cats/screens/onboarding/onboarding_screen.dart';
+import '../features/cats/screens/profile_screen.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/nutrition/screens/nutrition_screen.dart';
 import '../features/routine/screens/routine_screen.dart';
@@ -143,8 +144,7 @@ class AppRouter {
       case AppRoutes.nutrition:
         return const NutritionScreen();
       case AppRoutes.profile:
-        // Profile tab renders the switcher as the default landing.
-        return const CatSwitcherScreen();
+        return const ProfileScreen();
       default:
         return _PlaceholderForRoute(path: path);
     }
