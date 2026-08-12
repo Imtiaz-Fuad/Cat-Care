@@ -109,7 +109,7 @@ class _NutritionBody extends StatelessWidget {
             ],
           ),
         ),
-        SectionHeader(
+        const SectionHeader(
           title: 'Target for this cat',
           subtitle: 'Suggested daily ranges, not a vet prescription.',
         ),
@@ -163,7 +163,7 @@ class _NutritionBody extends StatelessWidget {
             ),
           ),
         ),
-        SectionHeader(title: 'Last 7 days'),
+        const SectionHeader(title: 'Last 7 days'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: _WeekStrip(days: provider.last7Days),
@@ -312,8 +312,8 @@ class _TodayTimeline extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     if (feedings.isEmpty && water.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: EmptyState(
           icon: Icons.restaurant_outlined,
           title: 'Nothing logged today',
