@@ -37,18 +37,20 @@ class RoutineSummaryHeader extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     'Today\'s progress',
-                    style: text.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: text.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     total == 0
                         ? 'No tasks yet. Add a routine or regenerate defaults.'
                         : 'You\'ve completed $completedToday of $total '
-                            'tasks today. Tap a tile to edit,'
-                            ' tap the circle to mark done.',
-                    style: text.bodySmall
-                        ?.copyWith(color: scheme.onSurfaceVariant),
+                              'tasks today. Tap a tile to edit,'
+                              ' tap the circle to mark done.',
+                    style: text.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

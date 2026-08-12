@@ -16,8 +16,8 @@ class NotificationScheduleRepository {
   NotificationScheduleRepository({
     required FirestoreService firestoreService,
     Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _uuid = uuid ?? const Uuid();
+  }) : _firestore = firestoreService,
+       _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final Uuid _uuid;
@@ -33,9 +33,7 @@ class NotificationScheduleRepository {
       '${AppConstants.notificationSchedulesSubcollection}';
 
   /// Stream every schedule owned by the user.
-  Stream<List<NotificationSchedule>> watchSchedules({
-    required String ownerId,
-  }) {
+  Stream<List<NotificationSchedule>> watchSchedules({required String ownerId}) {
     return _firestore.instance
         .collection(schedulesCollectionPath(ownerId))
         .orderBy('fireAt', descending: false)
@@ -58,8 +56,7 @@ class NotificationScheduleRepository {
     required String ownerId,
     required NotificationSchedule schedule,
   }) async {
-    final String id =
-        schedule.id.isEmpty ? newScheduleId() : schedule.id;
+    final String id = schedule.id.isEmpty ? newScheduleId() : schedule.id;
     final DateTime now = DateTime.now();
     final NotificationSchedule stored = schedule.copyWith(
       id: id,
@@ -78,9 +75,7 @@ class NotificationScheduleRepository {
     required String ownerId,
     required String scheduleId,
   }) async {
-    await _firestore.deleteDocument(
-      scheduleDocPath(ownerId, scheduleId),
-    );
+    await _firestore.deleteDocument(scheduleDocPath(ownerId, scheduleId));
     AppLogger.i('NotificationScheduleRepository.delete $ownerId/$scheduleId');
   }
 
@@ -93,6 +88,7 @@ class NotificationScheduleRepository {
       await doc.reference.delete();
     }
     AppLogger.i(
-        'NotificationScheduleRepository.deleteAllForOwner $ownerId (${snap.docs.length})');
+      'NotificationScheduleRepository.deleteAllForOwner $ownerId (${snap.docs.length})',
+    );
   }
 }

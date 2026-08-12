@@ -117,8 +117,7 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
     final NutritionProvider provider = context.read<NutritionProvider>();
     setState(() => _saving = true);
     final double amount = double.parse(_amount.text.trim());
-    final String? note =
-        _notes.text.trim().isEmpty ? null : _notes.text.trim();
+    final String? note = _notes.text.trim().isEmpty ? null : _notes.text.trim();
     if (_isEdit) {
       // Sentinel-aware update: empty text means "clear the field" (pass
       // null explicitly), non-empty text means "set to this value",
@@ -216,8 +215,9 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                 Expanded(
                   child: Text(
                     _isEdit ? 'Edit meal' : 'Log meal',
-                    style: text.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (_isEdit)
@@ -261,8 +261,9 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                   flex: 3,
                   child: TextField(
                     controller: _amount,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Amount',
                       hintText: 'e.g. 30',

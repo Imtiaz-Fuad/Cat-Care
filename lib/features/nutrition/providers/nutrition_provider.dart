@@ -30,11 +30,11 @@ class NutritionProvider extends ChangeNotifier {
     required CatProvider catProvider,
     DateTime Function()? clock,
     // ignore: prefer_initializing_formals
-  })  : feedingRepository = feedingRepository,
-        // ignore: prefer_initializing_formals
-        waterRepository = waterRepository,
-        catProvider = catProvider,
-        _clock = clock ?? DateTime.now {
+  }) : feedingRepository = feedingRepository,
+       // ignore: prefer_initializing_formals
+       waterRepository = waterRepository,
+       catProvider = catProvider,
+       _clock = clock ?? DateTime.now {
     catProvider.addListener(_handleCatChange);
     _catListeners.add(_handleCatChange);
     _handleCatChange();
@@ -163,9 +163,7 @@ class NutritionProvider extends ChangeNotifier {
     for (final WaterEntry entry in _water) {
       final int? idx = _indexOfDay(entry.time, today);
       if (idx == null) continue;
-      out[idx] = out[idx].copyWith(
-        waterMl: out[idx].waterMl + entry.amountMl,
-      );
+      out[idx] = out[idx].copyWith(waterMl: out[idx].waterMl + entry.amountMl);
     }
     return out;
   }
@@ -346,35 +344,45 @@ class NutritionProvider extends ChangeNotifier {
     _feedingSub = feedingRepository
         .watchFeedings(ownerId: ownerId, catId: catId, limit: 200)
         .listen(
-      (List<FeedingEntry> next) {
-        _feedings = next;
-        _streamReady = true;
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('NutritionProvider: feeding stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(error.toString(), code: 'nutrition-feeding-stream');
-        notifyListeners();
-      },
-    );
+          (List<FeedingEntry> next) {
+            _feedings = next;
+            _streamReady = true;
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e(
+              'NutritionProvider: feeding stream error',
+              error,
+              stack,
+            );
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(
+                    error.toString(),
+                    code: 'nutrition-feeding-stream',
+                  );
+            notifyListeners();
+          },
+        );
     _waterSub = waterRepository
         .watchWater(ownerId: ownerId, catId: catId, limit: 200)
         .listen(
-      (List<WaterEntry> next) {
-        _water = next;
-        _streamReady = true;
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('NutritionProvider: water stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(error.toString(), code: 'nutrition-water-stream');
-        notifyListeners();
-      },
-    );
+          (List<WaterEntry> next) {
+            _water = next;
+            _streamReady = true;
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e('NutritionProvider: water stream error', error, stack);
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(
+                    error.toString(),
+                    code: 'nutrition-water-stream',
+                  );
+            notifyListeners();
+          },
+        );
   }
 
   void _runGuarded(Future<void> Function() action) {
@@ -388,8 +396,10 @@ class NutritionProvider extends ChangeNotifier {
         _lastError = failure;
         AppLogger.w('NutritionProvider action failed: $failure');
       } catch (error, stack) {
-        _lastError =
-            UnknownFailure(error.toString(), code: 'nutrition-unknown');
+        _lastError = UnknownFailure(
+          error.toString(),
+          code: 'nutrition-unknown',
+        );
         AppLogger.e('NutritionProvider: unexpected error', error, stack);
       } finally {
         if (!_disposed) _setBusy(false);

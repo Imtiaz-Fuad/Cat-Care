@@ -183,8 +183,9 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
                 Expanded(
                   child: Text(
                     _isEdit ? 'Edit water entry' : 'Log water',
-                    style: text.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (_isEdit)
@@ -198,8 +199,9 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
             const SizedBox(height: 8),
             TextField(
               controller: _amount,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Amount (ml)',
                 hintText: 'e.g. 60',

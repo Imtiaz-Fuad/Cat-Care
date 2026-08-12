@@ -75,7 +75,9 @@ class RoutineScreen extends StatelessWidget {
   }
 
   Future<void> _confirmRegenerate(
-      BuildContext context, RoutineProvider provider) async {
+    BuildContext context,
+    RoutineProvider provider,
+  ) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
@@ -86,11 +88,13 @@ class RoutineScreen extends StatelessWidget {
         ),
         actions: <Widget>[
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Add defaults')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Add defaults'),
+          ),
         ],
       ),
     );
@@ -225,8 +229,7 @@ class _TaskTile extends StatelessWidget {
             isScrollControlled: true,
             useSafeArea: true,
             showDragHandle: true,
-            builder: (BuildContext ctx) =>
-                RoutineEditSheet(existing: task),
+            builder: (BuildContext ctx) => RoutineEditSheet(existing: task),
           ),
         ),
         if (_isOverdue(task))

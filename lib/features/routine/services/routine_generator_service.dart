@@ -128,22 +128,26 @@ class RoutineGeneratorService {
 
     if (priorities.contains(RoutinePriorities.medicine) &&
         !tasks.any((t) => t.category == RoutineCategories.medicine)) {
-      tasks.add(_task(
-        catId,
-        'Medication',
-        RoutineCategories.medicine,
-        _h(8),
-        reminder: true,
-      ));
+      tasks.add(
+        _task(
+          catId,
+          'Medication',
+          RoutineCategories.medicine,
+          _h(8),
+          reminder: true,
+        ),
+      );
     }
     if (priorities.contains(RoutinePriorities.grooming) &&
         !tasks.any((t) => t.category == RoutineCategories.grooming)) {
-      tasks.add(_task(
-        catId,
-        'Nail trim & grooming',
-        RoutineCategories.grooming,
-        _h(11),
-      ));
+      tasks.add(
+        _task(
+          catId,
+          'Nail trim & grooming',
+          RoutineCategories.grooming,
+          _h(11),
+        ),
+      );
     }
     if (priorities.contains(RoutinePriorities.exercise) &&
         !tasks.any(
@@ -151,12 +155,9 @@ class RoutineGeneratorService {
               t.title.toLowerCase().contains('exercise') ||
               t.category == RoutineCategories.exercise,
         )) {
-      tasks.add(_task(
-        catId,
-        'Exercise / wand toy',
-        RoutineCategories.exercise,
-        _h(17),
-      ));
+      tasks.add(
+        _task(catId, 'Exercise / wand toy', RoutineCategories.exercise, _h(17)),
+      );
     }
 
     tasks.sort((a, b) {

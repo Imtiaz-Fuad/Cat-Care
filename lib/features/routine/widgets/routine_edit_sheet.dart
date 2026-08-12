@@ -21,22 +21,38 @@ class RoutineEditSheet extends StatefulWidget {
 
 class _RoutineEditSheetState extends State<RoutineEditSheet> {
   static const List<_CategoryChoice> _categories = <_CategoryChoice>[
-    _CategoryChoice(RoutineCategories.feeding, 'Feed',
-        Icons.restaurant_outlined),
-    _CategoryChoice(RoutineCategories.water, 'Water',
-        Icons.water_drop_outlined),
-    _CategoryChoice(RoutineCategories.medicine, 'Med',
-        Icons.medication_outlined),
-    _CategoryChoice(RoutineCategories.play, 'Play',
-        Icons.toys_outlined),
-    _CategoryChoice(RoutineCategories.brushing, 'Brush',
-        Icons.brush_outlined),
-    _CategoryChoice(RoutineCategories.grooming, 'Groom',
-        Icons.content_cut_outlined),
-    _CategoryChoice(RoutineCategories.litter, 'Litter',
-        Icons.cleaning_services_outlined),
-    _CategoryChoice(RoutineCategories.exercise, 'Exercise',
-        Icons.directions_run_outlined),
+    _CategoryChoice(
+      RoutineCategories.feeding,
+      'Feed',
+      Icons.restaurant_outlined,
+    ),
+    _CategoryChoice(
+      RoutineCategories.water,
+      'Water',
+      Icons.water_drop_outlined,
+    ),
+    _CategoryChoice(
+      RoutineCategories.medicine,
+      'Med',
+      Icons.medication_outlined,
+    ),
+    _CategoryChoice(RoutineCategories.play, 'Play', Icons.toys_outlined),
+    _CategoryChoice(RoutineCategories.brushing, 'Brush', Icons.brush_outlined),
+    _CategoryChoice(
+      RoutineCategories.grooming,
+      'Groom',
+      Icons.content_cut_outlined,
+    ),
+    _CategoryChoice(
+      RoutineCategories.litter,
+      'Litter',
+      Icons.cleaning_services_outlined,
+    ),
+    _CategoryChoice(
+      RoutineCategories.exercise,
+      'Exercise',
+      Icons.directions_run_outlined,
+    ),
     _CategoryChoice(RoutineCategories.sleep, 'Sleep', Icons.bedtime_outlined),
   ];
 
@@ -169,8 +185,9 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
   String _formatTimeLabel() {
     final TimeOfDay t = _time ?? const TimeOfDay(hour: 9, minute: 0);
     final DateTime now = DateTime.now();
-    return DateFormat.Hm().format(DateTime(now.year, now.month, now.day,
-        t.hour, t.minute));
+    return DateFormat.Hm().format(
+      DateTime(now.year, now.month, now.day, t.hour, t.minute),
+    );
   }
 
   @override
@@ -190,8 +207,9 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                 Expanded(
                   child: Text(
                     _isEdit ? 'Edit routine' : 'New routine',
-                    style: text.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 if (_isEdit)
@@ -235,13 +253,10 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                   child: SwitchListTile.adaptive(
                     contentPadding: EdgeInsets.zero,
                     value: _hasTime,
-                    onChanged: (bool v) =>
-                        setState(() => _hasTime = v),
+                    onChanged: (bool v) => setState(() => _hasTime = v),
                     title: const Text('Specific time'),
                     subtitle: Text(
-                      _hasTime
-                          ? _formatTimeLabel()
-                          : 'Anytime during the day',
+                      _hasTime ? _formatTimeLabel() : 'Anytime during the day',
                     ),
                   ),
                 ),

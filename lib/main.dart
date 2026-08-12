@@ -153,8 +153,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
         NotificationScheduleRepository(firestoreService: firestore);
     final NotificationService notificationService = NotificationService();
     await notificationService.initialize();
-    final NotificationSchedulerService scheduler =
-        NotificationSchedulerService(
+    final NotificationSchedulerService scheduler = NotificationSchedulerService(
       repository: scheduleRepo,
       notificationService: notificationService,
       routineProvider: routineProvider,
@@ -207,11 +206,14 @@ class _AppRouterHostState extends State<_AppRouterHost> {
           providers: <SingleChildWidget>[
             ChangeNotifierProvider<CatProvider>.value(value: w.catProvider),
             ChangeNotifierProvider<RoutineProvider>.value(
-                value: w.routineProvider),
+              value: w.routineProvider,
+            ),
             ChangeNotifierProvider<NutritionProvider>.value(
-                value: w.nutritionProvider),
+              value: w.nutritionProvider,
+            ),
             ChangeNotifierProvider<NotificationSchedulerService>.value(
-                value: w.scheduler),
+              value: w.scheduler,
+            ),
           ],
           child: MaterialApp.router(
             title: AppConstants.appName,

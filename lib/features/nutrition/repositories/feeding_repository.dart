@@ -17,9 +17,9 @@ class FeedingRepository {
     required FirestoreService firestoreService,
     Uuid? uuid,
     DateTime Function()? clock,
-  })  : _firestore = firestoreService,
-        _uuid = uuid ?? const Uuid(),
-        _clock = clock ?? DateTime.now;
+  }) : _firestore = firestoreService,
+       _uuid = uuid ?? const Uuid(),
+       _clock = clock ?? DateTime.now;
 
   final FirestoreService _firestore;
   final Uuid _uuid;
@@ -50,16 +50,16 @@ class FeedingRepository {
         .orderBy('time', descending: true);
     if (limit != null) query = query.limit(limit);
     return query.snapshots().map(
-          (snap) => snap.docs
-              .map(
-                (d) => FeedingEntry.fromJson(<String, dynamic>{
-                  ...d.data(),
-                  'id': d.id,
-                  'catId': catId,
-                }),
-              )
-              .toList(growable: false),
-        );
+      (snap) => snap.docs
+          .map(
+            (d) => FeedingEntry.fromJson(<String, dynamic>{
+              ...d.data(),
+              'id': d.id,
+              'catId': catId,
+            }),
+          )
+          .toList(growable: false),
+    );
   }
 
   /// One-shot read used in tests + report generation. Returns `[]`
@@ -72,7 +72,12 @@ class FeedingRepository {
     var query = _firestore.instance
         .collection(entriesCollectionPath(ownerId, catId))
         .orderBy('time', descending: true);
-    if (since != null) query = query.where('time', isGreaterThanOrEqualTo: since.toIso8601String());
+        if (since != null) {
+      query = query.where(
+        'time',
+        isGreaterThanOrEqualTo: since.toIso8601String(),
+      );
+    }
     final snap = await query.get();
     return snap.docs
         .map(
@@ -141,7 +146,9 @@ class FeedingRepository {
       merge: true,
     );
     AppLogger.i('FeedingRepository.updateEntry ${entry.catId}/${entry.id}');
-    return entry.copyWith(note: identical(note, _sentinel) ? entry.note : note as String?);
+    return entry.copyWith(
+      note: identical(note, _sentinel) ? entry.note : note as String?,
+    );
   }
 
   /// Permanently delete a feeding entry.

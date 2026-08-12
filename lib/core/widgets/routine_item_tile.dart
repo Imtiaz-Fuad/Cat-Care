@@ -67,7 +67,9 @@ class RoutineItemTile extends StatelessWidget {
                       style: text.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         decoration: done ? TextDecoration.lineThrough : null,
-                        color: done ? scheme.onSurfaceVariant : scheme.onSurface,
+                        color: done
+                            ? scheme.onSurfaceVariant
+                            : scheme.onSurface,
                       ),
                     ),
                     if ((task.notes ?? '').isNotEmpty) ...<Widget>[
@@ -85,8 +87,11 @@ class RoutineItemTile extends StatelessWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: <Widget>[
-                          Icon(Icons.notifications_active_outlined,
-                              size: 14, color: scheme.primary),
+                          Icon(
+                            Icons.notifications_active_outlined,
+                            size: 14,
+                            color: scheme.primary,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Reminder on',
@@ -102,10 +107,7 @@ class RoutineItemTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              _DoneToggle(
-                done: done,
-                onChanged: onToggle,
-              ),
+              _DoneToggle(done: done, onChanged: onToggle),
             ],
           ),
         ),

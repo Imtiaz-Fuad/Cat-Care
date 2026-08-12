@@ -48,8 +48,8 @@ class HomeScreen extends StatelessWidget {
           body: loading
               ? const Center(child: CircularProgressIndicator())
               : cat == null
-                  ? const _NoActiveCat()
-                  : _HomeBody(cat: cat),
+              ? const _NoActiveCat()
+              : _HomeBody(cat: cat),
         );
       },
     );
@@ -66,177 +66,191 @@ class _HomeBody extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Consumer2<RoutineProvider, NutritionProvider>(
-      builder: (
-        BuildContext context,
-        RoutineProvider routineProvider,
-        NutritionProvider nutritionProvider,
-        Widget? _,
-      ) {
-        final List<RoutineTask> todays = routineProvider.todaysRoutines;
-        final int completed = routineProvider.completedTodayCount;
-        final int total = routineProvider.totalRoutineCount;
-        final int percent = routineProvider.completionPercent;
-        final List<RoutineTask> upcoming = _nextUpcoming(todays);
-        final List<FeedingEntry> recentMeals =
-            nutritionProvider.todaysFeedings.take(3).toList();
-        final double foodG = nutritionProvider.todaysFoodGrams;
-        final double waterMl = nutritionProvider.todaysWaterMl;
-        final int foodTarget = nutritionProvider.target.dailyFoodGrams.toInt();
-        final int waterTarget = nutritionProvider.target.dailyWaterMl.toInt();
-        final String insight = _insightFor(
-          routineProvider: routineProvider,
-          nutritionProvider: nutritionProvider,
-        );
-        return ListView(
-          padding: const EdgeInsets.only(bottom: 24),
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text(
-                _greeting(),
-                style: text.bodyMedium?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Text(
-                cat.name,
-                style: text.headlineSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _CompletionCard(
-                completed: completed,
-                total: total,
-                percent: percent,
-              ),
-            ),
-            if (upcoming.isNotEmpty) ...<Widget>[
-              const SizedBox(height: 4),
-              const _SectionTitle(title: 'Next up'),
-              for (final RoutineTask t in upcoming)
+      builder:
+          (
+            BuildContext context,
+            RoutineProvider routineProvider,
+            NutritionProvider nutritionProvider,
+            Widget? _,
+          ) {
+            final List<RoutineTask> todays = routineProvider.todaysRoutines;
+            final int completed = routineProvider.completedTodayCount;
+            final int total = routineProvider.totalRoutineCount;
+            final int percent = routineProvider.completionPercent;
+            final List<RoutineTask> upcoming = _nextUpcoming(todays);
+            final List<FeedingEntry> recentMeals = nutritionProvider
+                .todaysFeedings
+                .take(3)
+                .toList();
+            final double foodG = nutritionProvider.todaysFoodGrams;
+            final double waterMl = nutritionProvider.todaysWaterMl;
+            final int foodTarget = nutritionProvider.target.dailyFoodGrams
+                .toInt();
+            final int waterTarget = nutritionProvider.target.dailyWaterMl
+                .toInt();
+            final String insight = _insightFor(
+              routineProvider: routineProvider,
+              nutritionProvider: nutritionProvider,
+            );
+            return ListView(
+              padding: const EdgeInsets.only(bottom: 24),
+              children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: UpcomingCard(
-                    title: t.title,
-                    subtitle: t.category.isEmpty
-                        ? 'Routine'
-                        : '${t.category[0].toUpperCase()}${t.category.substring(1)}',
-                    timeLabel: _formatTime(t.timeOfDay),
-                    icon: _iconForCategory(t.category),
-                    onTap: () => _openRoutineEditor(context, task: t),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Text(
+                    _greeting(),
+                    style: text.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
-            ] else if (total > 0) ...<Widget>[
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: <Widget>[
-                        Icon(Icons.check_circle_outline,
-                            color: scheme.primary),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'All routines done for today. Great job!',
-                            style: text.bodyMedium,
-                          ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                  child: Text(
+                    cat.name,
+                    style: text.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _CompletionCard(
+                    completed: completed,
+                    total: total,
+                    percent: percent,
+                  ),
+                ),
+                if (upcoming.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: 4),
+                  const _SectionTitle(title: 'Next up'),
+                  for (final RoutineTask t in upcoming)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                      child: UpcomingCard(
+                        title: t.title,
+                        subtitle: t.category.isEmpty
+                            ? 'Routine'
+                            : '${t.category[0].toUpperCase()}${t.category.substring(1)}',
+                        timeLabel: _formatTime(t.timeOfDay),
+                        icon: _iconForCategory(t.category),
+                        onTap: () => _openRoutineEditor(context, task: t),
+                      ),
+                    ),
+                ] else if (total > 0) ...<Widget>[
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(
+                              Icons.check_circle_outline,
+                              color: scheme.primary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'All routines done for today. Great job!',
+                                style: text.bodyMedium,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 4),
-            _SectionTitle(title: 'Today for ${cat.name}'),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _NutritionSummaryCard(
-                      label: 'Food',
-                      centerLabel: '${foodG.toInt()} / $foodTarget g',
-                      progress: nutritionProvider.foodProgress,
-                      onTap: () => _openFeedingSheet(context),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _NutritionSummaryCard(
-                      label: 'Water',
-                      centerLabel: '${waterMl.toInt()} / $waterTarget ml',
-                      progress: nutritionProvider.waterProgress,
-                      onTap: () => _openWaterSheet(context),
+                      ),
                     ),
                   ),
                 ],
-              ),
-            ),
-            if (recentMeals.isNotEmpty) ...<Widget>[
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Recent meals',
-                            style: text.labelLarge?.copyWith(
-                                color: scheme.onSurfaceVariant)),
-                        const SizedBox(height: 8),
-                        for (final FeedingEntry meal in recentMeals)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Row(
-                              children: <Widget>[
-                                Icon(Icons.restaurant_outlined,
-                                    size: 16, color: scheme.primary),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    meal.foodName,
-                                    style: text.bodyMedium,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  DateFormat.Hm().format(meal.time),
-                                  style: text.labelMedium?.copyWith(
-                                    color: scheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
+                const SizedBox(height: 4),
+                _SectionTitle(title: 'Today for ${cat.name}'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: _NutritionSummaryCard(
+                          label: 'Food',
+                          centerLabel: '${foodG.toInt()} / $foodTarget g',
+                          progress: nutritionProvider.foodProgress,
+                          onTap: () => _openFeedingSheet(context),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _NutritionSummaryCard(
+                          label: 'Water',
+                          centerLabel: '${waterMl.toInt()} / $waterTarget ml',
+                          progress: nutritionProvider.waterProgress,
+                          onTap: () => _openWaterSheet(context),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: DailyInsightCard(
-                title: 'Daily insight',
-                body: insight,
-              ),
-            ),
-          ],
-        );
-      },
+                if (recentMeals.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Recent meals',
+                              style: text.labelLarge?.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            for (final FeedingEntry meal in recentMeals)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.restaurant_outlined,
+                                      size: 16,
+                                      color: scheme.primary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        meal.foodName,
+                                        style: text.bodyMedium,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Text(
+                                      DateFormat.Hm().format(meal.time),
+                                      style: text.labelMedium?.copyWith(
+                                        color: scheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: DailyInsightCard(
+                    title: 'Daily insight',
+                    body: insight,
+                  ),
+                ),
+              ],
+            );
+          },
     );
   }
 
@@ -278,10 +292,17 @@ class _HomeBody extends StatelessWidget {
   /// by time-of-day (nulls last).
   static List<RoutineTask> _nextUpcoming(List<RoutineTask> tasks) {
     final DateTime midnight = DateTime.now();
-    final DateTime today = DateTime(midnight.year, midnight.month, midnight.day);
+    final DateTime today = DateTime(
+      midnight.year,
+      midnight.month,
+      midnight.day,
+    );
     final List<RoutineTask> pending = tasks
-        .where((RoutineTask t) =>
-            !(t.lastCompletedAt != null && !t.lastCompletedAt!.isBefore(today)))
+        .where(
+          (RoutineTask t) =>
+              !(t.lastCompletedAt != null &&
+                  !t.lastCompletedAt!.isBefore(today)),
+        )
         .toList();
     pending.sort((RoutineTask a, RoutineTask b) {
       final DateTime? ta = a.timeOfDay;
@@ -301,11 +322,21 @@ class _HomeBody extends StatelessWidget {
     final int percent = routineProvider.completionPercent;
     final double waterP = nutritionProvider.waterProgress;
     final double foodP = nutritionProvider.foodProgress;
-    if (percent == 100) return 'All routines done — give yourself (and your cat) a pat on the head.';
-    if (waterP < 0.5) return 'Water intake is below half the daily target. Try a fresh bowl near a favorite spot.';
-    if (foodP > 1.2) return 'Looks like over-feeding today. Watch portions at the next meal.';
-    if (percent >= 60) return 'Nice momentum — most of today\'s routine is already in the bag.';
-    if (percent > 0) return 'You\'re off to a good start. Two more routines and today is on track.';
+    if (percent == 100) {
+      return 'All routines done — give yourself (and your cat) a pat on the head.';
+    }
+    if (waterP < 0.5) {
+      return 'Water intake is below half the daily target. Try a fresh bowl near a favorite spot.';
+    }
+    if (foodP > 1.2) {
+      return 'Looks like over-feeding today. Watch portions at the next meal.';
+    }
+    if (percent >= 60) {
+      return 'Nice momentum — most of today\'s routine is already in the bag.';
+    }
+    if (percent > 0) {
+      return 'You\'re off to a good start. Two more routines and today is on track.';
+    }
     return 'Start the day gently: log breakfast or a quick play session.';
   }
 }
@@ -340,11 +371,10 @@ class _CompletionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    total <= 0
-                        ? 'No routines yet'
-                        : 'Routine progress',
-                    style: text.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    total <= 0 ? 'No routines yet' : 'Routine progress',
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -443,7 +473,8 @@ class _NoActiveCat extends StatelessWidget {
     return const EmptyState(
       icon: Icons.pets_outlined,
       title: 'Welcome to CatCare',
-      subtitle: 'Add a cat from the Profile tab to see today\'s routine and nutrition.',
+      subtitle:
+          'Add a cat from the Profile tab to see today\'s routine and nutrition.',
     );
   }
 }
