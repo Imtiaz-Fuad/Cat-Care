@@ -7,6 +7,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/models/cat_profile.dart';
 import '../../../core/services/app_logger.dart';
+import '../../authentication/models/user_profile.dart';
 import '../../authentication/providers/auth_provider.dart';
 import '../models/cat_draft.dart';
 import '../repositories/cat_repository.dart';
@@ -109,6 +110,11 @@ class CatProvider extends ChangeNotifier {
     }
     return null;
   }
+
+  /// Convenience: the signed-in user's profile (or `null` when
+  /// signed out). Exposed so feature providers can scope writes
+  /// without importing [AuthProvider] directly.
+  UserProfile? get profile => _auth.profile;
 
   /// Whether a long-running repository call (create / upload /
   /// delete) is in flight.
