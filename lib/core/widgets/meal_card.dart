@@ -7,11 +7,7 @@ import '../../core/models/feeding_entry.dart';
 /// screen list. Shows time, food name + type, amount, and a delete
 /// overflow action.
 class MealCard extends StatelessWidget {
-  const MealCard({
-    super.key,
-    required this.entry,
-    this.onDelete,
-  });
+  const MealCard({super.key, required this.entry, this.onDelete});
 
   final FeedingEntry entry;
   final VoidCallback? onDelete;
@@ -33,8 +29,11 @@ class MealCard extends StatelessWidget {
                 color: scheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(_iconFor(entry.foodType),
-                  color: scheme.primary, size: 20),
+              child: Icon(
+                _iconFor(entry.foodType),
+                color: scheme.primary,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -43,8 +42,9 @@ class MealCard extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     entry.foodName,
-                    style: text.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: text.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -61,17 +61,22 @@ class MealCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text(time,
-                    style: text.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: scheme.onSurface)),
+                Text(
+                  time,
+                  style: text.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface,
+                  ),
+                ),
                 if (onDelete != null)
                   IconButton(
                     tooltip: 'Delete',
                     iconSize: 18,
                     visualDensity: VisualDensity.compact,
-                    icon: Icon(Icons.close_rounded,
-                        color: scheme.onSurfaceVariant),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: scheme.onSurfaceVariant,
+                    ),
                     onPressed: onDelete,
                   ),
               ],
@@ -105,10 +110,9 @@ class MealCard extends StatelessWidget {
   }
 
   static String _amountLabel(FeedingEntry e) {
-    final String amt =
-        e.amount.truncateToDouble() == e.amount
-            ? e.amount.toInt().toString()
-            : e.amount.toStringAsFixed(1);
+    final String amt = e.amount.truncateToDouble() == e.amount
+        ? e.amount.toInt().toString()
+        : e.amount.toStringAsFixed(1);
     return '$amt ${e.unit}';
   }
 }

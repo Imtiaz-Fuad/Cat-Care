@@ -44,8 +44,8 @@ class ProfileScreen extends StatelessWidget {
           body: loading
               ? const Center(child: CircularProgressIndicator())
               : active == null
-                  ? const _NoActiveCat()
-                  : _ProfileBody(cat: active),
+              ? const _NoActiveCat()
+              : _ProfileBody(cat: active),
         );
       },
     );
@@ -91,8 +91,9 @@ class _ProfileBody extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               cat.name,
-                              style: text.titleLarge
-                                  ?.copyWith(fontWeight: FontWeight.w700),
+                              style: text.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -218,73 +219,75 @@ class _TodayStatsCard extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Consumer2<RoutineProvider, NutritionProvider>(
-      builder: (
-        BuildContext context,
-        RoutineProvider routine,
-        NutritionProvider nutrition,
-        Widget? _,
-      ) {
-        final int done = routine.completedTodayCount;
-        final int total = routine.totalRoutineCount;
-        final int percent = routine.completionPercent;
-        final int meals = nutrition.todaysMealCount;
-        final int foodG = nutrition.todaysFoodGrams.toInt();
-        final int foodTarget = nutrition.target.dailyFoodGrams.toInt();
-        final int waterMl = nutrition.todaysWaterMl.toInt();
-        final int waterTarget = nutrition.target.dailyWaterMl.toInt();
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Today's snapshot",
-                  style: text.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                Text(
-                  DateFormat('EEEE, MMM d').format(DateTime.now()),
-                  style: text.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
+      builder:
+          (
+            BuildContext context,
+            RoutineProvider routine,
+            NutritionProvider nutrition,
+            Widget? _,
+          ) {
+            final int done = routine.completedTodayCount;
+            final int total = routine.totalRoutineCount;
+            final int percent = routine.completionPercent;
+            final int meals = nutrition.todaysMealCount;
+            final int foodG = nutrition.todaysFoodGrams.toInt();
+            final int foodTarget = nutrition.target.dailyFoodGrams.toInt();
+            final int waterMl = nutrition.todaysWaterMl.toInt();
+            final int waterTarget = nutrition.target.dailyWaterMl.toInt();
+            return Card(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: _StatBlock(
-                        icon: Icons.check_box_outlined,
-                        label: 'Routine',
-                        value: '$done / $total',
-                        sub: '$percent% done',
+                    Text(
+                      "Today's snapshot",
+                      style: text.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _StatBlock(
-                        icon: Icons.restaurant_outlined,
-                        label: 'Food',
-                        value: '$foodG / $foodTarget g',
-                        sub: '$meals meal${meals == 1 ? '' : 's'}',
+                    Text(
+                      DateFormat('EEEE, MMM d').format(DateTime.now()),
+                      style: text.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _StatBlock(
-                        icon: Icons.water_drop_outlined,
-                        label: 'Water',
-                        value: '$waterMl / $waterTarget ml',
-                        sub: percent < 50 ? 'Below target' : 'On track',
-                      ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: _StatBlock(
+                            icon: Icons.check_box_outlined,
+                            label: 'Routine',
+                            value: '$done / $total',
+                            sub: '$percent% done',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _StatBlock(
+                            icon: Icons.restaurant_outlined,
+                            label: 'Food',
+                            value: '$foodG / $foodTarget g',
+                            sub: '$meals meal${meals == 1 ? '' : 's'}',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _StatBlock(
+                            icon: Icons.water_drop_outlined,
+                            label: 'Water',
+                            value: '$waterMl / $waterTarget ml',
+                            sub: percent < 50 ? 'Below target' : 'On track',
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          },
     );
   }
 }
@@ -334,17 +337,14 @@ class _StatBlock extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: text.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 2),
           Text(
             sub,
-            style: text.labelSmall?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -386,12 +386,8 @@ class _ShortcutTile extends StatelessWidget {
           color: enabled ? scheme.onSurfaceVariant : scheme.outline,
         ),
       ),
-      trailing: enabled
-          ? const Icon(Icons.chevron_right_rounded)
-          : null,
-      onTap: route == null
-          ? null
-          : () => context.push(route!),
+      trailing: enabled ? const Icon(Icons.chevron_right_rounded) : null,
+      onTap: route == null ? null : () => context.push(route!),
     );
   }
 }

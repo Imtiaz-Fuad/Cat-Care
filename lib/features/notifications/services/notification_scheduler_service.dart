@@ -35,14 +35,14 @@ class NotificationSchedulerService extends ChangeNotifier {
     required CatProvider catProvider,
     DateTime Function()? clock,
     // ignore: prefer_initializing_formals
-  })  : _repository = repository,
-        // ignore: prefer_initializing_formals
-        _notificationService = notificationService,
-        // ignore: prefer_initializing_formals
-        _routineProvider = routineProvider,
-        // ignore: prefer_initializing_formals
-        _catProvider = catProvider,
-        _clock = clock ?? DateTime.now {
+  }) : _repository = repository,
+       // ignore: prefer_initializing_formals
+       _notificationService = notificationService,
+       // ignore: prefer_initializing_formals
+       _routineProvider = routineProvider,
+       // ignore: prefer_initializing_formals
+       _catProvider = catProvider,
+       _clock = clock ?? DateTime.now {
     _routineProvider.addListener(_handleRoutinesChanged);
     _listenerHandles.add(_handleRoutinesChanged);
     _catProvider.addListener(_handleCatChanged);
@@ -77,8 +77,11 @@ class NotificationSchedulerService extends ChangeNotifier {
       try {
         await _repository.deleteAllForOwner(ownerId: uid);
       } catch (error, stack) {
-        AppLogger.w('NotificationScheduler.cancelAll: cleanup failed',
-            error, stack);
+        AppLogger.w(
+          'NotificationScheduler.cancelAll: cleanup failed',
+          error,
+          stack,
+        );
       }
     }
   }
@@ -134,10 +137,7 @@ class NotificationSchedulerService extends ChangeNotifier {
 
       // 1. Apply every desired schedule.
       for (final _Planned p in planned) {
-        await _repository.upsert(
-          ownerId: uid,
-          schedule: p.schedule,
-        );
+        await _repository.upsert(ownerId: uid, schedule: p.schedule);
         await _notificationService.schedule(
           id: p.notificationId,
           title: p.schedule.title,
@@ -214,8 +214,7 @@ class NotificationSchedulerService extends ChangeNotifier {
       // We can't re-use the repository stream here without exposing
       // it; doing a one-shot read is fine for this small collection.
       final stream = _repository.watchSchedules(ownerId: uid);
-      final List<NotificationSchedule> existing =
-          await stream.first;
+      final List<NotificationSchedule> existing = await stream.first;
       for (final NotificationSchedule s in existing) {
         if (keepKeys.contains(s.id)) continue;
         await _repository.delete(ownerId: uid, scheduleId: s.id);

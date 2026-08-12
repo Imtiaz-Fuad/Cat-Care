@@ -47,23 +47,32 @@ class UpcomingCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(title,
-                        style: text.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
+                    Text(
+                      title,
+                      style: text.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     const SizedBox(height: 2),
-                    Text(subtitle,
-                        style: text.bodySmall?.copyWith(
-                            color: scheme.onSurfaceVariant)),
+                    Text(
+                      subtitle,
+                      style: text.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(width: 8),
-              Text(timeLabel,
-                  style: text.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: scheme.onSurface)),
+              Text(
+                timeLabel,
+                style: text.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: scheme.onSurface,
+                ),
+              ),
             ],
           ),
         ),

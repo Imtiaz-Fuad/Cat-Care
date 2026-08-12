@@ -44,8 +44,8 @@ class NutritionScreen extends StatelessWidget {
           body: loading
               ? const Center(child: CircularProgressIndicator())
               : cat == null
-                  ? const _NoActiveCat()
-                  : _NutritionBody(cat: cat, provider: provider),
+              ? const _NoActiveCat()
+              : _NutritionBody(cat: cat, provider: provider),
         );
       },
     );
@@ -75,10 +75,8 @@ class _NutritionBody extends StatelessWidget {
         _TodayTimeline(
           feedings: feedings,
           water: water,
-          onEditFeeding: (FeedingEntry entry) => _openFeedingSheet(
-            context,
-            existing: entry,
-          ),
+          onEditFeeding: (FeedingEntry entry) =>
+              _openFeedingSheet(context, existing: entry),
           onDeleteFeeding: (FeedingEntry entry) =>
               _confirmDeleteFeeding(context, entry),
           onEditWater: (WaterEntry entry) =>
@@ -123,8 +121,9 @@ class _NutritionBody extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     cat.name,
-                    style: text.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                    style: text.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -199,8 +198,7 @@ class _NutritionHeader extends StatelessWidget {
             children: <Widget>[
               Text(
                 'Today for ${cat.name}',
-                style: text.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 16),
               Row(
@@ -208,8 +206,7 @@ class _NutritionHeader extends StatelessWidget {
                   Expanded(
                     child: _RingStat(
                       label: 'Food',
-                      centerLabel:
-                          '${foodGrams.toInt()} / $foodTarget g',
+                      centerLabel: '${foodGrams.toInt()} / $foodTarget g',
                       progress: foodProgress,
                       color: scheme.primary,
                     ),
@@ -218,8 +215,7 @@ class _NutritionHeader extends StatelessWidget {
                   Expanded(
                     child: _RingStat(
                       label: 'Water',
-                      centerLabel:
-                          '${waterMl.toInt()} / $waterTarget ml',
+                      centerLabel: '${waterMl.toInt()} / $waterTarget ml',
                       progress: waterProgress,
                       color: scheme.tertiary,
                     ),
@@ -281,9 +277,7 @@ class _RingStat extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: text.labelLarge?.copyWith(
-            color: scheme.onSurfaceVariant,
-          ),
+          style: text.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
         ),
       ],
     );
@@ -329,9 +323,7 @@ class _TodayTimeline extends StatelessWidget {
           if (feedings.isNotEmpty) ...<Widget>[
             Text(
               'Meals',
-              style: text.labelLarge?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
+              style: text.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
             for (final FeedingEntry entry in feedings)
@@ -347,9 +339,7 @@ class _TodayTimeline extends StatelessWidget {
           if (water.isNotEmpty) ...<Widget>[
             Text(
               'Water',
-              style: text.labelLarge?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
+              style: text.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
             for (final WaterEntry entry in water)
@@ -393,8 +383,11 @@ class _WaterCard extends StatelessWidget {
                 color: scheme.tertiary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.water_drop_outlined,
-                  color: scheme.tertiary, size: 20),
+              child: Icon(
+                Icons.water_drop_outlined,
+                color: scheme.tertiary,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -403,8 +396,9 @@ class _WaterCard extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     '$amt ml',
-                    style: text.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: text.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   if (entry.note != null && entry.note!.isNotEmpty)
                     Padding(
@@ -424,17 +418,22 @@ class _WaterCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text(time,
-                    style: text.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: scheme.onSurface)),
+                Text(
+                  time,
+                  style: text.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: scheme.onSurface,
+                  ),
+                ),
                 if (onDelete != null)
                   IconButton(
                     tooltip: 'Delete',
                     iconSize: 18,
                     visualDensity: VisualDensity.compact,
-                    icon: Icon(Icons.close_rounded,
-                        color: scheme.onSurfaceVariant),
+                    icon: Icon(
+                      Icons.close_rounded,
+                      color: scheme.onSurfaceVariant,
+                    ),
                     onPressed: onDelete,
                   ),
               ],
@@ -506,10 +505,15 @@ class _DayBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double foodFraction = maxBar <= 0 ? 0 : (day.foodGrams / maxBar).clamp(0.0, 1.0);
-    final double waterFraction = maxBar <= 0 ? 0 : (day.waterMl / maxBar).clamp(0.0, 1.0);
+    final double foodFraction = maxBar <= 0
+        ? 0
+        : (day.foodGrams / maxBar).clamp(0.0, 1.0);
+    final double waterFraction = maxBar <= 0
+        ? 0
+        : (day.waterMl / maxBar).clamp(0.0, 1.0);
     final DateTime now = DateTime.now();
-    final bool isToday = day.day.year == now.year &&
+    final bool isToday =
+        day.day.year == now.year &&
         day.day.month == now.month &&
         day.day.day == now.day;
     return Padding(
@@ -582,15 +586,12 @@ class _Stat extends StatelessWidget {
         children: <Widget>[
           Text(
             label,
-            style: text.labelSmall?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 2),
           Text(
             value,
-            style: text.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w700),
+            style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -606,7 +607,8 @@ class _NoActiveCat extends StatelessWidget {
     return const EmptyState(
       icon: Icons.pets_outlined,
       title: 'No active cat',
-      subtitle: 'Add a cat from the Home or Profile tab to start tracking nutrition.',
+      subtitle:
+          'Add a cat from the Home or Profile tab to start tracking nutrition.',
     );
   }
 }
@@ -657,10 +659,7 @@ Future<void> _confirmDeleteFeeding(
   if (ok == true) await provider.deleteFeeding(entry);
 }
 
-Future<void> _confirmDeleteWater(
-  BuildContext context,
-  WaterEntry entry,
-) async {
+Future<void> _confirmDeleteWater(BuildContext context, WaterEntry entry) async {
   final NutritionProvider provider = context.read<NutritionProvider>();
   final bool? ok = await showDialog<bool>(
     context: context,

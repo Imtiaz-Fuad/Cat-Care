@@ -125,10 +125,7 @@ class AppRouter {
         .map(
           (String path) => StatefulShellBranch(
             routes: <RouteBase>[
-              GoRoute(
-                path: path,
-                builder: (_, _) => _branchScreenFor(path),
-              ),
+              GoRoute(path: path, builder: (_, _) => _branchScreenFor(path)),
             ],
           ),
         )
