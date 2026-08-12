@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/notification_schedule.dart';
+import '../../../core/models/routine_task.dart';
 import '../../../core/services/app_logger.dart';
 import '../../../core/services/notification_service.dart';
 import '../../cats/providers/cat_provider.dart';
-import '../../routine/models/routine_task.dart';
 import '../../routine/providers/routine_provider.dart';
 import '../repositories/notification_schedule_repository.dart';
 
@@ -34,9 +34,13 @@ class NotificationSchedulerService extends ChangeNotifier {
     required RoutineProvider routineProvider,
     required CatProvider catProvider,
     DateTime Function()? clock,
+    // ignore: prefer_initializing_formals
   })  : _repository = repository,
+        // ignore: prefer_initializing_formals
         _notificationService = notificationService,
+        // ignore: prefer_initializing_formals
         _routineProvider = routineProvider,
+        // ignore: prefer_initializing_formals
         _catProvider = catProvider,
         _clock = clock ?? DateTime.now {
     _routineProvider.addListener(_handleRoutinesChanged);
@@ -145,6 +149,9 @@ class NotificationSchedulerService extends ChangeNotifier {
 
       // 2. Cancel any persisted schedule that no longer corresponds
       //    to a reminder (deleted task, reminder turned off, etc.).
+      // Fire-and-forget: cleanup runs in parallel with the rest of the
+      // sync; failures are logged inside [_pruneStale].
+      // ignore: unawaited_futures
       _pruneStale(uid: uid, keep: planned);
     } catch (error, stack) {
       AppLogger.w('NotificationScheduler.sync failed', error, stack);
