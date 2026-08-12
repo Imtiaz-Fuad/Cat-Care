@@ -7,6 +7,10 @@ import '../features/authentication/providers/auth_provider.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/splash_screen.dart';
 import '../features/authentication/widgets/auth_gate.dart';
+import '../features/cats/providers/cat_provider.dart';
+import '../features/cats/screens/cat_profile_screen.dart';
+import '../features/cats/screens/cat_switcher_screen.dart';
+import '../features/cats/screens/onboarding/onboarding_screen.dart';
 import 'app_routes.dart';
 
 /// App router. Builds a `GoRouter` with the auth gate redirect and
@@ -16,8 +20,9 @@ import 'app_routes.dart';
 class AppRouter {
   AppRouter._();
 
-  static final GlobalKey<NavigatorState> _rootKey =
-      GlobalKey<NavigatorState>(debugLabel: 'root');
+  static final GlobalKey<NavigatorState> _rootKey = GlobalKey<NavigatorState>(
+    debugLabel: 'root',
+  );
 
   static const List<String> _shellPaths = <String>[
     AppRoutes.home,
@@ -49,33 +54,60 @@ class AppRouter {
     ),
   ];
 
-  static GoRouter build({required AuthProvider authProvider}) {
+  static GoRouter build({
+    required AuthProvider authProvider,
+    required CatProvider catProvider,
+  }) {
     return GoRouter(
       navigatorKey: _rootKey,
       initialLocation: AppRoutes.splash,
-      refreshListenable: authProvider,
-      redirect: AuthGate.buildRedirect(authProvider),
+      refreshListenable: Listenable.merge(<Listenable>[
+        authProvider,
+        catProvider,
+      ]),
+      redirect: AuthGate.buildRedirect(
+        authProvider: authProvider,
+        catProvider: catProvider,
+      ),
       routes: <RouteBase>[
         // Auth-only screens (outside the shell).
         GoRoute(
           path: AppRoutes.splash,
           builder: (_, _) => const SplashScreen(),
         ),
-        GoRoute(
-          path: AppRoutes.login,
-          builder: (_, _) => const LoginScreen(),
-        ),
+        GoRoute(path: AppRoutes.login, builder: (_, _) => const LoginScreen()),
 
         // Bottom-nav shell — the home destinations.
         StatefulShellRoute.indexedStack(
-          builder: (BuildContext context, GoRouterState state,
-              StatefulNavigationShell shell) {
-            return AppScaffold(
-              navigationShell: shell,
-              destinations: _destinations,
-            );
-          },
+          builder:
+              (
+                BuildContext context,
+                GoRouterState state,
+                StatefulNavigationShell shell,
+              ) {
+                return AppScaffold(
+                  navigationShell: shell,
+                  destinations: _destinations,
+                );
+              },
           branches: _buildBranches(),
+        ),
+
+        // Phase 3 cat-management routes — top-level so they render
+        // above the bottom-nav shell and survive tab switches.
+        GoRoute(
+          path: AppRoutes.onboarding,
+          builder: (_, _) => const OnboardingScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.catSwitch,
+          builder: (_, _) => const CatSwitcherScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.catProfilePattern,
+          builder: (BuildContext context, GoRouterState state) {
+            return CatProfileScreen(catId: state.pathParameters['id']!);
+          },
         ),
 
         // Top-level secondary destinations rendered above the shell.
@@ -86,14 +118,16 @@ class AppRouter {
 
   static List<StatefulShellBranch> _buildBranches() {
     return _shellPaths
-        .map((String path) => StatefulShellBranch(
-              routes: <RouteBase>[
-                GoRoute(
-                  path: path,
-                  builder: (_, _) => _PlaceholderForRoute(path: path),
-                ),
-              ],
-            ))
+        .map(
+          (String path) => StatefulShellBranch(
+            routes: <RouteBase>[
+              GoRoute(
+                path: path,
+                builder: (_, _) => _PlaceholderForRoute(path: path),
+              ),
+            ],
+          ),
+        )
         .toList(growable: false);
   }
 }
@@ -105,9 +139,9 @@ class _TopLevelRoute {
   final String subtitle;
 
   GoRoute get route => GoRoute(
-        path: path,
-        builder: (_, _) => PlaceholderScreen(title: title, subtitle: subtitle),
-      );
+    path: path,
+    builder: (_, _) => PlaceholderScreen(title: title, subtitle: subtitle),
+  );
 }
 
 const List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
@@ -116,91 +150,30 @@ const List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     'Health Records',
     'Coming in Phase 5.',
   ),
-  _TopLevelRoute(
-    AppRoutes.medications,
-    'Medications',
-    'Coming in Phase 5.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.vaccinations,
-    'Vaccinations',
-    'Coming in Phase 5.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.vetFinder,
-    'Vet Finder',
-    'Coming in Phase 6.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.aiAssistant,
-    'AI Assistant',
-    'Coming in Phase 7.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.settings,
-    'Settings',
-    'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.reminders,
-    'Reminders',
-    'Coming in Phase 4.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.addFeeding,
-    'Add Feeding',
-    'Coming in Phase 4.',
-  ),
+  _TopLevelRoute(AppRoutes.medications, 'Medications', 'Coming in Phase 5.'),
+  _TopLevelRoute(AppRoutes.vaccinations, 'Vaccinations', 'Coming in Phase 5.'),
+  _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
+  _TopLevelRoute(AppRoutes.aiAssistant, 'AI Assistant', 'Coming in Phase 7.'),
+  _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
+  _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
+  _TopLevelRoute(AppRoutes.addFeeding, 'Add Feeding', 'Coming in Phase 4.'),
   _TopLevelRoute(
     AppRoutes.nutritionReport,
     'Nutrition Report',
     'Coming in Phase 4.',
   ),
-  _TopLevelRoute(
-    AppRoutes.weightTrend,
-    'Weight Trend',
-    'Coming in Phase 5.',
-  ),
+  _TopLevelRoute(AppRoutes.weightTrend, 'Weight Trend', 'Coming in Phase 5.'),
   _TopLevelRoute(
     AppRoutes.emergencyGuidance,
     'Emergency Guidance',
     'Coming in Phase 7.',
   ),
-  _TopLevelRoute(
-    AppRoutes.weeklyReport,
-    'Weekly Report',
-    'Coming in Phase 7.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.grooming,
-    'Grooming',
-    'Coming in Phase 4.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.foodGuide,
-    'Food Guide',
-    'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.catSafety,
-    'Cat Safety',
-    'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.careGuides,
-    'Care Guides',
-    'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.kittenCare,
-    'Kitten Care',
-    'Coming in Phase 8.',
-  ),
-  _TopLevelRoute(
-    AppRoutes.onboarding,
-    'Onboarding',
-    'Coming in Phase 3.',
-  ),
+  _TopLevelRoute(AppRoutes.weeklyReport, 'Weekly Report', 'Coming in Phase 7.'),
+  _TopLevelRoute(AppRoutes.grooming, 'Grooming', 'Coming in Phase 4.'),
+  _TopLevelRoute(AppRoutes.foodGuide, 'Food Guide', 'Coming in Phase 8.'),
+  _TopLevelRoute(AppRoutes.catSafety, 'Cat Safety', 'Coming in Phase 8.'),
+  _TopLevelRoute(AppRoutes.careGuides, 'Care Guides', 'Coming in Phase 8.'),
+  _TopLevelRoute(AppRoutes.kittenCare, 'Kitten Care', 'Coming in Phase 8.'),
 ];
 
 class _PlaceholderForRoute extends StatelessWidget {

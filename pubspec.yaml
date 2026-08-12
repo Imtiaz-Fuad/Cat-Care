@@ -55,6 +55,11 @@ dependencies:
   palette_generator: ^0.3.3+5
   flutter_dotenv: ^5.2.1
 
+  # Local key/value persistence (active cat, theme mode, first-launch
+  # flag, etc.). Sensitive data must never go here — see
+  # docs/architecture.md.
+  shared_preferences: ^2.3.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
