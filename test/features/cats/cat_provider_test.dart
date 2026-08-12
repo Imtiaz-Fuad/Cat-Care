@@ -18,12 +18,12 @@ class _MockCatRepository extends Mock implements CatRepository {}
 class _MockAuthProvider extends Mock implements AuthProvider {}
 
 UserProfile _profile(String uid) => UserProfile(
-      uid: uid,
-      email: '$uid@example.com',
-      isAnonymous: false,
-      isEmailVerified: true,
-      providerIds: const <String>['password'],
-    );
+  uid: uid,
+  email: '$uid@example.com',
+  isAnonymous: false,
+  isEmailVerified: true,
+  providerIds: const <String>['password'],
+);
 
 CatProfile _cat(String id, String name) {
   return CatProfile(
@@ -86,8 +86,9 @@ void main() {
       final _MockCatRepository repo = _MockCatRepository();
       final _MockAuthProvider auth = _MockAuthProvider();
       when(() => auth.profile).thenReturn(_profile('alice'));
-      when(() => repo.watchCats('alice'))
-          .thenAnswer((_) => const Stream<List<CatProfile>>.empty());
+      when(
+        () => repo.watchCats('alice'),
+      ).thenAnswer((_) => const Stream<List<CatProfile>>.empty());
 
       final CatProvider provider = await CatProvider.create(
         repository: repo,
@@ -205,50 +206,56 @@ void main() {
       provider.dispose();
     });
 
-    test('returns null when the repository throws and surfaces lastError',
-        () async {
-      final _MockCatRepository repo = _MockCatRepository();
-      final _MockAuthProvider auth = _MockAuthProvider();
-      when(() => auth.profile).thenReturn(_profile('alice'));
-      when(() => repo.watchCats('alice'))
-          .thenAnswer((_) => const Stream<List<CatProfile>>.empty());
-      when(
-        () => repo.createCat(
-          ownerId: any(named: 'ownerId'),
-          draft: any(named: 'draft'),
-        ),
-      ).thenThrow(const UnknownFailure('boom', code: 'unknown'));
+    test(
+      'returns null when the repository throws and surfaces lastError',
+      () async {
+        final _MockCatRepository repo = _MockCatRepository();
+        final _MockAuthProvider auth = _MockAuthProvider();
+        when(() => auth.profile).thenReturn(_profile('alice'));
+        when(
+          () => repo.watchCats('alice'),
+        ).thenAnswer((_) => const Stream<List<CatProfile>>.empty());
+        when(
+          () => repo.createCat(
+            ownerId: any(named: 'ownerId'),
+            draft: any(named: 'draft'),
+          ),
+        ).thenThrow(const UnknownFailure('boom', code: 'unknown'));
 
-      final CatProvider provider = await CatProvider.create(
-        repository: repo,
-        authProvider: auth,
-      );
+        final CatProvider provider = await CatProvider.create(
+          repository: repo,
+          authProvider: auth,
+        );
 
-      final CatProfile? created =
-          await provider.createCat(CatDraft(name: 'Mimi'));
-      await Future<void>.delayed(Duration.zero);
+        final CatProfile? created = await provider.createCat(
+          CatDraft(name: 'Mimi'),
+        );
+        await Future<void>.delayed(Duration.zero);
 
-      expect(created, isNull);
-      expect(provider.lastError, isA<UnknownFailure>());
-      provider.clearError();
-      expect(provider.lastError, isNull);
+        expect(created, isNull);
+        expect(provider.lastError, isA<UnknownFailure>());
+        provider.clearError();
+        expect(provider.lastError, isNull);
 
-      provider.dispose();
-    });
+        provider.dispose();
+      },
+    );
 
     test('refuses when there is no signed-in user', () async {
       final _MockCatRepository repo = _MockCatRepository();
       final _MockAuthProvider auth = _MockAuthProvider();
       when(() => auth.profile).thenReturn(null);
-      when(() => repo.watchCats(any<String>()))
-          .thenAnswer((_) => const Stream<List<CatProfile>>.empty());
+      when(
+        () => repo.watchCats(any<String>()),
+      ).thenAnswer((_) => const Stream<List<CatProfile>>.empty());
       final CatProvider provider = await CatProvider.create(
         repository: repo,
         authProvider: auth,
       );
 
-      final CatProfile? created =
-          await provider.createCat(CatDraft(name: 'Mimi'));
+      final CatProfile? created = await provider.createCat(
+        CatDraft(name: 'Mimi'),
+      );
       await Future<void>.delayed(Duration.zero);
 
       expect(created, isNull);

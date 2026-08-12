@@ -41,31 +41,35 @@ void main() {
       );
     });
 
-    test('writes under users/{uid}/cats/{catId} and returns the profile',
-        () async {
-      when(() => firestore.writeDocument(
+    test(
+      'writes under users/{uid}/cats/{catId} and returns the profile',
+      () async {
+        when(
+          () => firestore.writeDocument(
             any<String>(),
             any<Map<String, dynamic>>(),
-          )).thenAnswer((_) async {});
+          ),
+        ).thenAnswer((_) async {});
 
-      final CatProfile created = await repo.createCat(
-        ownerId: 'alice',
-        draft: CatDraft(name: 'Mimi'),
-      );
+        final CatProfile created = await repo.createCat(
+          ownerId: 'alice',
+          draft: CatDraft(name: 'Mimi'),
+        );
 
-      expect(created.id, 'cat-42');
-      expect(created.ownerId, 'alice');
-      expect(created.name, 'Mimi');
+        expect(created.id, 'cat-42');
+        expect(created.ownerId, 'alice');
+        expect(created.name, 'Mimi');
 
-      final captured = verify(
-        () => firestore.writeDocument(
-          captureAny<String>(),
-          captureAny<Map<String, dynamic>>(),
-        ),
-      ).captured;
-      expect(captured[0] as String, 'users/alice/cats/cat-42');
-      expect((captured[1] as Map<String, dynamic>)['name'], 'Mimi');
-    });
+        final captured = verify(
+          () => firestore.writeDocument(
+            captureAny<String>(),
+            captureAny<Map<String, dynamic>>(),
+          ),
+        ).captured;
+        expect(captured[0] as String, 'users/alice/cats/cat-42');
+        expect((captured[1] as Map<String, dynamic>)['name'], 'Mimi');
+      },
+    );
 
     test('rejects an empty-name draft with ValidationFailure', () async {
       expect(
@@ -75,17 +79,17 @@ void main() {
         ),
         throwsA(isA<ValidationFailure>()),
       );
-      verifyNever(() => firestore.writeDocument(
-            any<String>(),
-            any<Map<String, dynamic>>(),
-          ));
+      verifyNever(
+        () =>
+            firestore.writeDocument(any<String>(), any<Map<String, dynamic>>()),
+      );
     });
 
     test('wraps a repository failure as UnknownFailure', () async {
-      when(() => firestore.writeDocument(
-            any<String>(),
-            any<Map<String, dynamic>>(),
-          )).thenThrow(const UnknownFailure('boom', code: 'unknown'));
+      when(
+        () =>
+            firestore.writeDocument(any<String>(), any<Map<String, dynamic>>()),
+      ).thenThrow(const UnknownFailure('boom', code: 'unknown'));
 
       await expectLater(
         repo.createCat(
@@ -126,15 +130,17 @@ void main() {
       };
     }
 
-    test('writes a merge patch with updatedAt and the new fields',
-        () async {
-      when(() => firestore.writeDocument(
-            any<String>(),
-            any<Map<String, dynamic>>(),
-            merge: any<bool>(named: 'merge'),
-          )).thenAnswer((_) async {});
-      when(() => firestore.readDocument(any<String>()))
-          .thenAnswer((_) async => sampleDoc());
+    test('writes a merge patch with updatedAt and the new fields', () async {
+      when(
+        () => firestore.writeDocument(
+          any<String>(),
+          any<Map<String, dynamic>>(),
+          merge: any<bool>(named: 'merge'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => firestore.readDocument(any<String>()),
+      ).thenAnswer((_) async => sampleDoc());
 
       final CatProfile updated = await repo.updateCat(
         ownerId: 'alice',
@@ -159,13 +165,16 @@ void main() {
     });
 
     test('trims name on update', () async {
-      when(() => firestore.writeDocument(
-            any<String>(),
-            any<Map<String, dynamic>>(),
-            merge: any<bool>(named: 'merge'),
-          )).thenAnswer((_) async {});
-      when(() => firestore.readDocument(any<String>()))
-          .thenAnswer((_) async => sampleDoc());
+      when(
+        () => firestore.writeDocument(
+          any<String>(),
+          any<Map<String, dynamic>>(),
+          merge: any<bool>(named: 'merge'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => firestore.readDocument(any<String>()),
+      ).thenAnswer((_) async => sampleDoc());
 
       await repo.updateCat(
         ownerId: 'alice',
@@ -201,11 +210,13 @@ void main() {
     });
 
     test('uploads to users/{uid}/cats/{catId}/photo.jpg', () async {
-      when(() => storage.uploadBytes(
-            path: any<String>(named: 'path'),
-            bytes: any<Uint8List>(named: 'bytes'),
-            contentType: any<String>(named: 'contentType'),
-          )).thenAnswer((_) async => 'https://example.com/mimi.jpg');
+      when(
+        () => storage.uploadBytes(
+          path: any<String>(named: 'path'),
+          bytes: any<Uint8List>(named: 'bytes'),
+          contentType: any<String>(named: 'contentType'),
+        ),
+      ).thenAnswer((_) async => 'https://example.com/mimi.jpg');
 
       final String url = await repo.uploadCatPhoto(
         ownerId: 'alice',
@@ -214,11 +225,13 @@ void main() {
       );
 
       expect(url, 'https://example.com/mimi.jpg');
-      final captured = verify(() => storage.uploadBytes(
-            path: captureAny<String>(named: 'path'),
-            bytes: any<Uint8List>(named: 'bytes'),
-            contentType: any<String>(named: 'contentType'),
-          )).captured;
+      final captured = verify(
+        () => storage.uploadBytes(
+          path: captureAny<String>(named: 'path'),
+          bytes: any<Uint8List>(named: 'bytes'),
+          contentType: any<String>(named: 'contentType'),
+        ),
+      ).captured;
       expect(captured.single as String, 'users/alice/cats/cat-42/photo.jpg');
     });
   });
@@ -238,53 +251,52 @@ void main() {
       );
     });
 
-    test('deletes the firestore document and skips storage when no url',
-        () async {
-      when(() => firestore.deleteDocument(any<String>()))
-          .thenAnswer((_) async {});
+    test(
+      'deletes the firestore document and skips storage when no url',
+      () async {
+        when(
+          () => firestore.deleteDocument(any<String>()),
+        ).thenAnswer((_) async {});
 
-      await repo.deleteCat(ownerId: 'alice', catId: 'cat-42');
+        await repo.deleteCat(ownerId: 'alice', catId: 'cat-42');
 
-      verify(() => firestore.deleteDocument('users/alice/cats/cat-42'))
-          .called(1);
-      verifyNever(() => storage.delete(any<String>()));
-    });
+        verify(
+          () => firestore.deleteDocument('users/alice/cats/cat-42'),
+        ).called(1);
+        verifyNever(() => storage.delete(any<String>()));
+      },
+    );
 
-    test('best-effort cleans up storage when photoUrl is provided',
-        () async {
+    test('best-effort cleans up storage when photoUrl is provided', () async {
       const String url =
           'https://firebasestorage.googleapis.com/v0/b/x/o/users%2Falice%2Fcats%2Fcat-42%2Fphoto.jpg';
-      when(() => firestore.deleteDocument(any<String>()))
-          .thenAnswer((_) async {});
+      when(
+        () => firestore.deleteDocument(any<String>()),
+      ).thenAnswer((_) async {});
       when(() => storage.delete(any<String>())).thenAnswer((_) async {});
 
-      await repo.deleteCat(
-        ownerId: 'alice',
-        catId: 'cat-42',
-        photoUrl: url,
-      );
+      await repo.deleteCat(ownerId: 'alice', catId: 'cat-42', photoUrl: url);
 
-      final captured = verify(() => storage.delete(captureAny<String>()))
-          .captured;
+      final captured = verify(
+        () => storage.delete(captureAny<String>()),
+      ).captured;
       expect(captured.single, 'users/alice/cats/cat-42/photo.jpg');
     });
 
     test('storage failure does NOT block the firestore deletion', () async {
       const String url = 'https://example.com/mimi.jpg';
-      when(() => firestore.deleteDocument(any<String>()))
-          .thenAnswer((_) async {});
-      when(() => storage.delete(any<String>())).thenThrow(
-        const UnknownFailure('storage down', code: 'unknown'),
-      );
+      when(
+        () => firestore.deleteDocument(any<String>()),
+      ).thenAnswer((_) async {});
+      when(
+        () => storage.delete(any<String>()),
+      ).thenThrow(const UnknownFailure('storage down', code: 'unknown'));
 
-      await repo.deleteCat(
-        ownerId: 'alice',
-        catId: 'cat-42',
-        photoUrl: url,
-      );
+      await repo.deleteCat(ownerId: 'alice', catId: 'cat-42', photoUrl: url);
 
-      verify(() => firestore.deleteDocument('users/alice/cats/cat-42'))
-          .called(1);
+      verify(
+        () => firestore.deleteDocument('users/alice/cats/cat-42'),
+      ).called(1);
     });
   });
 

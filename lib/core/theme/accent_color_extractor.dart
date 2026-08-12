@@ -71,13 +71,10 @@ class AccentColorExtractor {
     final HSLColor muted = hsl.withSaturation(
       (hsl.saturation * (1 - clamped)).clamp(0.0, 1.0),
     );
-    final HSLColor warmed = muted.withHue(
-      _warmHue(muted.hue),
-    );
+    final HSLColor warmed = muted.withHue(_warmHue(muted.hue));
     // Keep lightness in the soft 0.55..0.75 range so the accent is
     // never a deep shadow color that fails contrast against text.
-    final double lightness =
-        warmed.lightness.clamp(0.55, 0.75).toDouble();
+    final double lightness = warmed.lightness.clamp(0.55, 0.75).toDouble();
     return warmed.withLightness(lightness).toColor();
   }
 
@@ -130,8 +127,12 @@ class AccentColorExtractor {
     final int top = (h * 0.25).round();
     final int width = (w * 0.5).round();
     final int height = (h * 0.5).round();
-    return Rect.fromLTWH(left.toDouble(), top.toDouble(),
-        width.toDouble(), height.toDouble());
+    return Rect.fromLTWH(
+      left.toDouble(),
+      top.toDouble(),
+      width.toDouble(),
+      height.toDouble(),
+    );
   }
 
   static Color _pickSourceColor(PaletteGenerator palette) {

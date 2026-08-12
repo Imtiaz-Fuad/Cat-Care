@@ -42,9 +42,7 @@ class OnboardingPhotoStep extends StatelessWidget {
           Text(
             'A picture makes it feel personal. We use it to '
             'pick an accent color for the app too.',
-            style: text.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -100,8 +98,9 @@ class OnboardingNameStep extends StatefulWidget {
 }
 
 class _OnboardingNameStepState extends State<OnboardingNameStep> {
-  late final TextEditingController _text =
-      TextEditingController(text: widget.controller.draft.name);
+  late final TextEditingController _text = TextEditingController(
+    text: widget.controller.draft.name,
+  );
 
   @override
   void dispose() {
@@ -123,9 +122,7 @@ class _OnboardingNameStepState extends State<OnboardingNameStep> {
           Text(
             'We use this everywhere — home screen, routines, and '
             'reminders.',
-            style: text.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           TextField(
@@ -164,10 +161,12 @@ class OnboardingDetailsStep extends StatefulWidget {
 }
 
 class _OnboardingDetailsStepState extends State<OnboardingDetailsStep> {
-  late final TextEditingController _breed =
-      TextEditingController(text: widget.controller.draft.breed ?? '');
-  late final TextEditingController _color =
-      TextEditingController(text: widget.controller.draft.color ?? '');
+  late final TextEditingController _breed = TextEditingController(
+    text: widget.controller.draft.breed ?? '',
+  );
+  late final TextEditingController _color = TextEditingController(
+    text: widget.controller.draft.color ?? '',
+  );
 
   @override
   void dispose() {
@@ -192,9 +191,7 @@ class _OnboardingDetailsStepState extends State<OnboardingDetailsStep> {
           Text(
             'Skip anything you\'re not sure about — you can fill it '
             'in later.',
-            style: text.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           _BirthdayField(controller: widget.controller, draft: draft),
@@ -210,9 +207,8 @@ class _OnboardingDetailsStepState extends State<OnboardingDetailsStep> {
               border: OutlineInputBorder(),
             ),
             onChanged: (String v) => widget.controller.updateDraft(
-              (CatDraft d) => d.copyWith(
-                breed: v.trim().isEmpty ? null : v.trim(),
-              ),
+              (CatDraft d) =>
+                  d.copyWith(breed: v.trim().isEmpty ? null : v.trim()),
             ),
           ),
           const SizedBox(height: 16),
@@ -225,9 +221,8 @@ class _OnboardingDetailsStepState extends State<OnboardingDetailsStep> {
               border: OutlineInputBorder(),
             ),
             onChanged: (String v) => widget.controller.updateDraft(
-              (CatDraft d) => d.copyWith(
-                color: v.trim().isEmpty ? null : v.trim(),
-              ),
+              (CatDraft d) =>
+                  d.copyWith(color: v.trim().isEmpty ? null : v.trim()),
             ),
           ),
           const SizedBox(height: 16),
@@ -317,9 +312,7 @@ class _SexPicker extends StatelessWidget {
           .map(
             (_SexOption opt) => Expanded(
               child: Padding(
-                padding: EdgeInsets.only(
-                  right: opt == _options.last ? 0 : 8,
-                ),
+                padding: EdgeInsets.only(right: opt == _options.last ? 0 : 8),
                 child: ChoiceChip(
                   selected: current == opt.value,
                   onSelected: (_) {
@@ -329,11 +322,13 @@ class _SexPicker extends StatelessWidget {
                       ),
                     );
                   },
-                  avatar: Icon(opt.icon,
-                      color: current == opt.value
-                          ? scheme.onPrimary
-                          : scheme.onSurfaceVariant,
-                      size: 18),
+                  avatar: Icon(
+                    opt.icon,
+                    color: current == opt.value
+                        ? scheme.onPrimary
+                        : scheme.onSurfaceVariant,
+                    size: 18,
+                  ),
                   label: Text(opt.label),
                 ),
               ),
@@ -373,37 +368,41 @@ class OnboardingPrioritiesStep extends StatelessWidget {
           Text(
             'Pick the routines you\'d like CatCare to set up by '
             'default for ${controller.draft.name.isEmpty ? 'your cat' : controller.draft.name}.',
-            style: text.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: CatPriority.all.map((String id) {
-              final bool isSelected = selected.contains(id);
-              return FilterChip(
-                selected: isSelected,
-                onSelected: (bool v) {
-                  controller.updateDraft((CatDraft d) {
-                    final List<String> next = List<String>.from(d.priorities);
-                    if (v) {
-                      if (!next.contains(id)) next.add(id);
-                    } else {
-                      next.remove(id);
-                    }
-                    return d.copyWith(priorities: next);
-                  });
-                },
-                label: Text(_labelFor(id)),
-                avatar: Icon(
-                  _iconFor(id),
-                  size: 18,
-                  color: isSelected ? scheme.onPrimary : scheme.onSurfaceVariant,
-                ),
-              );
-            }).toList(growable: false),
+            children: CatPriority.all
+                .map((String id) {
+                  final bool isSelected = selected.contains(id);
+                  return FilterChip(
+                    selected: isSelected,
+                    onSelected: (bool v) {
+                      controller.updateDraft((CatDraft d) {
+                        final List<String> next = List<String>.from(
+                          d.priorities,
+                        );
+                        if (v) {
+                          if (!next.contains(id)) next.add(id);
+                        } else {
+                          next.remove(id);
+                        }
+                        return d.copyWith(priorities: next);
+                      });
+                    },
+                    label: Text(_labelFor(id)),
+                    avatar: Icon(
+                      _iconFor(id),
+                      size: 18,
+                      color: isSelected
+                          ? scheme.onPrimary
+                          : scheme.onSurfaceVariant,
+                    ),
+                  );
+                })
+                .toList(growable: false),
           ),
         ],
       ),
@@ -467,9 +466,7 @@ class OnboardingDoneStep extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'Here\'s what we\'ll save for ${draft.name.isEmpty ? 'your cat' : draft.name}.',
-            style: text.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           Expanded(
@@ -478,8 +475,10 @@ class OnboardingDoneStep extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: <Widget>[
                   _row('Name', draft.name),
-                  _row('Birthday',
-                      draft.birthday == null ? '—' : _formatDate(draft.birthday!)),
+                  _row(
+                    'Birthday',
+                    draft.birthday == null ? '—' : _formatDate(draft.birthday!),
+                  ),
                   _row('Sex', _labelForSex(draft.sex)),
                   _row('Breed', draft.breed ?? '—'),
                   _row('Color', draft.color ?? '—'),
@@ -500,7 +499,9 @@ class OnboardingDoneStep extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: draft.priorities
-                          .map((String p) => Chip(label: Text(_priorityLabel(p))))
+                          .map(
+                            (String p) => Chip(label: Text(_priorityLabel(p))),
+                          )
                           .toList(growable: false),
                     ),
                 ],

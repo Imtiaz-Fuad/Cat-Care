@@ -48,9 +48,7 @@ class OnboardingStepIndicator extends StatelessWidget {
           Text(
             '$label',
             textAlign: TextAlign.center,
-            style: text.labelMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: text.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ],

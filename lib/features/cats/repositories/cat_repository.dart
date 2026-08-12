@@ -21,9 +21,9 @@ class CatRepository {
     required FirestoreService firestoreService,
     required StorageService storageService,
     Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _storage = storageService,
-        _uuid = uuid ?? const Uuid();
+  }) : _firestore = firestoreService,
+       _storage = storageService,
+       _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final StorageService _storage;
@@ -50,13 +50,17 @@ class CatRepository {
         .collection(AppConstants.catsSubcollection)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => CatProfile.fromJson(<String, dynamic>{
+        .map(
+          (snap) => snap.docs
+              .map(
+                (d) => CatProfile.fromJson(<String, dynamic>{
                   ...d.data(),
                   'id': d.id,
                   'ownerId': ownerId,
-                }))
-            .toList(growable: false));
+                }),
+              )
+              .toList(growable: false),
+        );
   }
 
   /// Stream a single cat. Emits `null` if the document was deleted.
@@ -64,9 +68,7 @@ class CatRepository {
     required String ownerId,
     required String catId,
   }) {
-    return _firestore
-        .watchDocument(catDocPath(ownerId, catId))
-        .map((data) {
+    return _firestore.watchDocument(catDocPath(ownerId, catId)).map((data) {
       if (data == null) return null;
       return CatProfile.fromJson(<String, dynamic>{
         ...data,
@@ -82,8 +84,9 @@ class CatRepository {
     required String ownerId,
     required String catId,
   }) async {
-    final Map<String, dynamic>? data =
-        await _firestore.readDocument(catDocPath(ownerId, catId));
+    final Map<String, dynamic>? data = await _firestore.readDocument(
+      catDocPath(ownerId, catId),
+    );
     if (data == null) return null;
     return CatProfile.fromJson(<String, dynamic>{
       ...data,
@@ -106,10 +109,7 @@ class CatRepository {
     }
     final String id = newCatId();
     final CatProfile profile = draft.toProfile(id: id, ownerId: ownerId);
-    await _firestore.writeDocument(
-      catDocPath(ownerId, id),
-      profile.toJson(),
-    );
+    await _firestore.writeDocument(catDocPath(ownerId, id), profile.toJson());
     AppLogger.i('CatRepository.createCat $ownerId/$id (${profile.name})');
     return profile;
   }
@@ -209,9 +209,7 @@ class CatRepository {
       } on AppFailure catch (failure) {
         // A stray Storage delete failure must not block the Firestore
         // deletion — log and continue.
-        AppLogger.w(
-          'CatRepository.deleteCat: photo cleanup failed: $failure',
-        );
+        AppLogger.w('CatRepository.deleteCat: photo cleanup failed: $failure');
       }
     }
     AppLogger.i('CatRepository.deleteCat $ownerId/$catId');

@@ -29,24 +29,18 @@ class CatSwitcherScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (cats.cats.isEmpty) {
-            return _EmptySwitcher(
-              onAdd: () => context.push('/onboarding'),
-            );
+            return _EmptySwitcher(onAdd: () => context.push('/onboarding'));
           }
           return ListView.separated(
             padding: const EdgeInsets.symmetric(vertical: 8),
             itemCount: cats.cats.length + 1,
-            separatorBuilder: (_, _) =>
-                const Divider(height: 1, indent: 80),
+            separatorBuilder: (_, _) => const Divider(height: 1, indent: 80),
             itemBuilder: (BuildContext context, int index) {
               if (index == cats.cats.length) {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: scheme.secondaryContainer,
-                    child: Icon(
-                      Icons.add,
-                      color: scheme.onSecondaryContainer,
-                    ),
+                    child: Icon(Icons.add, color: scheme.onSecondaryContainer),
                   ),
                   title: const Text('Add another cat'),
                   onTap: () => context.push('/onboarding'),
@@ -65,25 +59,18 @@ class CatSwitcherScreen extends StatelessWidget {
                     semanticLabel: 'Photo of ${current.name}',
                   ),
                 ),
-                title: Text(
-                  current.name,
-                  style: text.titleMedium,
-                ),
+                title: Text(current.name, style: text.titleMedium),
                 subtitle: Text(
-                  active ? 'Currently active' : current.breed ?? 'Tap to switch',
+                  active
+                      ? 'Currently active'
+                      : current.breed ?? 'Tap to switch',
                   style: text.bodySmall?.copyWith(
-                    color: active
-                        ? scheme.primary
-                        : scheme.onSurfaceVariant,
+                    color: active ? scheme.primary : scheme.onSurfaceVariant,
                   ),
                 ),
                 trailing: Icon(
-                  active
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
-                  color: active
-                      ? scheme.primary
-                      : scheme.outlineVariant,
+                  active ? Icons.check_circle : Icons.radio_button_unchecked,
+                  color: active ? scheme.primary : scheme.outlineVariant,
                 ),
                 onTap: () async {
                   await cats.setActiveCat(current.id);
@@ -119,23 +106,14 @@ class _EmptySwitcher extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(
-              Icons.pets_outlined,
-              size: 56,
-              color: scheme.onSurfaceVariant,
-            ),
+            Icon(Icons.pets_outlined, size: 56, color: scheme.onSurfaceVariant),
             const SizedBox(height: 16),
-            Text(
-              'No cats yet',
-              style: text.titleMedium,
-            ),
+            Text('No cats yet', style: text.titleMedium),
             const SizedBox(height: 8),
             Text(
               'Add your first cat to start tracking routines, '
               'vaccinations, and more.',
-              style: text.bodyMedium?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
+              style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),

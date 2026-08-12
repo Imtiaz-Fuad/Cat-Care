@@ -68,14 +68,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       );
     } on AppFailure catch (failure) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(failure.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(failure.message)));
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not load photo: $error')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Could not load photo: $error')));
     }
   }
 
@@ -85,27 +85,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final Object? result = await cats.createCat(_controller.draft);
     if (!mounted) return;
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cat profile saved')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Cat profile saved')));
       if (context.canPop()) {
         context.pop();
       } else {
         context.go('/home');
       }
     } else if (cats.lastError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(cats.lastError!.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(cats.lastError!.message)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add a cat'),
-      ),
+      appBar: AppBar(title: const Text('Add a cat')),
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -175,11 +173,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         onPressed: atLast
                             ? (_controller.canFinish ? _finish : null)
                             : (_controller.canAdvance
-                                ? () {
-                                    _controller.next();
-                                    _animateTo(_controller.step);
-                                  }
-                                : null),
+                                  ? () {
+                                      _controller.next();
+                                      _animateTo(_controller.step);
+                                    }
+                                  : null),
                         child: Text(atLast ? 'Finish' : 'Next'),
                       ),
                     ],

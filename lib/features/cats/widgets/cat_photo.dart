@@ -69,15 +69,15 @@ class CatPhoto extends StatelessWidget {
         height: dim,
         child: ClipRRect(
           borderRadius: radius,
-          child: image ??
+          child:
+              image ??
               ColoredBox(
                 color: placeholderColor,
                 child: Center(
                   child: Icon(
                     Icons.pets,
                     size: dim / 2.5,
-                    color: scheme.onPrimaryContainer
-                        .withValues(alpha: 0.6),
+                    color: scheme.onPrimaryContainer.withValues(alpha: 0.6),
                   ),
                 ),
               ),
@@ -100,9 +100,8 @@ class CatPhoto extends StatelessWidget {
       return Image.file(
         File(localPath!),
         fit: BoxFit.cover,
-        errorBuilder:
-            (BuildContext _, Object error, StackTrace? stack) =>
-                _shimmer(context),
+        errorBuilder: (BuildContext _, Object error, StackTrace? stack) =>
+            _shimmer(context),
       );
     }
     return null;

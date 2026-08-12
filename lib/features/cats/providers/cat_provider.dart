@@ -39,15 +39,15 @@ class CatProvider extends ChangeNotifier {
     // assignments so the static factory in [create] can pre-resolve
     // the prefs Future without exposing that pattern to callers.
     // ignore: prefer_initializing_formals
-  })  : _repository = repository,
-        // ignore: prefer_initializing_formals
-        _auth = authProvider,
-        // ignore: prefer_initializing_formals
-        _prefs = prefs,
-        // Boot-time fallback so Home renders the right cat before the
-        // Firestore stream emits. The id is re-validated against the
-        // list in [_handleAuthChange].
-        _activeCatId = initialActiveCatId {
+  }) : _repository = repository,
+       // ignore: prefer_initializing_formals
+       _auth = authProvider,
+       // ignore: prefer_initializing_formals
+       _prefs = prefs,
+       // Boot-time fallback so Home renders the right cat before the
+       // Firestore stream emits. The id is re-validated against the
+       // list in [_handleAuthChange].
+       _activeCatId = initialActiveCatId {
     _auth.addListener(_handleAuthChange);
     _authListeners.add(_handleAuthChange);
     if (_activeCatId != null && _activeCatId!.isEmpty) {
@@ -146,18 +146,14 @@ class CatProvider extends ChangeNotifier {
   }) async {
     final String? uid = _uidForWrite();
     if (uid == null) return;
-    _runGuarded(() async => _repository.updateCat(
-          ownerId: uid,
-          catId: catId,
-          draft: draft,
-        ));
+    _runGuarded(
+      () async =>
+          _repository.updateCat(ownerId: uid, catId: catId, draft: draft),
+    );
   }
 
   /// Delete a cat, with optional photo cleanup.
-  Future<void> deleteCat({
-    required String catId,
-    String? photoUrl,
-  }) async {
+  Future<void> deleteCat({required String catId, String? photoUrl}) async {
     final String? uid = _uidForWrite();
     if (uid == null) return;
     _runGuarded(() async {
@@ -192,11 +188,7 @@ class CatProvider extends ChangeNotifier {
         contentType: contentType,
       );
       if (url != null) {
-        await _repository.updateCat(
-          ownerId: uid,
-          catId: catId,
-          photoUrl: url,
-        );
+        await _repository.updateCat(ownerId: uid, catId: catId, photoUrl: url);
       }
     });
     return url;
@@ -241,37 +233,36 @@ class CatProvider extends ChangeNotifier {
       return;
     }
     _catsSub?.cancel();
-    _catsSub = _repository.watchCats(uid).listen(
-      (List<CatProfile> next) {
-        _cats = next;
-        _streamReady = true;
+    _catsSub = _repository
+        .watchCats(uid)
+        .listen(
+          (List<CatProfile> next) {
+            _cats = next;
+            _streamReady = true;
 
-        // Validate the active id against the new list. If the
-        // active cat was deleted, fall back to the first available.
-        bool activePresent = false;
-        for (final CatProfile c in next) {
-          if (c.id == _activeCatId) {
-            activePresent = true;
-            break;
-          }
-        }
-        if (!activePresent) {
-          _activeCatId = next.isEmpty ? null : next.first.id;
-          unawaited(_persistActiveCat(_activeCatId));
-        }
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('CatProvider: stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(
-                error.toString(),
-                code: 'cats-stream-error',
-              );
-        notifyListeners();
-      },
-    );
+            // Validate the active id against the new list. If the
+            // active cat was deleted, fall back to the first available.
+            bool activePresent = false;
+            for (final CatProfile c in next) {
+              if (c.id == _activeCatId) {
+                activePresent = true;
+                break;
+              }
+            }
+            if (!activePresent) {
+              _activeCatId = next.isEmpty ? null : next.first.id;
+              unawaited(_persistActiveCat(_activeCatId));
+            }
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e('CatProvider: stream error', error, stack);
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(error.toString(), code: 'cats-stream-error');
+            notifyListeners();
+          },
+        );
   }
 
   Future<void> _persistActiveCat(String? catId) async {
@@ -312,8 +303,7 @@ class CatProvider extends ChangeNotifier {
         _lastError = failure;
         AppLogger.w('CatProvider action failed: $failure');
       } catch (error, stack) {
-        _lastError =
-            UnknownFailure(error.toString(), code: 'cats-unknown');
+        _lastError = UnknownFailure(error.toString(), code: 'cats-unknown');
         AppLogger.e('CatProvider: unexpected error', error, stack);
       } finally {
         if (!_disposed) _setBusy(false);
