@@ -788,3 +788,93 @@ CatCare BD should feel like:
 > **"A small, calm space dedicated to taking care of my cat."**
 
 Every major design decision should support that feeling.
+
+---
+
+# 24. Phase 4 — Daily Loop
+
+The Daily Loop is the primary user journey: the owner opens the app
+and answers today's question — *"how is my cat doing today?"* — in
+under a minute. Every tab in the bottom navigation feeds this
+journey; no tab is a destination by itself.
+
+## The single active cat
+
+The whole app is scoped to **one cat at a time** (the *active cat*).
+Tab-level data — routines, feedings, water, profile photo, daily
+insight — is the active cat's data. The Profile tab is the only
+place to switch cats.
+
+Implication for the UI:
+
+- Switching cats reloads every tab. Bottom-nav state is preserved
+  (the user stays on the tab they were on); only the data behind it
+  changes.
+- After sign-out the active-cat pointer is cleared. A fresh sign-in
+  to the same account restores the previously selected cat.
+
+## Tab map
+
+| Tab          | Primary job                                    | Visual primacy          |
+| ------------ | ---------------------------------------------- | ----------------------- |
+| Home         | "How is my cat today?" at a glance.            | Cat hero + daily stats. |
+| Routine      | "What still needs doing?" checklist.           | Timeline by time-of-day.|
+| Nutrition    | "What did I feed them? + what should I feed?" | "+ Add what I fed".     |
+| Profile      | "This is my cat." + account-level actions.     | Large cat photo.        |
+
+There is no Home → Routine drilldown. Tabs are independent entry
+points; the *state* on Home is what motivates the user to tap into
+the other tabs.
+
+## Edit sheets
+
+Each recorded event (routine completion, feeding, water) opens a
+**bottom sheet**, not a full-screen route. The sheet:
+
+- Uses the active cat's name and photo so the owner is never in
+  doubt which cat they are recording for.
+- Persists immediately on `Save`. There is no "draft" state and no
+  unsaved-changes confirmation beyond the system's standard back
+  gesture / button.
+- For fields that may be cleared (routine notes), the empty input
+  is the **clear action** — leaving the field empty and saving
+  deletes the previous value. This matches the muscle memory of
+  every other note-taking surface on the phone and avoids an
+  explicit "Clear note" affordance.
+
+## Local notifications
+
+Notifications are a *byproduct* of routines, not a feature users
+configure. Concretely:
+
+- One local notification per routine task, scheduled for the
+  task's `timeOfDay` on the next future occurrence.
+- Routine edits re-sync the schedule automatically. There is no
+  notification settings screen.
+- When the user switches cats, the previous cat's notification
+  schedules are removed and the new cat's are installed.
+- Notification text uses the active cat's name
+  ("Time to feed Mishu — wet food, 60g").
+
+## Empty states by tab
+
+Empty states follow §18 universally. Tab-specific addenda:
+
+- **Home** — "Mishu is all caught up! Nothing else to do right now." when completion is 100% on a fresh day. Otherwise: "Nothing recorded yet today — start by [adding a meal] or [ticking the first routine item]."
+- **Routine** — "Mishu's routine hasn't been generated yet. Tap below to set it up." with a CTA, only when the cat has no routines at all.
+- **Nutrition** — "Mishu's first meal hasn't been recorded yet." per §18.
+- **Profile** — never empty (cat photo + name are guaranteed by onboarding).
+
+## What lives where
+
+| Concern                              | Owned by             | Lives in          |
+| ------------------------------------ | -------------------- | ----------------- |
+| Active cat selection                 | `CatProvider`        | `cats/providers/` |
+| Routine list + today's stats         | `RoutineProvider`    | `routine/providers/` |
+| Feeding + water entries + targets    | `NutritionProvider`  | `nutrition/providers/` |
+| OS-level reminders                   | `NotificationSchedulerService` | `notifications/services/` |
+| Tab bar                              | `AppRouter` shell    | `routes/`         |
+
+UI screens never call Firestore or the OS notification API
+directly — they observe the providers above (per `architecture.md`'s
+layer rule).

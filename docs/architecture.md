@@ -190,6 +190,127 @@ Rules:
 
 ---
 
+# Phase 4 — Daily Loop
+
+The Daily Loop is the Phase 4 milestone: the four bottom-navigation
+features (Home, Routine, Nutrition, Profile) wired against a single
+active cat, with local notifications synced from the user's routine
+schedule. This section locks the contracts that the screens, providers,
+and the new notification scheduler all depend on.
+
+## Active cat
+
+`CatProvider` is the single source of truth for the **active cat**
+(the cat whose data the current shell is showing). It exposes:
+
+- `activeCatId` / `activeCat` — the current cat (may be `null` before
+  the first stream emission or after sign-out).
+- `_catsSub` — a Firestore subscription that re-emits whenever the
+  user's cat list changes. Providers below `CatProvider` must listen
+  to `CatProvider` and rebind their own subscriptions whenever the
+  active cat changes (never read `activeCatId` once and cache it).
+- `activeCatId` is persisted to `SharedPreferences` under
+  `AppConstants.activeCatIdKey` so the user lands on the same cat
+  after a cold start. `null` is persisted as a missing key (lets a
+  future "choose your cat" bootstrap re-prompt).
+
+## RoutineProvider
+
+`RoutineProvider` holds the resolved routine list for the active cat
+and exposes the computed daily metrics Home/Profile consume.
+
+- `routines` — all routine tasks for the active cat (unmodifiable).
+- `todaysRoutines` — tasks whose `timeOfDay` is within today's
+  window. The provider does **not** filter out tasks completed
+  earlier today; the UI marks them via `lastCompletedAt`.
+- `completedTodayCount` — count of tasks whose `lastCompletedAt` is
+  on or after midnight (local time). This is the single number Home
+  and Profile show.
+- `completionPercent` — `100 * completed / total`, clamped to `0..100`.
+  Returns `0` when there are no tasks (avoids a NaN dashboard).
+- `setCompletion(task, done: true)` — toggles `lastCompletedAt`
+  through `RoutineRepository.updateTask`. The provider never touches
+  the task's `notes` field; clearing notes uses the sentinel argument
+  on `RoutineRepository.updateTask` directly (see below).
+- `seedIfEmpty` / `reseedDefaults` — populate the routine list from
+  `RoutineGeneratorService` when the active cat has no routines.
+  Generation is driven by `CatLifeStage` (derived from
+  `CatProfile.birthday` — there is no separate `lifeStage` field)
+  plus `CatProfile.priorities`.
+
+## NutritionProvider
+
+`NutritionProvider` aggregates feeding + water entries for the active
+cat and surfaces today's totals + the per-cat `NutritionTarget`.
+
+- `target` — `NutritionTarget.forCat(activeCat)` when the active cat
+  has a usable weight; `NutritionTarget.fallback` otherwise. The
+  fallback uses documented defaults (70 g food, 200 ml water, 220
+  kcal, 3 meals) and is the only path Home/Profile ever render
+  before weight is known.
+- `todayFoodGrams`, `todayWaterMl` — rolling totals for "today"
+  (local-time midnight onward).
+- `todayStatus` — enum returned to the UI that drives the Home
+  snapshot's status text (`onTrack`, `belowTarget`, `aboveTarget`,
+  `noData`). This is the only place the UI ever reads "is my cat
+  okay" — the UI must not recompute thresholds.
+
+## NotificationSchedulerService
+
+`NotificationSchedulerService` reconciles the user's routine tasks
+with the local notification layer. It is wired in `main.dart`'s
+`_AppRouterHost._buildWiring()` as a `ChangeNotifierProvider` so the
+service is app-scoped and survives route changes.
+
+- Inputs (via constructor): `NotificationScheduleRepository`,
+  `NotificationService`, `RoutineProvider`, `CatProvider`.
+- Listens to `RoutineProvider` and `CatProvider`. When either
+  notifies, it calls `syncNow()`.
+- `syncNow()`:
+  1. Watches every existing schedule for the active owner via
+     `NotificationScheduleRepository.watchSchedules`.
+  2. Builds the desired set of `NotificationSchedule` plans from
+     the current routine list (one plan per routine task).
+  3. Cancels and deletes any schedule whose `sourceType:sourceId`
+     is not in the desired set (covers routine edits + cat
+     switches).
+  - Schedules and persists any new or changed plans.
+- `idForKey(key)` — static deterministic mapping
+  `String -> int` for the OS notification id. Implementation:
+  `hash = hash * 31 + code; hash & 0x7fffffff`. The 31-bit mask
+  guarantees the result is non-negative and fits the Android
+  32-bit signed notification-id range. Same `key` must always
+  produce the same id (`test/features/notifications/notification_scheduler_id_test.dart`
+  pins this contract).
+
+### Firestore schema
+
+`users/{uid}/notification_schedules/{scheduleId}` — one document per
+local notification. Fields: `catId`, `channelKey`, `title`, `body`,
+`fireAt` (ISO 8601), `payload`, `sourceType`, `sourceId`, `createdAt`.
+A schedule's `sourceType:sourceId` (e.g. `routine:<taskId>`) is the
+stable identity the scheduler uses for diffing on the next sync.
+
+### `RoutineRepository.updateTask` note-clearing sentinel
+
+`RoutineRepository.updateTask` takes `Object? notes = _sentinel`
+where `_sentinel` is a library-private `Object()`. The contract is:
+
+- `_sentinel` — "leave the field alone" (no write).
+- `null` — "explicitly clear the field" (write `null` to Firestore).
+- `String` — "write the trimmed value" (Firestore preserves the
+  trimmed string).
+
+This three-way logic is the only path that can clear a routine
+note. `RoutineProvider.updateTask` forwards via `RoutineTask.copyWith`,
+which uses the standard `?? this.x` pattern and therefore **cannot**
+clear nullable fields — clearing notes must call the repository
+directly. Documented in `routine_provider_test.dart` and tracked
+as a known asymmetry; redesigning `copyWith` to use the sentinel
+pattern is a follow-up.
+
+---
+
 # Folder Structure
 
 ```

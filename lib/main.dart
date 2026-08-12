@@ -7,12 +7,20 @@ import 'core/services/app_logger.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/firebase_bootstrap.dart';
 import 'core/services/firestore_service.dart';
+import 'core/services/notification_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/authentication/providers/auth_provider.dart';
 import 'features/authentication/repositories/auth_repository.dart';
 import 'features/cats/providers/cat_provider.dart';
 import 'features/cats/repositories/cat_repository.dart';
+import 'features/notifications/repositories/notification_schedule_repository.dart';
+import 'features/notifications/services/notification_scheduler_service.dart';
+import 'features/nutrition/providers/nutrition_provider.dart';
+import 'features/nutrition/repositories/feeding_repository.dart';
+import 'features/nutrition/repositories/water_repository.dart';
+import 'features/routine/providers/routine_provider.dart';
+import 'features/routine/repositories/routine_repository.dart';
 import 'routes/app_router.dart';
 
 Future<void> main() async {
@@ -106,29 +114,77 @@ class _AppRouterHost extends StatefulWidget {
 }
 
 class _AppRouterHostState extends State<_AppRouterHost> {
-  late final Future<CatProvider> _catProviderFuture;
+  late final Future<_Wiring> _wiringFuture;
 
   @override
   void initState() {
     super.initState();
-    _catProviderFuture = CatProvider.create(
+    _wiringFuture = _buildWiring();
+  }
+
+  Future<_Wiring> _buildWiring() async {
+    final FirestoreService firestore = FirestoreService();
+    final CatProvider catProvider = await CatProvider.create(
       repository: widget.catRepository,
       authProvider: widget.authProvider,
+    );
+
+    final RoutineRepository routineRepo = RoutineRepository(
+      firestoreService: firestore,
+    );
+    final RoutineProvider routineProvider = RoutineProvider(
+      repository: routineRepo,
+      catProvider: catProvider,
+    );
+
+    final FeedingRepository feedingRepo = FeedingRepository(
+      firestoreService: firestore,
+    );
+    final WaterRepository waterRepo = WaterRepository(
+      firestoreService: firestore,
+    );
+    final NutritionProvider nutritionProvider = NutritionProvider(
+      feedingRepository: feedingRepo,
+      waterRepository: waterRepo,
+      catProvider: catProvider,
+    );
+
+    final NotificationScheduleRepository scheduleRepo =
+        NotificationScheduleRepository(firestoreService: firestore);
+    final NotificationService notificationService = NotificationService();
+    await notificationService.initialize();
+    final NotificationSchedulerService scheduler = NotificationSchedulerService(
+      repository: scheduleRepo,
+      notificationService: notificationService,
+      routineProvider: routineProvider,
+      catProvider: catProvider,
+    );
+
+    return _Wiring(
+      catProvider: catProvider,
+      routineProvider: routineProvider,
+      nutritionProvider: nutritionProvider,
+      scheduler: scheduler,
     );
   }
 
   @override
   void dispose() {
     // Best-effort dispose - the future may not have completed yet.
-    _catProviderFuture.then((CatProvider p) => p.dispose());
+    _wiringFuture.then((_Wiring w) {
+      w.scheduler.dispose();
+      w.routineProvider.dispose();
+      w.nutritionProvider.dispose();
+      w.catProvider.dispose();
+    });
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<CatProvider>(
-      future: _catProviderFuture,
-      builder: (BuildContext context, AsyncSnapshot<CatProvider> snapshot) {
+    return FutureBuilder<_Wiring>(
+      future: _wiringFuture,
+      builder: (BuildContext context, AsyncSnapshot<_Wiring> snapshot) {
         if (snapshot.connectionState != ConnectionState.done ||
             !snapshot.hasData) {
           // SharedPreferences is local and resolves in <100ms even
@@ -145,10 +201,19 @@ class _AppRouterHostState extends State<_AppRouterHost> {
             ),
           );
         }
-        final CatProvider catProvider = snapshot.data!;
+        final _Wiring w = snapshot.data!;
         return MultiProvider(
           providers: <SingleChildWidget>[
-            ChangeNotifierProvider<CatProvider>.value(value: catProvider),
+            ChangeNotifierProvider<CatProvider>.value(value: w.catProvider),
+            ChangeNotifierProvider<RoutineProvider>.value(
+              value: w.routineProvider,
+            ),
+            ChangeNotifierProvider<NutritionProvider>.value(
+              value: w.nutritionProvider,
+            ),
+            ChangeNotifierProvider<NotificationSchedulerService>.value(
+              value: w.scheduler,
+            ),
           ],
           child: MaterialApp.router(
             title: AppConstants.appName,
@@ -158,11 +223,24 @@ class _AppRouterHostState extends State<_AppRouterHost> {
             themeMode: ThemeMode.system,
             routerConfig: AppRouter.build(
               authProvider: widget.authProvider,
-              catProvider: catProvider,
+              catProvider: w.catProvider,
             ),
           ),
         );
       },
     );
   }
+}
+
+class _Wiring {
+  const _Wiring({
+    required this.catProvider,
+    required this.routineProvider,
+    required this.nutritionProvider,
+    required this.scheduler,
+  });
+  final CatProvider catProvider;
+  final RoutineProvider routineProvider;
+  final NutritionProvider nutritionProvider;
+  final NotificationSchedulerService scheduler;
 }

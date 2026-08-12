@@ -11,6 +11,10 @@ import '../features/cats/providers/cat_provider.dart';
 import '../features/cats/screens/cat_profile_screen.dart';
 import '../features/cats/screens/cat_switcher_screen.dart';
 import '../features/cats/screens/onboarding/onboarding_screen.dart';
+import '../features/cats/screens/profile_screen.dart';
+import '../features/home/screens/home_screen.dart';
+import '../features/nutrition/screens/nutrition_screen.dart';
+import '../features/routine/screens/routine_screen.dart';
 import 'app_routes.dart';
 
 /// App router. Builds a `GoRouter` with the auth gate redirect and
@@ -121,14 +125,26 @@ class AppRouter {
         .map(
           (String path) => StatefulShellBranch(
             routes: <RouteBase>[
-              GoRoute(
-                path: path,
-                builder: (_, _) => _PlaceholderForRoute(path: path),
-              ),
+              GoRoute(path: path, builder: (_, _) => _branchScreenFor(path)),
             ],
           ),
         )
         .toList(growable: false);
+  }
+
+  static Widget _branchScreenFor(String path) {
+    switch (path) {
+      case AppRoutes.home:
+        return const HomeScreen();
+      case AppRoutes.routine:
+        return const RoutineScreen();
+      case AppRoutes.nutrition:
+        return const NutritionScreen();
+      case AppRoutes.profile:
+        return const ProfileScreen();
+      default:
+        return _PlaceholderForRoute(path: path);
+    }
   }
 }
 
