@@ -117,7 +117,7 @@ class _HomeBody extends StatelessWidget {
             ),
             if (upcoming.isNotEmpty) ...<Widget>[
               const SizedBox(height: 4),
-              _SectionTitle(title: 'Next up'),
+              const _SectionTitle(title: 'Next up'),
               for (final RoutineTask t in upcoming)
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
