@@ -12,6 +12,8 @@ class AppConstants {
   static const String waterSubcollection = 'water';
   static const String contentCollection = 'content';
   static const String vetClinicsCollection = 'vet_clinics';
+  static const String notificationSchedulesSubcollection =
+      'notification_schedules';
 
   // SharedPreferences keys (UI-only settings; never auth).
   static const String themeModeKey = 'pref.theme_mode';

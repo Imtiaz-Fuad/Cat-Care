@@ -461,3 +461,8 @@ class DailyTotals {
 /// NutritionProvider so callers can distinguish "don't touch the field"
 /// from "set the field to null".
 const Object _sentinel = Object();
+
+/// Public re-export of the sentinel so feature code (edit sheets, tests)
+/// can reference the same instance when patching fields via [Object?]
+/// parameters on this provider.
+Object get clearFieldSentinel => _sentinel;
