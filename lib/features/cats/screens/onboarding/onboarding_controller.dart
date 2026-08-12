@@ -9,8 +9,7 @@ import '../../models/cat_draft.dart';
 /// `OnboardingScreen`) so the same draft can be edited across the
 /// five step widgets.
 class OnboardingController extends ChangeNotifier {
-  OnboardingController({CatDraft? initial})
-      : _draft = initial ?? CatDraft();
+  OnboardingController({CatDraft? initial}) : _draft = initial ?? CatDraft();
 
   /// Total number of steps. Centralized so the step indicator and
   /// `PageController` agree.

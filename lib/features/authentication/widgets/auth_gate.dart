@@ -43,16 +43,13 @@ class AuthGate {
       // 2. Unauthenticated user trying to reach a protected route:
       //    bounce to /login (but keep /splash so we don't fight
       //    itself on cold-start).
-      if (!authed &&
-          loc != AppRoutes.login &&
-          loc != AppRoutes.splash) {
+      if (!authed && loc != AppRoutes.login && loc != AppRoutes.splash) {
         return AppRoutes.login;
       }
 
       // 3. Authenticated user hitting the login screen: send them
       //    home. Same for splash.
-      if (authed &&
-          (loc == AppRoutes.login || loc == AppRoutes.splash)) {
+      if (authed && (loc == AppRoutes.login || loc == AppRoutes.splash)) {
         return AppRoutes.home;
       }
 

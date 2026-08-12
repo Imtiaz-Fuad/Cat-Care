@@ -70,26 +70,26 @@ class _ProfileBody extends StatelessWidget {
           ),
           PopupMenuButton<String>(
             tooltip: 'More',
-            onSelected: (String action) =>
-                _handleMenu(context, action),
-            itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                value: 'edit',
-                child: ListTile(
-                  leading: Icon(Icons.edit_outlined),
-                  title: Text('Edit'),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              PopupMenuItem<String>(
-                value: 'delete',
-                child: ListTile(
-                  leading: Icon(Icons.delete_outline),
-                  title: Text('Delete'),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            ],
+            onSelected: (String action) => _handleMenu(context, action),
+            itemBuilder: (BuildContext context) =>
+                const <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'edit',
+                    child: ListTile(
+                      leading: Icon(Icons.edit_outlined),
+                      title: Text('Edit'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: ListTile(
+                      leading: Icon(Icons.delete_outline),
+                      title: Text('Delete'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
@@ -124,47 +124,61 @@ class _ProfileBody extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: <Widget>[
-                    if (profile.sex != null) _Chip(label: _sexLabel(profile.sex!)),
+                    if (profile.sex != null)
+                      _Chip(label: _sexLabel(profile.sex!)),
                     if (profile.breed != null) _Chip(label: profile.breed!),
                     if (profile.color != null) _Chip(label: profile.color!),
                     _Chip(
-                      label: profile.indoor
-                          ? 'Indoor'
-                          : 'Indoor + outdoor',
+                      label: profile.indoor ? 'Indoor' : 'Indoor + outdoor',
                     ),
-                    if (profile.neutered) const _Chip(label: 'Spayed / neutered'),
+                    if (profile.neutered)
+                      const _Chip(label: 'Spayed / neutered'),
                     if (profile.weightKg != null)
-                      _Chip(label: '${profile.weightKg!.toStringAsFixed(1)} kg'),
+                      _Chip(
+                        label: '${profile.weightKg!.toStringAsFixed(1)} kg',
+                      ),
                   ],
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-          _Section(title: 'Health notes', children: <Widget>[
-            if (profile.allergies.isNotEmpty)
-              _NoteRow(label: 'Allergies', value: profile.allergies.join(', ')),
-            if (profile.diseases.isNotEmpty)
-              _NoteRow(label: 'Conditions', value: profile.diseases.join(', ')),
-            if (profile.medications.isNotEmpty)
-              _NoteRow(label: 'Medications', value: profile.medications.join(', ')),
-            if (profile.notes != null && profile.notes!.isNotEmpty)
-              _NoteRow(label: 'Notes', value: profile.notes!),
-            if (profile.allergies.isEmpty &&
-                profile.diseases.isEmpty &&
-                profile.medications.isEmpty &&
-                (profile.notes == null || profile.notes!.isEmpty))
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'No health notes yet. Add allergies, conditions, '
-                  'and medications so reminders stay accurate.',
-                  style: text.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
+          _Section(
+            title: 'Health notes',
+            children: <Widget>[
+              if (profile.allergies.isNotEmpty)
+                _NoteRow(
+                  label: 'Allergies',
+                  value: profile.allergies.join(', '),
+                ),
+              if (profile.diseases.isNotEmpty)
+                _NoteRow(
+                  label: 'Conditions',
+                  value: profile.diseases.join(', '),
+                ),
+              if (profile.medications.isNotEmpty)
+                _NoteRow(
+                  label: 'Medications',
+                  value: profile.medications.join(', '),
+                ),
+              if (profile.notes != null && profile.notes!.isNotEmpty)
+                _NoteRow(label: 'Notes', value: profile.notes!),
+              if (profile.allergies.isEmpty &&
+                  profile.diseases.isEmpty &&
+                  profile.medications.isEmpty &&
+                  (profile.notes == null || profile.notes!.isEmpty))
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    'No health notes yet. Add allergies, conditions, '
+                    'and medications so reminders stay accurate.',
+                    style: text.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
-              ),
-          ]),
+            ],
+          ),
         ],
       ),
     );
@@ -200,10 +214,7 @@ class _ProfileBody extends StatelessWidget {
           ),
         );
         if (confirm == true) {
-          await cats.deleteCat(
-            catId: profile.id,
-            photoUrl: profile.photoUrl,
-          );
+          await cats.deleteCat(catId: profile.id, photoUrl: profile.photoUrl);
           if (context.mounted) {
             if (context.canPop()) {
               context.pop();
@@ -274,9 +285,7 @@ class _Section extends StatelessWidget {
         children: <Widget>[
           Text(
             title.toUpperCase(),
-            style: text.labelSmall?.copyWith(
-              letterSpacing: 1.2,
-            ),
+            style: text.labelSmall?.copyWith(letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),
           ...children,
@@ -292,10 +301,7 @@ class _Chip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Text(label),
-      visualDensity: VisualDensity.compact,
-    );
+    return Chip(label: Text(label), visualDensity: VisualDensity.compact);
   }
 }
 

@@ -34,10 +34,8 @@ void main() {
     test('mix is clamped to [0, 1]', () {
       const Color source = Color(0xFF123456);
       // mix > 1 should behave like mix = 1.
-      final Color high =
-          AccentColorExtractor.mixTowardNeutral(source, 5);
-      final Color clamped =
-          AccentColorExtractor.mixTowardNeutral(source, 1);
+      final Color high = AccentColorExtractor.mixTowardNeutral(source, 5);
+      final Color clamped = AccentColorExtractor.mixTowardNeutral(source, 1);
       expect(high.r, closeTo(clamped.r, 0.01));
       expect(high.g, closeTo(clamped.g, 0.01));
       expect(high.b, closeTo(clamped.b, 0.01));
@@ -102,10 +100,7 @@ void main() {
 
     test('parses 3-digit hex by doubling each channel', () {
       // #ABC -> #AABBCC
-      expect(
-        AccentColorExtractor.tryParseHex('#abc'),
-        const Color(0xFFAABBCC),
-      );
+      expect(AccentColorExtractor.tryParseHex('#abc'), const Color(0xFFAABBCC));
     });
 
     test('returns null for null input', () {

@@ -128,8 +128,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
   Widget build(BuildContext context) {
     return FutureBuilder<CatProvider>(
       future: _catProviderFuture,
-      builder: (BuildContext context,
-          AsyncSnapshot<CatProvider> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<CatProvider> snapshot) {
         if (snapshot.connectionState != ConnectionState.done ||
             !snapshot.hasData) {
           // SharedPreferences is local and resolves in <100ms even

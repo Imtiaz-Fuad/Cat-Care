@@ -34,8 +34,7 @@ void main() {
         photoPath: '/tmp/cat.jpg',
         color: 'brown',
       );
-      final CatDraft cleared =
-          original.copyWith(photoPath: null, color: null);
+      final CatDraft cleared = original.copyWith(photoPath: null, color: null);
       expect(cleared.photoPath, isNull);
       expect(cleared.color, isNull);
       expect(cleared.name, 'Mimi');
@@ -43,8 +42,9 @@ void main() {
 
     test('updating allergies list replaces the reference', () {
       final CatDraft original = CatDraft(allergies: <String>['pollen']);
-      final CatDraft updated =
-          original.copyWith(allergies: <String>['pollen', 'fish']);
+      final CatDraft updated = original.copyWith(
+        allergies: <String>['pollen', 'fish'],
+      );
       expect(updated.allergies, <String>['pollen', 'fish']);
     });
   });
@@ -98,13 +98,16 @@ void main() {
 
   group('CatPriority', () {
     test('all contains every constant identifier', () {
-      expect(CatPriority.all, containsAll(<String>[
-        CatPriority.routine,
-        CatPriority.nutrition,
-        CatPriority.grooming,
-        CatPriority.health,
-        CatPriority.vaccinations,
-      ]));
+      expect(
+        CatPriority.all,
+        containsAll(<String>[
+          CatPriority.routine,
+          CatPriority.nutrition,
+          CatPriority.grooming,
+          CatPriority.health,
+          CatPriority.vaccinations,
+        ]),
+      );
     });
 
     test('all has no duplicates', () {
