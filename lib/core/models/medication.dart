@@ -105,6 +105,39 @@ class Medication {
       updatedAt: _parseDate(json['updatedAt']),
     );
   }
+
+  /// True when [day] falls within the medication's [startDate, endDate] range
+  /// (end-date inclusive) and the medication is still flagged active.
+  bool isActiveOn(DateTime day) {
+    if (!active) return false;
+    final dayStart = DateTime(day.year, day.month, day.day);
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    if (dayStart.isBefore(start)) return false;
+    if (endDate != null) {
+      final end = DateTime(endDate!.year, endDate!.month, endDate!.day);
+      if (dayStart.isAfter(end)) return false;
+    }
+    return true;
+  }
+
+  /// Returns a copy with the check-off flipped for the local day of [day].
+  Medication toggleCheckOff(DateTime day) {
+    final key = _dayKey(day);
+    final next = Map<String, bool>.from(dailyCheckOff);
+    next[key] = !(next[key] ?? false);
+    return copyWith(dailyCheckOff: next, updatedAt: DateTime.now());
+  }
+
+  /// `YYYY-MM-DD` key for [day] in local time.
+  String dayKey(DateTime day) => _dayKey(day);
+
+  static String _dayKey(DateTime day) {
+    final d = DateTime(day.year, day.month, day.day);
+    final y = d.year.toString().padLeft(4, '0');
+    final m = d.month.toString().padLeft(2, '0');
+    final dd = d.day.toString().padLeft(2, '0');
+    return '$y-$m-$dd';
+  }
 }
 
 DateTime? _parseDate(Object? value) {
