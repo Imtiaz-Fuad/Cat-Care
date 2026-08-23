@@ -11,10 +11,9 @@ import '../repositories/vaccination_repository.dart';
 /// State for the Vaccinations surface of one cat.
 class VaccinationProvider extends ChangeNotifier {
   VaccinationProvider._({
-    required VaccinationRepository repository,
-    required AuthProvider authProvider,
-  })  : _repository = repository,
-        _auth = authProvider {
+    required this._repository,
+    required this._auth,
+  }) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }
@@ -29,8 +28,7 @@ class VaccinationProvider extends ChangeNotifier {
   String? _catId;
   AppFailure? _lastError;
 
-  List<Vaccination> get records =>
-      List<Vaccination>.unmodifiable(_records);
+  List<Vaccination> get records => List<Vaccination>.unmodifiable(_records);
   bool get isLoading => _loading;
   AppFailure? get lastError => _lastError;
 
@@ -115,10 +113,7 @@ class VaccinationProvider extends ChangeNotifier {
     required VaccinationRepository repository,
     required AuthProvider authProvider,
   }) =>
-      VaccinationProvider._(
-        repository: repository,
-        authProvider: authProvider,
-      );
+      VaccinationProvider._(repository: repository, auth: authProvider);
 
   void _handleAuthChange() {
     final uid = _auth.profile?.uid;
@@ -147,21 +142,26 @@ class VaccinationProvider extends ChangeNotifier {
     _loading = true;
     _lastError = null;
     notifyListeners();
-    _sub = _repository.watchForCat(uid, cid).listen(
-      (next) {
-        _records = next;
-        _loading = false;
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('VaccinationProvider: stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(error.toString(), code: 'vaccination-stream-error');
-        _loading = false;
-        notifyListeners();
-      },
-    );
+    _sub = _repository
+        .watchForCat(uid, cid)
+        .listen(
+          (next) {
+            _records = next;
+            _loading = false;
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e('VaccinationProvider: stream error', error, stack);
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(
+                    error.toString(),
+                    code: 'vaccination-stream-error',
+                  );
+            _loading = false;
+            notifyListeners();
+          },
+        );
   }
 
   @override

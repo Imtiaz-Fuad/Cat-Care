@@ -369,18 +369,18 @@ class _MedCheckRow extends StatelessWidget {
                   Text(
                     medication.name,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          decoration: checked
-                              ? TextDecoration.lineThrough
-                              : TextDecoration.none,
-                        ),
+                      fontWeight: FontWeight.w600,
+                      decoration: checked
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
                   ),
                   Text(
                     '${medication.dose} • ${medication.frequency}'
                     '${timeLabel != null ? ' • $timeLabel' : ''}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

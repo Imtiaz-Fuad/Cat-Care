@@ -165,8 +165,9 @@ class _TopLevelRoute {
 
   GoRoute get route => GoRoute(
     path: path,
-    builder: (BuildContext context, GoRouterState state) =>
-        builder != null ? builder!(context, state) : PlaceholderScreen(title: title, subtitle: subtitle),
+    builder: (BuildContext context, GoRouterState state) => builder != null
+        ? builder!(context, state)
+        : PlaceholderScreen(title: title, subtitle: subtitle),
   );
 }
 
@@ -193,12 +194,12 @@ final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     'Coming in Phase 5.',
     (BuildContext _, GoRouterState _) => const VaccinationListScreen(),
   ),
-  _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
-  _TopLevelRoute(AppRoutes.aiAssistant, 'AI Assistant', 'Coming in Phase 7.'),
-  _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
-  _TopLevelRoute(AppRoutes.addFeeding, 'Add Feeding', 'Coming in Phase 4.'),
-  _TopLevelRoute(
+  const _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
+  const _TopLevelRoute(AppRoutes.aiAssistant, 'AI Assistant', 'Coming in Phase 7.'),
+  const _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
+  const _TopLevelRoute(AppRoutes.addFeeding, 'Add Feeding', 'Coming in Phase 4.'),
+  const _TopLevelRoute(
     AppRoutes.nutritionReport,
     'Nutrition Report',
     'Coming in Phase 4.',
@@ -209,17 +210,17 @@ final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     'Coming in Phase 5.',
     (BuildContext _, GoRouterState _) => const WeightTrendScreen(),
   ),
-  _TopLevelRoute(
+  const _TopLevelRoute(
     AppRoutes.emergencyGuidance,
     'Emergency Guidance',
     'Coming in Phase 7.',
   ),
-  _TopLevelRoute(AppRoutes.weeklyReport, 'Weekly Report', 'Coming in Phase 7.'),
-  _TopLevelRoute(AppRoutes.grooming, 'Grooming', 'Coming in Phase 4.'),
-  _TopLevelRoute(AppRoutes.foodGuide, 'Food Guide', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.catSafety, 'Cat Safety', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.careGuides, 'Care Guides', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.kittenCare, 'Kitten Care', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.weeklyReport, 'Weekly Report', 'Coming in Phase 7.'),
+  const _TopLevelRoute(AppRoutes.grooming, 'Grooming', 'Coming in Phase 4.'),
+  const _TopLevelRoute(AppRoutes.foodGuide, 'Food Guide', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.catSafety, 'Cat Safety', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.careGuides, 'Care Guides', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.kittenCare, 'Kitten Care', 'Coming in Phase 8.'),
 ];
 
 class _PlaceholderForRoute extends StatelessWidget {

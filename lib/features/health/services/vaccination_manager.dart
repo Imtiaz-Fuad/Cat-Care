@@ -13,8 +13,8 @@ class VaccinationManager {
   VaccinationManager({
     required ContentRepository contentRepository,
     DateTime Function()? clock,
-  })  : _content = contentRepository,
-        _clock = clock ?? DateTime.now;
+  }) : _content = contentRepository,
+       _clock = clock ?? DateTime.now;
 
   final ContentRepository _content;
   final DateTime Function() _clock;
@@ -44,11 +44,7 @@ class VaccinationManager {
       );
       return nextDue(vaccination: vaccination, info: info);
     } catch (error, stack) {
-      AppLogger.w(
-        'VaccinationManager.nextDueResolved failed',
-        error,
-        stack,
-      );
+      AppLogger.w('VaccinationManager.nextDueResolved failed', error, stack);
       return null;
     }
   }
@@ -65,8 +61,7 @@ class VaccinationManager {
     int horizonDays = 30,
   }) {
     final DateTime now = _clock();
-    final DateTime horizon =
-        now.add(Duration(days: horizonDays));
+    final DateTime horizon = now.add(Duration(days: horizonDays));
 
     final List<Vaccination> overdue = <Vaccination>[];
     final List<Vaccination> upcoming = <Vaccination>[];

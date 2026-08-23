@@ -22,16 +22,12 @@ import 'notification_scheduler_service.dart' show NotificationSchedulerService;
 ///     `reminderTimes` shrank
 class MedicationReminderScheduler extends ChangeNotifier {
   MedicationReminderScheduler({
-    required NotificationScheduleRepository repository,
-    required NotificationService notificationService,
-    required MedicationProvider medicationProvider,
-    required String Function() catIdProvider,
+    required this._repository,
+    required this._notificationService,
+    required this._provider,
+    required this._catIdProvider,
     DateTime Function()? clock,
-  })  : _repository = repository,
-        _notificationService = notificationService,
-        _provider = medicationProvider,
-        _catIdProvider = catIdProvider,
-        _clock = clock ?? DateTime.now {
+  }) : _clock = clock ?? DateTime.now {
     _provider.addListener(_handleChanged);
     _listenerHandles.add(_handleChanged);
   }
@@ -61,13 +57,13 @@ class MedicationReminderScheduler extends ChangeNotifier {
 
   Future<void> _sync() async {
     if (_busy) return;
-    final String? catId = _catIdProvider();
-    if (catId == null) return;
+    final catId = _catIdProvider();
     _busy = true;
     try {
       await _notificationService.initialize();
-      final List<Medication> meds =
-          _provider.records.where((Medication m) => m.active).toList();
+      final List<Medication> meds = _provider.records
+          .where((Medication m) => m.active)
+          .toList();
       final List<_Planned> planned = <_Planned>[];
       for (final Medication med in meds) {
         planned.addAll(_planFromMedication(med, catId));
@@ -114,8 +110,7 @@ class MedicationReminderScheduler extends ChangeNotifier {
       yield _Planned(
         key: key,
         schedule: schedule,
-        notificationId:
-            NotificationSchedulerService.idForKey(key),
+        notificationId: NotificationSchedulerService.idForKey(key),
       );
     }
   }
@@ -147,8 +142,9 @@ class MedicationReminderScheduler extends ChangeNotifier {
         if (s.sourceType != 'medication') continue;
         if (keepKeys.contains(s.id)) continue;
         await _repository.delete(ownerId: catId, scheduleId: s.id);
-        await _notificationService
-            .cancel(NotificationSchedulerService.idForKey(s.id));
+        await _notificationService.cancel(
+          NotificationSchedulerService.idForKey(s.id),
+        );
       }
     } catch (error, stack) {
       AppLogger.w(

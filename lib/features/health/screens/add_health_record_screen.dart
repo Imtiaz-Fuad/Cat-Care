@@ -135,8 +135,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       prescription: _prescriptionCtrl.text.trim().isEmpty
           ? null
           : _prescriptionCtrl.text.trim(),
-      notes:
-          _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+      notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       medicines: _splitCsv(_medicinesCtrl.text),
       vaccines: _splitCsv(_vaccinesCtrl.text),
       tests: _splitCsv(_testsCtrl.text),
@@ -167,9 +166,9 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -303,9 +302,9 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
               const SizedBox(height: 8),
               Text(
                 'Only photos (no PDFs / documents).',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
               if (_pendingAttachments.isEmpty)
@@ -332,9 +331,8 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                     for (int i = 0; i < _pendingAttachments.length; i++)
                       _PendingAttachmentTile(
                         attachment: _pendingAttachments[i],
-                        onRemove: () => setState(
-                          () => _pendingAttachments.removeAt(i),
-                        ),
+                        onRemove: () =>
+                            setState(() => _pendingAttachments.removeAt(i)),
                       ),
                   ],
                 ),
@@ -394,10 +392,7 @@ class _PendingAttachmentTile extends StatelessWidget {
               tooltip: 'Remove',
               icon: const Icon(Icons.close, color: Colors.white, size: 16),
               onPressed: onRemove,
-              constraints: const BoxConstraints(
-                minWidth: 28,
-                minHeight: 28,
-              ),
+              constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
               padding: EdgeInsets.zero,
             ),
           ),

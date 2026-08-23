@@ -145,10 +145,7 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
               Row(
                 children: <Widget>[
                   Expanded(
-                    child: Text(
-                      'Reminder times',
-                      style: text.titleSmall,
-                    ),
+                    child: Text('Reminder times', style: text.titleSmall),
                   ),
                   IconButton(
                     tooltip: 'Add reminder',
@@ -216,7 +213,11 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _saving = true);
     final MedicationProvider provider = context.read<MedicationProvider>();
-    final startDate = DateTime(_startDate.year, _startDate.month, _startDate.day);
+    final startDate = DateTime(
+      _startDate.year,
+      _startDate.month,
+      _startDate.day,
+    );
     final endDate = _endDate == null
         ? null
         : DateTime(_endDate!.year, _endDate!.month, _endDate!.day);
@@ -245,9 +246,7 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
         endDate: endDate,
         reminderTimes: reminderTimes,
         active: _active,
-        notes: _notesCtrl.text.trim().isEmpty
-            ? null
-            : _notesCtrl.text.trim(),
+        notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       );
       final created = await provider.add(draft);
       if (!mounted) return;
@@ -266,9 +265,7 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
         endDate: endDate,
         reminderTimes: reminderTimes,
         active: _active,
-        notes: _notesCtrl.text.trim().isEmpty
-            ? null
-            : _notesCtrl.text.trim(),
+        notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
         updatedAt: now,
       );
       await provider.update(updated);
@@ -290,7 +287,11 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
 }
 
 class _DateTile extends StatelessWidget {
-  const _DateTile({this.date, this.placeholder = 'Tap to pick', required this.onPick});
+  const _DateTile({
+    this.date,
+    this.placeholder = 'Tap to pick',
+    required this.onPick,
+  });
 
   final DateTime? date;
   final String placeholder;
@@ -321,8 +322,8 @@ class _DateTile extends StatelessWidget {
           date == null ? placeholder : fmt.format(date!),
           style: date == null
               ? Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  )
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                )
               : null,
         ),
       ),

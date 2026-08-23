@@ -15,10 +15,9 @@ import '../repositories/medication_repository.dart';
 /// to render the daily-check-off card.
 class MedicationProvider extends ChangeNotifier {
   MedicationProvider._({
-    required MedicationRepository repository,
-    required AuthProvider authProvider,
-  })  : _repository = repository,
-        _auth = authProvider {
+    required this._repository,
+    required this._auth,
+  }) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }
@@ -128,10 +127,7 @@ class MedicationProvider extends ChangeNotifier {
     required MedicationRepository repository,
     required AuthProvider authProvider,
   }) =>
-      MedicationProvider._(
-        repository: repository,
-        authProvider: authProvider,
-      );
+      MedicationProvider._(repository: repository, auth: authProvider);
 
   void _handleAuthChange() {
     final uid = _auth.profile?.uid;
@@ -160,21 +156,26 @@ class MedicationProvider extends ChangeNotifier {
     _loading = true;
     _lastError = null;
     notifyListeners();
-    _sub = _repository.watchForCat(uid, cid).listen(
-      (next) {
-        _records = next;
-        _loading = false;
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('MedicationProvider: stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(error.toString(), code: 'medication-stream-error');
-        _loading = false;
-        notifyListeners();
-      },
-    );
+    _sub = _repository
+        .watchForCat(uid, cid)
+        .listen(
+          (next) {
+            _records = next;
+            _loading = false;
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e('MedicationProvider: stream error', error, stack);
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(
+                    error.toString(),
+                    code: 'medication-stream-error',
+                  );
+            _loading = false;
+            notifyListeners();
+          },
+        );
   }
 
   @override

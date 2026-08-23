@@ -128,9 +128,7 @@ class _WeightEntryScreenState extends State<WeightEntryScreen> {
       catId: '',
       weightKg: double.parse(_weightCtrl.text.trim()),
       recordedAt: _date,
-      notes: _notesCtrl.text.trim().isEmpty
-          ? null
-          : _notesCtrl.text.trim(),
+      notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
     );
     final created = await provider.add(draft);
     if (!mounted) return;

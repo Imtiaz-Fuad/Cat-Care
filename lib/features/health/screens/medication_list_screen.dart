@@ -62,7 +62,9 @@ class MedicationListScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                         children: <Widget>[
                           if (active.isNotEmpty) ...<Widget>[
-                            _SectionTitle(text: 'Active now (${active.length})'),
+                            _SectionTitle(
+                              text: 'Active now (${active.length})',
+                            ),
                             const SizedBox(height: 8),
                             for (final Medication m in active) ...<Widget>[
                               _MedicationTile(medication: m),
@@ -101,10 +103,7 @@ class MedicationListScreen extends StatelessWidget {
 
   AppFailureBanner? _bannerFor(MedicationProvider p) {
     if (p.lastError == null) return null;
-    return AppFailureBanner(
-      message: p.lastError!.message,
-      onRetry: p.retry,
-    );
+    return AppFailureBanner(message: p.lastError!.message, onRetry: p.retry);
   }
 }
 
@@ -183,11 +182,7 @@ class _MedicationTile extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: <Widget>[
-                    Icon(
-                      Icons.alarm,
-                      size: 14,
-                      color: scheme.onSurfaceVariant,
-                    ),
+                    Icon(Icons.alarm, size: 14, color: scheme.onSurfaceVariant),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
@@ -238,10 +233,7 @@ class AppFailureBanner extends StatelessWidget {
             ),
           ),
           if (onRetry != null)
-            TextButton(
-              onPressed: onRetry,
-              child: const Text('Retry'),
-            ),
+            TextButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );

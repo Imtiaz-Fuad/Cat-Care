@@ -11,10 +11,9 @@ import '../repositories/behavior_repository.dart';
 /// State for the Behavior Logs surface of one cat.
 class BehaviorProvider extends ChangeNotifier {
   BehaviorProvider._({
-    required BehaviorRepository repository,
-    required AuthProvider authProvider,
-  })  : _repository = repository,
-        _auth = authProvider {
+    required this._repository,
+    required this._auth,
+  }) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }
@@ -113,11 +112,7 @@ class BehaviorProvider extends ChangeNotifier {
   static BehaviorProvider create({
     required BehaviorRepository repository,
     required AuthProvider authProvider,
-  }) =>
-      BehaviorProvider._(
-        repository: repository,
-        authProvider: authProvider,
-      );
+  }) => BehaviorProvider._(repository: repository, auth: authProvider);
 
   void _handleAuthChange() {
     final uid = _auth.profile?.uid;
@@ -146,21 +141,26 @@ class BehaviorProvider extends ChangeNotifier {
     _loading = true;
     _lastError = null;
     notifyListeners();
-    _sub = _repository.watchForCat(uid, cid).listen(
-      (next) {
-        _records = next;
-        _loading = false;
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('BehaviorProvider: stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(error.toString(), code: 'behavior-stream-error');
-        _loading = false;
-        notifyListeners();
-      },
-    );
+    _sub = _repository
+        .watchForCat(uid, cid)
+        .listen(
+          (next) {
+            _records = next;
+            _loading = false;
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e('BehaviorProvider: stream error', error, stack);
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(
+                    error.toString(),
+                    code: 'behavior-stream-error',
+                  );
+            _loading = false;
+            notifyListeners();
+          },
+        );
   }
 
   @override

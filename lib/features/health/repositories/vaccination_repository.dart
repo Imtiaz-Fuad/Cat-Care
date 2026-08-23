@@ -13,8 +13,8 @@ class VaccinationRepository {
   VaccinationRepository({
     required FirestoreService firestoreService,
     Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _uuid = uuid ?? const Uuid();
+  }) : _firestore = firestoreService,
+       _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final Uuid _uuid;
@@ -36,13 +36,16 @@ class VaccinationRepository {
         .collection(AppConstants.vaccinationsSubcollection)
         .orderBy('administeredAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) {
-              return Vaccination.fromJson(<String, dynamic>{
-                ...d.data(),
-                'id': d.id,
-              });
-            }).toList(growable: false));
+        .map(
+          (snap) => snap.docs
+              .map((d) {
+                return Vaccination.fromJson(<String, dynamic>{
+                  ...d.data(),
+                  'id': d.id,
+                });
+              })
+              .toList(growable: false),
+        );
   }
 
   Future<String> add(String userId, String catId, Vaccination record) async {
@@ -56,11 +59,7 @@ class VaccinationRepository {
     return id;
   }
 
-  Future<void> update(
-    String userId,
-    String catId,
-    Vaccination record,
-  ) async {
+  Future<void> update(String userId, String catId, Vaccination record) async {
     if (record.id.isEmpty) {
       throw const ValidationFailure(
         'Cannot update a vaccination without an id.',

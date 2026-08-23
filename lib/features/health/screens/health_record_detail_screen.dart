@@ -66,23 +66,22 @@ class HealthRecordDetailScreen extends StatelessWidget {
                   value: record.vetName!,
                 ),
               ],
-              if (record.diagnosis != null &&
-                  record.diagnosis!.isNotEmpty) ...[
+              if (record.diagnosis != null && record.diagnosis!.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(label: 'Diagnosis'),
+                const _SectionLabel(label: 'Diagnosis'),
                 const SizedBox(height: 4),
                 Text(record.diagnosis!, style: text.bodyMedium),
               ],
               if (record.prescription != null &&
                   record.prescription!.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(label: 'Prescription'),
+                const _SectionLabel(label: 'Prescription'),
                 const SizedBox(height: 4),
                 Text(record.prescription!, style: text.bodyMedium),
               ],
               if (record.medicines.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(label: 'Medicines'),
+                const _SectionLabel(label: 'Medicines'),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 8,
@@ -95,7 +94,7 @@ class HealthRecordDetailScreen extends StatelessWidget {
               ],
               if (record.vaccines.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(label: 'Vaccines'),
+                const _SectionLabel(label: 'Vaccines'),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 8,
@@ -108,20 +107,19 @@ class HealthRecordDetailScreen extends StatelessWidget {
               ],
               if (record.tests.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(label: 'Tests'),
+                const _SectionLabel(label: 'Tests'),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: <Widget>[
-                    for (final String t in record.tests)
-                      Chip(label: Text(t)),
+                    for (final String t in record.tests) Chip(label: Text(t)),
                   ],
                 ),
               ],
               if (record.notes != null && record.notes!.isNotEmpty) ...[
                 const SizedBox(height: 16),
-                _SectionLabel(label: 'Notes'),
+                const _SectionLabel(label: 'Notes'),
                 const SizedBox(height: 4),
                 Text(record.notes!, style: text.bodyMedium),
               ],
@@ -173,10 +171,7 @@ class HealthRecordDetailScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _confirmDelete(
-    BuildContext context,
-    HealthProvider p,
-  ) async {
+  Future<void> _confirmDelete(BuildContext context, HealthProvider p) async {
     final bool? ok = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
@@ -221,9 +216,9 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+      style: Theme.of(
+        context,
+      ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
     );
   }
 }
@@ -252,9 +247,9 @@ class _MetaRow extends StatelessWidget {
             children: <Widget>[
               Text(
                 label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
               Text(value),
             ],

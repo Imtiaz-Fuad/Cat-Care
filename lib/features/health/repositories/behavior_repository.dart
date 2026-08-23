@@ -11,11 +11,9 @@ import '../../../core/services/firestore_service.dart';
 
 /// Firestore bridge for `users/{uid}/cats/{catId}/behavior/{docId}`.
 class BehaviorRepository {
-  BehaviorRepository({
-    required FirestoreService firestoreService,
-    Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _uuid = uuid ?? const Uuid();
+  BehaviorRepository({required FirestoreService firestoreService, Uuid? uuid})
+    : _firestore = firestoreService,
+      _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final Uuid _uuid;
@@ -37,13 +35,16 @@ class BehaviorRepository {
         .collection(AppConstants.behaviorsSubcollection)
         .orderBy('recordedAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
-              return BehaviorLog.fromJson(<String, dynamic>{
-                ...d.data(),
-                'id': d.id,
-              });
-            }).toList(growable: false));
+        .map(
+          (snap) => snap.docs
+              .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
+                return BehaviorLog.fromJson(<String, dynamic>{
+                  ...d.data(),
+                  'id': d.id,
+                });
+              })
+              .toList(growable: false),
+        );
   }
 
   Future<String> add(String userId, String catId, BehaviorLog record) async {
@@ -57,11 +58,7 @@ class BehaviorRepository {
     return id;
   }
 
-  Future<void> update(
-    String userId,
-    String catId,
-    BehaviorLog record,
-  ) async {
+  Future<void> update(String userId, String catId, BehaviorLog record) async {
     if (record.id.isEmpty) {
       throw const ValidationFailure(
         'Cannot update a behavior log without an id.',

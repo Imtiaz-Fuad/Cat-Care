@@ -58,10 +58,7 @@ class MedicationDetailScreen extends StatelessWidget {
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: <Widget>[
-              Text(
-                med.name,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              Text(med.name, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
               Text(med.dose, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 4),
@@ -73,7 +70,9 @@ class MedicationDetailScreen extends StatelessWidget {
               _MetaRow(
                 label: 'Status',
                 value: med.active
-                    ? (med.isActiveOn(DateTime.now()) ? 'Active today' : 'Scheduled')
+                    ? (med.isActiveOn(DateTime.now())
+                          ? 'Active today'
+                          : 'Scheduled')
                     : 'Inactive',
               ),
               if (med.reminderTimes.isNotEmpty) ...<Widget>[
@@ -111,10 +110,7 @@ class MedicationDetailScreen extends StatelessWidget {
               ),
               if (med.notes != null && med.notes!.isNotEmpty) ...<Widget>[
                 const SizedBox(height: 24),
-                Text(
-                  'Notes',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
+                Text('Notes', style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: 8),
                 Text(med.notes!),
               ],

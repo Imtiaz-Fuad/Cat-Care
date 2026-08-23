@@ -16,10 +16,9 @@ import '../repositories/health_repository.dart';
 /// pair so the UI's error banner always has a working action.
 class HealthProvider extends ChangeNotifier {
   HealthProvider._({
-    required HealthRepository repository,
-    required AuthProvider authProvider,
-  })  : _repository = repository,
-        _auth = authProvider {
+    required this._repository,
+    required this._auth,
+  }) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }
@@ -163,11 +162,7 @@ class HealthProvider extends ChangeNotifier {
   static HealthProvider create({
     required HealthRepository repository,
     required AuthProvider authProvider,
-  }) =>
-      HealthProvider._(
-        repository: repository,
-        authProvider: authProvider,
-      );
+  }) => HealthProvider._(repository: repository, auth: authProvider);
 
   void _handleAuthChange() {
     final String? uid = _auth.profile?.uid;
@@ -198,21 +193,23 @@ class HealthProvider extends ChangeNotifier {
     _loading = true;
     _lastError = null;
     notifyListeners();
-    _sub = _repository.watchForCat(uid, cid).listen(
-      (next) {
-        _records = next;
-        _loading = false;
-        notifyListeners();
-      },
-      onError: (Object error, StackTrace stack) {
-        AppLogger.e('HealthProvider: stream error', error, stack);
-        _lastError = error is AppFailure
-            ? error
-            : UnknownFailure(error.toString(), code: 'health-stream-error');
-        _loading = false;
-        notifyListeners();
-      },
-    );
+    _sub = _repository
+        .watchForCat(uid, cid)
+        .listen(
+          (next) {
+            _records = next;
+            _loading = false;
+            notifyListeners();
+          },
+          onError: (Object error, StackTrace stack) {
+            AppLogger.e('HealthProvider: stream error', error, stack);
+            _lastError = error is AppFailure
+                ? error
+                : UnknownFailure(error.toString(), code: 'health-stream-error');
+            _loading = false;
+            notifyListeners();
+          },
+        );
   }
 
   @override

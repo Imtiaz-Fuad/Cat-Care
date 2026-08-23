@@ -11,11 +11,9 @@ import '../../../core/services/firestore_service.dart';
 
 /// Firestore bridge for `users/{uid}/cats/{catId}/medications/{docId}`.
 class MedicationRepository {
-  MedicationRepository({
-    required FirestoreService firestoreService,
-    Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _uuid = uuid ?? const Uuid();
+  MedicationRepository({required FirestoreService firestoreService, Uuid? uuid})
+    : _firestore = firestoreService,
+      _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final Uuid _uuid;
@@ -37,13 +35,16 @@ class MedicationRepository {
         .collection(AppConstants.medicationsSubcollection)
         .orderBy('startDate', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
-              return Medication.fromJson(<String, dynamic>{
-                ...d.data(),
-                'id': d.id,
-              });
-            }).toList(growable: false));
+        .map(
+          (snap) => snap.docs
+              .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
+                return Medication.fromJson(<String, dynamic>{
+                  ...d.data(),
+                  'id': d.id,
+                });
+              })
+              .toList(growable: false),
+        );
   }
 
   Future<String> add(String userId, String catId, Medication record) async {
@@ -60,11 +61,7 @@ class MedicationRepository {
     return id;
   }
 
-  Future<void> update(
-    String userId,
-    String catId,
-    Medication record,
-  ) async {
+  Future<void> update(String userId, String catId, Medication record) async {
     if (record.id.isEmpty) {
       throw const ValidationFailure(
         'Cannot update a medication without an id.',

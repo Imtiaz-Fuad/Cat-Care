@@ -62,9 +62,8 @@ class VaccinationListScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                         itemCount: p.records.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 12),
-                        itemBuilder:
-                            (BuildContext context, int index) =>
-                                _VaccinationTile(record: p.records[index]),
+                        itemBuilder: (BuildContext context, int index) =>
+                            _VaccinationTile(record: p.records[index]),
                       ),
                     ),
                   ],
@@ -85,10 +84,7 @@ class VaccinationListScreen extends StatelessWidget {
 
   AppFailureBanner? _bannerFor(VaccinationProvider p) {
     if (p.lastError == null) return null;
-    return AppFailureBanner(
-      message: p.lastError!.message,
-      onRetry: p.retry,
-    );
+    return AppFailureBanner(message: p.lastError!.message, onRetry: p.retry);
   }
 }
 
@@ -184,10 +180,13 @@ class _VaccinationTile extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Next due ${fmt.format(record.nextDue!)}',
-                  style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                  style: text.bodySmall?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ],
-              if (record.vetName != null && record.vetName!.isNotEmpty) ...<Widget>[
+              if (record.vetName != null &&
+                  record.vetName!.isNotEmpty) ...<Widget>[
                 const SizedBox(height: 8),
                 Row(
                   children: <Widget>[
@@ -241,14 +240,9 @@ class AppFailureBanner extends StatelessWidget {
             ),
           ),
           if (onRetry != null)
-            TextButton(
-              onPressed: onRetry,
-              child: const Text('Retry'),
-            ),
+            TextButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
   }
 }
-
-

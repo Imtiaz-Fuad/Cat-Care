@@ -252,20 +252,20 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     // notifications whenever the source list changes.
     final MedicationReminderScheduler medicationReminders =
         MedicationReminderScheduler(
-      repository: scheduleRepo,
-      notificationService: notificationService,
-      medicationProvider: medicationProvider,
-      catIdProvider: () => catProvider.activeCatId ?? '',
-    );
+          repository: scheduleRepo,
+          notificationService: notificationService,
+          provider: medicationProvider,
+          catIdProvider: () => catProvider.activeCatId ?? '',
+        );
     final VaccinationReminderScheduler vaccinationReminders =
         VaccinationReminderScheduler(
-      repository: scheduleRepo,
-      notificationService: notificationService,
-      vaccinationProvider: vaccinationProvider,
-      vaccinationManager: vaccinationManager,
-      contentRepository: contentRepository,
-      catIdProvider: () => catProvider.activeCatId ?? '',
-    );
+          repository: scheduleRepo,
+          notificationService: notificationService,
+          provider: vaccinationProvider,
+          manager: vaccinationManager,
+          content: contentRepository,
+          catIdProvider: () => catProvider.activeCatId ?? '',
+        );
 
     return _Wiring(
       catProvider: catProvider,

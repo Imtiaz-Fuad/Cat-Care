@@ -10,8 +10,8 @@ class DewormingManager {
   DewormingManager({
     required ContentRepository contentRepository,
     DateTime Function()? clock,
-  })  : _content = contentRepository,
-        _clock = clock ?? DateTime.now;
+  }) : _content = contentRepository,
+       _clock = clock ?? DateTime.now;
 
   final ContentRepository _content;
   final DateTime Function() _clock;
@@ -25,8 +25,7 @@ class DewormingManager {
   }) {
     if (lastDosedAt == null) return true;
     final DateTime now = _clock();
-    final DateTime dueAt =
-        lastDosedAt.add(Duration(days: info.intervalDays));
+    final DateTime dueAt = lastDosedAt.add(Duration(days: info.intervalDays));
     return !dueAt.isAfter(now.add(Duration(days: warningWindowDays)));
   }
 

@@ -60,10 +60,7 @@ class _BehaviorEntryScreenState extends State<BehaviorEntryScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
           children: <Widget>[
-            Text(
-              'How is your cat doing?',
-              style: text.titleMedium,
-            ),
+            Text('How is your cat doing?', style: text.titleMedium),
             const SizedBox(height: 16),
             _RatingRow(
               title: 'Appetite',
@@ -152,9 +149,7 @@ class _BehaviorEntryScreenState extends State<BehaviorEntryScreen> {
       litterNormal: _litterNormal,
       aggressionPresent: _aggression,
       hidingPresent: _hiding,
-      notes: _notesCtrl.text.trim().isEmpty
-          ? null
-          : _notesCtrl.text.trim(),
+      notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
     );
     final created = await provider.add(draft);
     if (!mounted) return;

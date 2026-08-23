@@ -161,8 +161,9 @@ class _WeightChart extends StatelessWidget {
         ),
       );
     }
-    final List<double> weights =
-        entries.map((WeightEntry e) => e.weightKg).toList(growable: false);
+    final List<double> weights = entries
+        .map((WeightEntry e) => e.weightKg)
+        .toList(growable: false);
     final double minW = weights.reduce((a, b) => a < b ? a : b);
     final double maxW = weights.reduce((a, b) => a > b ? a : b);
     final double pad = ((maxW - minW) * 0.1).clamp(0.1, 0.5);
@@ -172,8 +173,9 @@ class _WeightChart extends StatelessWidget {
         minY: minW - pad,
         maxY: maxW + pad,
         color: Theme.of(context).colorScheme.primary,
-        gridColor:
-            Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
+        gridColor: Theme.of(
+          context,
+        ).colorScheme.outlineVariant.withValues(alpha: 0.5),
         labelColor: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       child: const SizedBox.expand(),
@@ -201,19 +203,18 @@ class _ChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (entries.isEmpty) return;
+    const double leftPad = 36;
+    const double bottomPad = 18;
     final double w = size.width;
     final double h = size.height;
-    final double leftPad = 36;
-    final double bottomPad = 18;
     final double plotW = w - leftPad - 4;
     final double plotH = h - bottomPad - 8;
     final double span = (maxY - minY).abs() < 0.0001 ? 1.0 : (maxY - minY);
     final DateTime first = entries.first.recordedAt;
     final DateTime last = entries.last.recordedAt;
-    final double totalMs =
-        (last.difference(first).inMilliseconds.abs()).toDouble();
-    final double msScale =
-        totalMs < 1 ? 1.0 : totalMs;
+    final double totalMs = (last.difference(first).inMilliseconds.abs())
+        .toDouble();
+    final double msScale = totalMs < 1 ? 1.0 : totalMs;
 
     Offset toScreen(WeightEntry e) {
       final double y = plotH - ((e.weightKg - minY) / span) * plotH + 8;
@@ -231,15 +232,15 @@ class _ChartPainter extends CustomPainter {
       canvas.drawLine(Offset(leftPad, y), Offset(w - 4, y), grid);
     }
     final TextPainter? minLabel = _label(
-      '${minY.toStringAsFixed(1)}',
+      minY.toStringAsFixed(1),
       labelColor,
     );
     minLabel?.paint(canvas, Offset(0, plotH - 4));
     final TextPainter? maxLabel = _label(
-      '${maxY.toStringAsFixed(1)}',
+      maxY.toStringAsFixed(1),
       labelColor,
     );
-    maxLabel?.paint(canvas, Offset(0, 4));
+    maxLabel?.paint(canvas, const Offset(0, 4));
 
     final Paint linePaint = Paint()
       ..color = color

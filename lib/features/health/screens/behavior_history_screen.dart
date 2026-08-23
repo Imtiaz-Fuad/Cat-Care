@@ -54,9 +54,8 @@ class BehaviorHistoryScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                   itemCount: p.records.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder:
-                      (BuildContext context, int index) =>
-                          _LogTile(log: p.records[index]),
+                  itemBuilder: (BuildContext context, int index) =>
+                      _LogTile(log: p.records[index]),
                 ),
         );
       },
@@ -75,21 +74,35 @@ class _LogTile extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final DateFormat fmt = DateFormat('EEE, MMM d • HH:mm');
     final List<Widget> chips = <Widget>[];
-    if (log.appetite != null) chips.add(_Chip(label: 'Appetite ${log.appetite}/5'));
-    if (log.activity != null) chips.add(_Chip(label: 'Activity ${log.activity}/5'));
-    if (log.mood != null) chips.add(_Chip(label: 'Mood ${log.mood}/5'));
+    if (log.appetite != null) {
+      chips.add(_Chip(label: 'Appetite ${log.appetite}/5'));
+    }
+    if (log.activity != null) {
+      chips.add(_Chip(label: 'Activity ${log.activity}/5'));
+    }
+    if (log.mood != null) {
+      chips.add(_Chip(label: 'Mood ${log.mood}/5'));
+    }
     if (log.sleepHours != null) {
       chips.add(_Chip(label: 'Sleep ${log.sleepHours!.toStringAsFixed(1)}h'));
     }
-    if (log.vomitingPresent == true) chips.add(_Chip(label: 'Vomiting', danger: true));
-    if (log.diarrheaPresent == true) chips.add(_Chip(label: 'Diarrhea', danger: true));
-    if (log.aggressionPresent == true) chips.add(_Chip(label: 'Aggression', danger: true));
-    if (log.hidingPresent == true) chips.add(_Chip(label: 'Hiding', danger: true));
+    if (log.vomitingPresent == true) {
+      chips.add(const _Chip(label: 'Vomiting', danger: true));
+    }
+    if (log.diarrheaPresent == true) {
+      chips.add(const _Chip(label: 'Diarrhea', danger: true));
+    }
+    if (log.aggressionPresent == true) {
+      chips.add(const _Chip(label: 'Aggression', danger: true));
+    }
+    if (log.hidingPresent == true) {
+      chips.add(const _Chip(label: 'Hiding', danger: true));
+    }
     if (log.urinationNormal == false) {
-      chips.add(_Chip(label: 'Urination off', danger: true));
+      chips.add(const _Chip(label: 'Urination off', danger: true));
     }
     if (log.litterNormal == false) {
-      chips.add(_Chip(label: 'Litter off', danger: true));
+      chips.add(const _Chip(label: 'Litter off', danger: true));
     }
     return Card(
       child: Padding(
@@ -99,9 +112,7 @@ class _LogTile extends StatelessWidget {
           children: <Widget>[
             Text(
               fmt.format(log.recordedAt),
-              style: text.titleSmall?.copyWith(
-                color: scheme.onSurfaceVariant,
-              ),
+              style: text.titleSmall?.copyWith(color: scheme.onSurfaceVariant),
             ),
             if (chips.isNotEmpty) ...<Widget>[
               const SizedBox(height: 8),
@@ -127,9 +138,7 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
-    final Color bg = danger
-        ? scheme.errorContainer
-        : scheme.secondaryContainer;
+    final Color bg = danger ? scheme.errorContainer : scheme.secondaryContainer;
     final Color fg = danger
         ? scheme.onErrorContainer
         : scheme.onSecondaryContainer;

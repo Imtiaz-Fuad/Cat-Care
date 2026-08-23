@@ -10,11 +10,9 @@ import '../../../core/services/firestore_service.dart';
 
 /// Firestore bridge for `users/{uid}/cats/{catId}/weights/{docId}`.
 class WeightRepository {
-  WeightRepository({
-    required FirestoreService firestoreService,
-    Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _uuid = uuid ?? const Uuid();
+  WeightRepository({required FirestoreService firestoreService, Uuid? uuid})
+    : _firestore = firestoreService,
+      _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final Uuid _uuid;
@@ -36,13 +34,16 @@ class WeightRepository {
         .collection(AppConstants.weightsSubcollection)
         .orderBy('recordedAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
-              return WeightEntry.fromJson(<String, dynamic>{
-                ...d.data(),
-                'id': d.id,
-              });
-            }).toList(growable: false));
+        .map(
+          (snap) => snap.docs
+              .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
+                return WeightEntry.fromJson(<String, dynamic>{
+                  ...d.data(),
+                  'id': d.id,
+                });
+              })
+              .toList(growable: false),
+        );
   }
 
   Future<String> add(String userId, String catId, WeightEntry entry) async {

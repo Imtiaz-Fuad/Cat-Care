@@ -58,7 +58,8 @@ class _AddVaccinationScreenState extends State<AddVaccinationScreen> {
               const SizedBox(height: 8),
               _VaccineCodeField(
                 initial: _vaccineCode,
-                onSelected: (String code) => setState(() => _vaccineCode = code),
+                onSelected: (String code) =>
+                    setState(() => _vaccineCode = code),
               ),
               const SizedBox(height: 20),
               Text('Administered on', style: text.titleSmall),
@@ -115,9 +116,9 @@ class _AddVaccinationScreenState extends State<AddVaccinationScreen> {
 
   Future<void> _save() async {
     if (_vaccineCode == null || _vaccineCode!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pick a vaccine first.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Pick a vaccine first.')));
       return;
     }
     setState(() => _saving = true);
@@ -141,8 +142,9 @@ class _AddVaccinationScreenState extends State<AddVaccinationScreen> {
       administeredAt: _administeredAt,
       nextDue: nextDue,
       vetName: _vetCtrl.text.trim().isEmpty ? null : _vetCtrl.text.trim(),
-      batchNumber:
-          _batchCtrl.text.trim().isEmpty ? null : _batchCtrl.text.trim(),
+      batchNumber: _batchCtrl.text.trim().isEmpty
+          ? null
+          : _batchCtrl.text.trim(),
       notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
       reminderEnabled: _reminderEnabled,
     );
@@ -203,10 +205,7 @@ class _VaccineCodeField extends StatelessWidget {
     final list = await content.listVaccineInfo();
     return list
         .map(
-          (v) => DropdownMenuItem<String>(
-            value: v.code,
-            child: Text(v.name),
-          ),
+          (v) => DropdownMenuItem<String>(value: v.code, child: Text(v.name)),
         )
         .toList(growable: false);
   }

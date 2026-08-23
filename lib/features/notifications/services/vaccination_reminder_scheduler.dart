@@ -23,22 +23,15 @@ import 'notification_scheduler_service.dart' show NotificationSchedulerService;
 /// notification are deleted.
 class VaccinationReminderScheduler extends ChangeNotifier {
   VaccinationReminderScheduler({
-    required NotificationScheduleRepository repository,
-    required NotificationService notificationService,
-    required VaccinationProvider vaccinationProvider,
-    required VaccinationManager vaccinationManager,
-    required ContentRepository contentRepository,
-    required String Function() catIdProvider,
-    int warningWindowDays = 7,
+    required this._repository,
+    required this._notificationService,
+    required this._provider,
+    required this._manager,
+    required this._content,
+    required this._catIdProvider,
+    this._warningWindowDays = 7,
     DateTime Function()? clock,
-  })  : _repository = repository,
-        _notificationService = notificationService,
-        _provider = vaccinationProvider,
-        _manager = vaccinationManager,
-        _content = contentRepository,
-        _catIdProvider = catIdProvider,
-        _warningWindowDays = warningWindowDays,
-        _clock = clock ?? DateTime.now {
+  })  : _clock = clock ?? DateTime.now {
     _provider.addListener(_handleChanged);
     _listenerHandles.add(_handleChanged);
   }
@@ -67,8 +60,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
 
   Future<void> _sync() async {
     if (_busy) return;
-    final String? catId = _catIdProvider();
-    if (catId == null) return;
+    final catId = _catIdProvider();
     _busy = true;
     try {
       await _notificationService.initialize();

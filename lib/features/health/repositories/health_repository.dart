@@ -20,9 +20,9 @@ class HealthRepository {
     required FirestoreService firestoreService,
     required StorageService storageService,
     Uuid? uuid,
-  })  : _firestore = firestoreService,
-        _storage = storageService,
-        _uuid = uuid ?? const Uuid();
+  }) : _firestore = firestoreService,
+       _storage = storageService,
+       _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final StorageService _storage;
@@ -48,26 +48,26 @@ class HealthRepository {
         .collection(AppConstants.healthSubcollection)
         .orderBy('recordedAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) {
-              final Map<String, dynamic> data = <String, dynamic>{
-                ...d.data(),
-                'id': d.id,
-              };
-              return HealthRecord.fromJson(data);
-            }).toList(growable: false));
+        .map(
+          (snap) => snap.docs
+              .map((d) {
+                final Map<String, dynamic> data = <String, dynamic>{
+                  ...d.data(),
+                  'id': d.id,
+                };
+                return HealthRecord.fromJson(data);
+              })
+              .toList(growable: false),
+        );
   }
 
   /// Stream a single record so detail screens stay live across devices.
   Stream<HealthRecord?> watchOne(String userId, String catId, String recordId) {
-    return _firestore
-        .watchDocument(recordPath(userId, catId, recordId))
-        .map((Map<String, dynamic>? data) {
+    return _firestore.watchDocument(recordPath(userId, catId, recordId)).map((
+      Map<String, dynamic>? data,
+    ) {
       if (data == null) return null;
-      return HealthRecord.fromJson(<String, dynamic>{
-        ...data,
-        'id': recordId,
-      });
+      return HealthRecord.fromJson(<String, dynamic>{...data, 'id': recordId});
     });
   }
 
@@ -86,11 +86,7 @@ class HealthRepository {
     return id;
   }
 
-  Future<void> update(
-    String userId,
-    String catId,
-    HealthRecord record,
-  ) async {
+  Future<void> update(String userId, String catId, HealthRecord record) async {
     if (record.id.isEmpty) {
       throw const ValidationFailure(
         'Cannot update a record without an id.',
@@ -132,7 +128,8 @@ class HealthRepository {
       contentType: contentType,
     );
     AppLogger.i(
-        'HealthRepository.uploadAttachment $userId/$catId/$recordId/$fileName');
+      'HealthRepository.uploadAttachment $userId/$catId/$recordId/$fileName',
+    );
     return url;
   }
 }

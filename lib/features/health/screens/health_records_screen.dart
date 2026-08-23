@@ -63,9 +63,8 @@ class HealthRecordsScreen extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                         itemCount: p.records.length,
                         separatorBuilder: (_, _) => const SizedBox(height: 12),
-                        itemBuilder:
-                            (BuildContext context, int index) =>
-                                _RecordTile(record: p.records[index]),
+                        itemBuilder: (BuildContext context, int index) =>
+                            _RecordTile(record: p.records[index]),
                       ),
                     ),
                   ],
@@ -86,10 +85,7 @@ class HealthRecordsScreen extends StatelessWidget {
 
   AppFailureBanner? _bannerFor(HealthProvider p) {
     if (p.lastError == null) return null;
-    return AppFailureBanner(
-      message: p.lastError!.message,
-      onRetry: p.retry,
-    );
+    return AppFailureBanner(message: p.lastError!.message, onRetry: p.retry);
   }
 }
 
@@ -175,26 +171,24 @@ class _RecordTile extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: record.fileAttachments.length,
                     separatorBuilder: (_, _) => const SizedBox(width: 8),
-                    itemBuilder:
-                        (BuildContext context, int index) => ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            imageUrl: record.fileAttachments[index],
-                            width: 64,
-                            height: 64,
-                            fit: BoxFit.cover,
-                            placeholder: (_, _) => Container(
-                              color: scheme.surfaceContainerHighest,
-                            ),
-                            errorWidget: (_, _, _) => Container(
-                              color: scheme.surfaceContainerHighest,
-                              child: Icon(
-                                Icons.broken_image_outlined,
-                                color: scheme.outline,
-                              ),
-                            ),
+                    itemBuilder: (BuildContext context, int index) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: record.fileAttachments[index],
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        placeholder: (_, _) =>
+                            Container(color: scheme.surfaceContainerHighest),
+                        errorWidget: (_, _, _) => Container(
+                          color: scheme.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            color: scheme.outline,
                           ),
                         ),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -223,11 +217,7 @@ class _AttachmentChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(
-            Icons.attach_file,
-            size: 14,
-            color: scheme.onSecondaryContainer,
-          ),
+          Icon(Icons.attach_file, size: 14, color: scheme.onSecondaryContainer),
           const SizedBox(width: 2),
           Text(
             '$count',
@@ -268,10 +258,7 @@ class AppFailureBanner extends StatelessWidget {
             ),
           ),
           if (onRetry != null)
-            TextButton(
-              onPressed: onRetry,
-              child: const Text('Retry'),
-            ),
+            TextButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );

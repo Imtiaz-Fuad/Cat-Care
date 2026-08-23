@@ -51,7 +51,10 @@ class VaccinationDetailScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 12),
-              _MetaRow(label: 'Administered', value: fmt.format(record.administeredAt)),
+              _MetaRow(
+                label: 'Administered',
+                value: fmt.format(record.administeredAt),
+              ),
               if (record.nextDue != null)
                 _MetaRow(label: 'Next due', value: fmt.format(record.nextDue!)),
               if (record.vetName != null && record.vetName!.isNotEmpty)
@@ -77,10 +80,7 @@ class VaccinationDetailScreen extends StatelessWidget {
               ),
               if (record.notes != null && record.notes!.isNotEmpty) ...<Widget>[
                 const SizedBox(height: 24),
-                Text(
-                  'Notes',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
+                Text('Notes', style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: 8),
                 Text(record.notes!),
               ],
