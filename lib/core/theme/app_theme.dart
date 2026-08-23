@@ -23,16 +23,17 @@ class AppTheme {
   static const Color info = Color(0xFF4A90E2);
 
   static ThemeData light() {
-    final ColorScheme scheme = ColorScheme.fromSeed(
-      seedColor: _seedSage,
-      brightness: Brightness.light,
-      secondary: _seedPeach,
-      surface: _warmWhite,
-    ).copyWith(
-      surface: _warmWhite,
-      onSurface: _deepCharcoal,
-      onSurfaceVariant: _warmGray,
-    );
+    final ColorScheme scheme =
+        ColorScheme.fromSeed(
+          seedColor: _seedSage,
+          brightness: Brightness.light,
+          secondary: _seedPeach,
+          surface: _warmWhite,
+        ).copyWith(
+          surface: _warmWhite,
+          onSurface: _deepCharcoal,
+          onSurfaceVariant: _warmGray,
+        );
 
     return _build(scheme, _ivory);
   }
@@ -42,15 +43,17 @@ class AppTheme {
       seedColor: _seedSage,
       brightness: Brightness.dark,
       secondary: _seedPeach,
+      surface: const Color(0xFF2A1F18),
+      onSurface: const Color(0xFFF1E6DA),
     );
-    return _build(scheme, const Color(0xFF1A1B1F));
+    return _build(scheme, const Color(0xFF221A14));
   }
 
   static ThemeData _build(ColorScheme scheme, Color background) {
     final TextTheme text = ThemeData.light().textTheme.apply(
-          bodyColor: scheme.onSurface,
-          displayColor: scheme.onSurface,
-        );
+      bodyColor: scheme.onSurface,
+      displayColor: scheme.onSurface,
+    );
 
     return ThemeData(
       colorScheme: scheme,
@@ -61,15 +64,9 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           letterSpacing: -0.2,
         ),
-        titleLarge: text.titleLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
-        bodyLarge: text.bodyLarge?.copyWith(
-          height: 1.4,
-        ),
-        bodyMedium: text.bodyMedium?.copyWith(
-          color: scheme.onSurfaceVariant,
-        ),
+        titleLarge: text.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+        bodyLarge: text.bodyLarge?.copyWith(height: 1.4),
+        bodyMedium: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -112,7 +109,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: scheme.primary, width: 1.6),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         height: 68,

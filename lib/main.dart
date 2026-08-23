@@ -195,7 +195,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            themeMode: ThemeMode.system,
+            themeMode: ThemeMode.light,
             home: const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             ),
@@ -220,7 +220,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light(),
             darkTheme: AppTheme.dark(),
-            themeMode: ThemeMode.system,
+            themeMode: ThemeMode.light,
             routerConfig: AppRouter.build(
               authProvider: widget.authProvider,
               catProvider: w.catProvider,

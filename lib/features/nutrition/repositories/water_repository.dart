@@ -72,7 +72,7 @@ class WaterRepository {
     var query = _firestore.instance
         .collection(entriesCollectionPath(ownerId, catId))
         .orderBy('time', descending: true);
-        if (since != null) {
+    if (since != null) {
       query = query.where(
         'time',
         isGreaterThanOrEqualTo: since.toIso8601String(),
