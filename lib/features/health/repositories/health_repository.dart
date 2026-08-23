@@ -1,11 +1,14 @@
+import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:cat_care/core/constants/app_constants.dart';
-import 'package:cat_care/core/errors/app_failure.dart';
-import 'package:cat_care/core/models/health_record.dart';
-import 'package:cat_care/core/services/firestore_service.dart';
-import 'package:cat_care/core/services/logger.dart';
-import 'package:cat_care/core/services/storage_service.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../core/errors/app_failure.dart';
+import '../../../core/models/health_record.dart';
+import '../../../core/services/app_logger.dart';
+import '../../../core/services/firestore_service.dart';
+import '../../../core/services/storage_service.dart';
 
 /// Firestore + Storage bridge for `users/{uid}/cats/{catId}/health/{recordId}`.
 ///
@@ -14,73 +17,73 @@ import 'package:cat_care/core/services/storage_service.dart';
 /// `FirebaseFirestore` or `FirebaseStorage` directly.
 class HealthRepository {
   HealthRepository({
-    FirestoreService? firestore,
-    StorageService? storage,
-    AppLogger? logger,
-  })  : _firestore = firestore ?? FirestoreService(),
-        _storage = storage ?? StorageService(),
-        _log = logger ?? AppLogger();
+    required FirestoreService firestoreService,
+    required StorageService storageService,
+    Uuid? uuid,
+  })  : _firestore = firestoreService,
+        _storage = storageService,
+        _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
   final StorageService _storage;
-  final AppLogger _log;
+  final Uuid _uuid;
 
-  /// Streams every health record for the cat, newest first.
+  /// Generate a new document id. Exposed so tests can pin it.
+  String newRecordId() => _uuid.v4();
+
+  /// Static path helper for testability.
+  static String recordPath(String userId, String catId, String recordId) =>
+      '${AppConstants.healthCollectionPath(userId, catId)}/$recordId';
+
+  /// Stream every health record for the cat, newest first.
   Stream<List<HealthRecord>> watchForCat(String userId, String catId) {
     if (userId.isEmpty || catId.isEmpty) {
-      return Stream.value(const <HealthRecord>[]);
+      return Stream<List<HealthRecord>>.value(const <HealthRecord>[]);
     }
-    final path =
-        AppConstants.healthCollectionPath(userId, catId);
-    return _firestore
-        .streamCollection(
-      path,
-      orderBy: 'visitDate',
-      descending: true,
-    )
-        .map((docs) => docs
-            .map((doc) {
-              final data = Map<String, dynamic>.from(doc.data as Map);
-              data['id'] = doc.id;
+    return _firestore.instance
+        .collection(AppConstants.usersCollection)
+        .doc(userId)
+        .collection(AppConstants.catsSubcollection)
+        .doc(catId)
+        .collection(AppConstants.healthSubcollection)
+        .orderBy('visitDate', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((d) {
+              final Map<String, dynamic> data = <String, dynamic>{
+                ...d.data(),
+                'id': d.id,
+              };
               return HealthRecord.fromJson(data);
-            })
-            .toList())
-        .handleError((Object error, StackTrace stack) {
-      _log.e('HealthRepository.watchForCat failed', error: error, stack: stack);
-      throw AppFailure.fromException(error);
-    });
+            }).toList(growable: false));
   }
 
-  /// Streams a single record so detail screens stay live across devices.
+  /// Stream a single record so detail screens stay live across devices.
   Stream<HealthRecord?> watchOne(String userId, String catId, String recordId) {
-    final path =
-        '${AppConstants.healthCollectionPath(userId, catId)}/$recordId';
-    return _firestore.streamDocument(path).map((doc) {
-      if (doc == null || doc.data == null) return null;
-      final data = Map<String, dynamic>.from(doc.data as Map);
-      data['id'] = doc.id;
-      return HealthRecord.fromJson(data);
-    }).handleError((Object error, StackTrace stack) {
-      _log.e('HealthRepository.watchOne failed', error: error, stack: stack);
-      throw AppFailure.fromException(error);
+    return _firestore
+        .watchDocument(recordPath(userId, catId, recordId))
+        .map((Map<String, dynamic>? data) {
+      if (data == null) return null;
+      return HealthRecord.fromJson(<String, dynamic>{
+        ...data,
+        'id': recordId,
+      });
     });
   }
 
   Future<String> add(String userId, String catId, HealthRecord record) async {
-    try {
-      final docId = record.id.isEmpty ? null : record.id;
-      final json = record.toJson()..remove('id');
-      final newId = await _firestore.addDocument(
-        AppConstants.healthCollectionPath(userId, catId),
-        json,
-        documentId: docId,
-      );
-      _log.i('HealthRepository.add -> $newId');
-      return newId;
-    } catch (e, st) {
-      _log.e('HealthRepository.add failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    final String id = record.id.isEmpty ? newRecordId() : record.id;
+    final HealthRecord withId = record.copyWith(
+      id: id,
+      createdAt: record.createdAt ?? DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    await _firestore.writeDocument(
+      recordPath(userId, catId, id),
+      withId.toJson(),
+    );
+    AppLogger.i('HealthRepository.add $userId/$catId/$id');
+    return id;
   }
 
   Future<void> update(
@@ -89,34 +92,22 @@ class HealthRepository {
     HealthRecord record,
   ) async {
     if (record.id.isEmpty) {
-      throw const AppFailure(
-        kind: AppFailureKind.invalidInput,
-        messageKey: 'error.health.updateMissingId',
+      throw const ValidationFailure(
+        'Cannot update a record without an id.',
+        code: 'health-missing-id',
       );
     }
-    try {
-      final json = record.toJson()..remove('id');
-      await _firestore.updateDocument(
-        '${AppConstants.healthCollectionPath(userId, catId)}/${record.id}',
-        json,
-      );
-      _log.i('HealthRepository.update -> ${record.id}');
-    } catch (e, st) {
-      _log.e('HealthRepository.update failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    final HealthRecord stamped = record.copyWith(updatedAt: DateTime.now());
+    await _firestore.writeDocument(
+      recordPath(userId, catId, record.id),
+      stamped.toJson(),
+    );
+    AppLogger.i('HealthRepository.update $userId/$catId/${record.id}');
   }
 
   Future<void> delete(String userId, String catId, String recordId) async {
-    try {
-      await _firestore.deleteDocument(
-        '${AppConstants.healthCollectionPath(userId, catId)}/$recordId',
-      );
-      _log.i('HealthRepository.delete -> $recordId');
-    } catch (e, st) {
-      _log.e('HealthRepository.delete failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    await _firestore.deleteDocument(recordPath(userId, catId, recordId));
+    AppLogger.i('HealthRepository.delete $userId/$catId/$recordId');
   }
 
   /// Uploads an attachment (image or PDF) under the record's folder so it
@@ -129,29 +120,19 @@ class HealthRepository {
     required Uint8List bytes,
     required String contentType,
   }) async {
-    try {
-      final path = AppConstants.healthAttachmentStoragePath(
-        userId: userId,
-        catId: catId,
-        recordId: recordId,
-        fileName: fileName,
-      );
-      final url = await _storage.uploadFile(path, bytes, contentType);
-      _log.i('HealthRepository.uploadAttachment -> $url');
-      return url;
-    } catch (e, st) {
-      _log.e('HealthRepository.uploadAttachment failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
-  }
-
-  Future<void> deleteAttachment(String storageUrl) async {
-    try {
-      await _storage.deleteFile(storageUrl);
-      _log.i('HealthRepository.deleteAttachment -> $storageUrl');
-    } catch (e, st) {
-      _log.e('HealthRepository.deleteAttachment failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    final String path = AppConstants.healthAttachmentStoragePath(
+      userId: userId,
+      catId: catId,
+      recordId: recordId,
+      fileName: fileName,
+    );
+    final String url = await _storage.uploadBytes(
+      path: path,
+      bytes: bytes,
+      contentType: contentType,
+    );
+    AppLogger.i(
+        'HealthRepository.uploadAttachment $userId/$catId/$recordId/$fileName');
+    return url;
   }
 }

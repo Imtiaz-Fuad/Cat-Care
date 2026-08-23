@@ -1,69 +1,63 @@
-import 'package:cat_care/core/constants/app_constants.dart';
-import 'package:cat_care/core/errors/app_failure.dart';
-import 'package:cat_care/core/models/medication.dart';
-import 'package:cat_care/core/services/firestore_service.dart';
-import 'package:cat_care/core/services/logger.dart';
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../../core/constants/app_constants.dart';
+import '../../../core/errors/app_failure.dart';
+import '../../../core/models/medication.dart';
+import '../../../core/services/app_logger.dart';
+import '../../../core/services/firestore_service.dart';
 
 /// Firestore bridge for `users/{uid}/cats/{catId}/medications/{docId}`.
 class MedicationRepository {
   MedicationRepository({
-    FirestoreService? firestore,
-    AppLogger? logger,
-  })  : _firestore = firestore ?? FirestoreService(),
-        _log = logger ?? AppLogger();
+    required FirestoreService firestoreService,
+    Uuid? uuid,
+  })  : _firestore = firestoreService,
+        _uuid = uuid ?? const Uuid();
 
   final FirestoreService _firestore;
-  final AppLogger _log;
+  final Uuid _uuid;
+
+  String newRecordId() => _uuid.v4();
+
+  static String recordPath(String userId, String catId, String recordId) =>
+      '${AppConstants.medicationCollectionPath(userId, catId)}/$recordId';
 
   Stream<List<Medication>> watchForCat(String userId, String catId) {
     if (userId.isEmpty || catId.isEmpty) {
-      return Stream.value(const <Medication>[]);
+      return Stream<List<Medication>>.value(const <Medication>[]);
     }
-    final path =
-        AppConstants.medicationCollectionPath(userId, catId);
-    return _firestore
-        .streamCollection(path, orderBy: 'startDate', descending: true)
-        .map((docs) => docs.map((doc) {
-              final data = Map<String, dynamic>.from(doc.data as Map);
-              data['id'] = doc.id;
-              return Medication.fromJson(data);
-            }).toList())
-        .handleError((Object error, StackTrace stack) {
-      _log.e('MedicationRepository.watchForCat failed',
-          error: error, stack: stack);
-      throw AppFailure.fromException(error);
-    });
-  }
-
-  /// Streams only medications whose [startDate, endDate] window contains
-  /// [today] (or are open-ended). Used by the Routine screen for the daily
-  /// check-off card.
-  Stream<List<Medication>> watchActiveForCat(
-    String userId,
-    String catId, {
-    DateTime? now,
-  }) {
-    return watchForCat(userId, catId).map((all) {
-      final today = now ?? DateTime.now();
-      return all.where((med) => med.isActiveOn(today)).toList();
-    });
+    return _firestore.instance
+        .collection(AppConstants.usersCollection)
+        .doc(userId)
+        .collection(AppConstants.catsSubcollection)
+        .doc(catId)
+        .collection(AppConstants.medicationsSubcollection)
+        .orderBy('startDate', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
+              return Medication.fromJson(<String, dynamic>{
+                ...d.data(),
+                'id': d.id,
+              });
+            }).toList(growable: false));
   }
 
   Future<String> add(String userId, String catId, Medication record) async {
-    try {
-      final docId = record.id.isEmpty ? null : record.id;
-      final json = record.toJson()..remove('id');
-      final newId = await _firestore.addDocument(
-        AppConstants.medicationCollectionPath(userId, catId),
-        json,
-        documentId: docId,
-      );
-      _log.i('MedicationRepository.add -> $newId');
-      return newId;
-    } catch (e, st) {
-      _log.e('MedicationRepository.add failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    final String id = record.id.isEmpty ? newRecordId() : record.id;
+    final Medication stamped = record.copyWith(
+      id: id,
+      updatedAt: DateTime.now(),
+    );
+    await _firestore.writeDocument(
+      recordPath(userId, catId, id),
+      stamped.toJson(),
+    );
+    AppLogger.i('MedicationRepository.add $userId/$catId/$id');
+    return id;
   }
 
   Future<void> update(
@@ -72,33 +66,21 @@ class MedicationRepository {
     Medication record,
   ) async {
     if (record.id.isEmpty) {
-      throw const AppFailure(
-        kind: AppFailureKind.invalidInput,
-        messageKey: 'error.health.updateMissingId',
+      throw const ValidationFailure(
+        'Cannot update a medication without an id.',
+        code: 'medication-missing-id',
       );
     }
-    try {
-      final json = record.toJson()..remove('id');
-      await _firestore.updateDocument(
-        '${AppConstants.medicationCollectionPath(userId, catId)}/${record.id}',
-        json,
-      );
-      _log.i('MedicationRepository.update -> ${record.id}');
-    } catch (e, st) {
-      _log.e('MedicationRepository.update failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    final Medication stamped = record.copyWith(updatedAt: DateTime.now());
+    await _firestore.writeDocument(
+      recordPath(userId, catId, record.id),
+      stamped.toJson(),
+    );
+    AppLogger.i('MedicationRepository.update $userId/$catId/${record.id}');
   }
 
   Future<void> delete(String userId, String catId, String recordId) async {
-    try {
-      await _firestore.deleteDocument(
-        '${AppConstants.medicationCollectionPath(userId, catId)}/$recordId',
-      );
-      _log.i('MedicationRepository.delete -> $recordId');
-    } catch (e, st) {
-      _log.e('MedicationRepository.delete failed', error: e, stack: st);
-      throw AppFailure.fromException(e);
-    }
+    await _firestore.deleteDocument(recordPath(userId, catId, recordId));
+    AppLogger.i('MedicationRepository.delete $userId/$catId/$recordId');
   }
 }
