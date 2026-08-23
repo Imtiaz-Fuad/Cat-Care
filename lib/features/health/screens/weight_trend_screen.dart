@@ -231,15 +231,9 @@ class _ChartPainter extends CustomPainter {
       final double y = 8 + (plotH / 4) * i;
       canvas.drawLine(Offset(leftPad, y), Offset(w - 4, y), grid);
     }
-    final TextPainter? minLabel = _label(
-      minY.toStringAsFixed(1),
-      labelColor,
-    );
+    final TextPainter? minLabel = _label(minY.toStringAsFixed(1), labelColor);
     minLabel?.paint(canvas, Offset(0, plotH - 4));
-    final TextPainter? maxLabel = _label(
-      maxY.toStringAsFixed(1),
-      labelColor,
-    );
+    final TextPainter? maxLabel = _label(maxY.toStringAsFixed(1), labelColor);
     maxLabel?.paint(canvas, const Offset(0, 4));
 
     final Paint linePaint = Paint()

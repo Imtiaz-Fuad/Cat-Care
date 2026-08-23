@@ -10,10 +10,7 @@ import '../repositories/weight_repository.dart';
 
 /// State for the Weight Tracking surface of one cat.
 class WeightProvider extends ChangeNotifier {
-  WeightProvider._({
-    required this._repository,
-    required this._auth,
-  }) {
+  WeightProvider._({required this._repository, required this._auth}) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }

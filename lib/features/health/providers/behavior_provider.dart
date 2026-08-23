@@ -10,10 +10,7 @@ import '../repositories/behavior_repository.dart';
 
 /// State for the Behavior Logs surface of one cat.
 class BehaviorProvider extends ChangeNotifier {
-  BehaviorProvider._({
-    required this._repository,
-    required this._auth,
-  }) {
+  BehaviorProvider._({required this._repository, required this._auth}) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }

@@ -31,7 +31,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
     required this._catIdProvider,
     this._warningWindowDays = 7,
     DateTime Function()? clock,
-  })  : _clock = clock ?? DateTime.now {
+  }) : _clock = clock ?? DateTime.now {
     _provider.addListener(_handleChanged);
     _listenerHandles.add(_handleChanged);
   }
@@ -92,13 +92,9 @@ class VaccinationReminderScheduler extends ChangeNotifier {
     }
   }
 
-  Future<_Planned?> _planFromVaccination(
-    Vaccination v,
-    String catId,
-  ) async {
+  Future<_Planned?> _planFromVaccination(Vaccination v, String catId) async {
     try {
-      final VaccineInfo? info =
-          await _content.getVaccineInfo(v.vaccineCode);
+      final VaccineInfo? info = await _content.getVaccineInfo(v.vaccineCode);
       if (info == null) return null;
       final DateTime? due = _manager.nextDue(vaccination: v, info: info);
       if (due == null) return null;
@@ -114,7 +110,8 @@ class VaccinationReminderScheduler extends ChangeNotifier {
         catId: catId,
         channelKey: AppConstants.notificationsChannelVaccines,
         title: 'Vaccine due soon \u2014 ${info.name}',
-        body: 'Booster for ${info.name} is due on '
+        body:
+            'Booster for ${info.name} is due on '
             '${_friendlyDate(due)}.',
         fireAt: fire,
         payload: 'vaccination/${v.id}',
@@ -124,8 +121,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
       return _Planned(
         key: key,
         schedule: schedule,
-        notificationId:
-            NotificationSchedulerService.idForKey(key),
+        notificationId: NotificationSchedulerService.idForKey(key),
       );
     } catch (error, stack) {
       AppLogger.w(
@@ -154,8 +150,9 @@ class VaccinationReminderScheduler extends ChangeNotifier {
         if (s.sourceType != 'vaccination') continue;
         if (keepKeys.contains(s.id)) continue;
         await _repository.delete(ownerId: catId, scheduleId: s.id);
-        await _notificationService
-            .cancel(NotificationSchedulerService.idForKey(s.id));
+        await _notificationService.cancel(
+          NotificationSchedulerService.idForKey(s.id),
+        );
       }
     } catch (error, stack) {
       AppLogger.w(

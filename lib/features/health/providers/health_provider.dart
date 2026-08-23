@@ -15,10 +15,7 @@ import '../repositories/health_repository.dart';
 /// when the signed-in user changes, and exposes an `error` + `retry()`
 /// pair so the UI's error banner always has a working action.
 class HealthProvider extends ChangeNotifier {
-  HealthProvider._({
-    required this._repository,
-    required this._auth,
-  }) {
+  HealthProvider._({required this._repository, required this._auth}) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }

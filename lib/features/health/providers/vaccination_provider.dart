@@ -10,10 +10,7 @@ import '../repositories/vaccination_repository.dart';
 
 /// State for the Vaccinations surface of one cat.
 class VaccinationProvider extends ChangeNotifier {
-  VaccinationProvider._({
-    required this._repository,
-    required this._auth,
-  }) {
+  VaccinationProvider._({required this._repository, required this._auth}) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }
@@ -112,8 +109,7 @@ class VaccinationProvider extends ChangeNotifier {
   static VaccinationProvider create({
     required VaccinationRepository repository,
     required AuthProvider authProvider,
-  }) =>
-      VaccinationProvider._(repository: repository, auth: authProvider);
+  }) => VaccinationProvider._(repository: repository, auth: authProvider);
 
   void _handleAuthChange() {
     final uid = _auth.profile?.uid;

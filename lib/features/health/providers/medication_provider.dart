@@ -14,10 +14,7 @@ import '../repositories/medication_repository.dart';
 /// [startDate, endDate] range covers "today" — used by the Routine screen
 /// to render the daily-check-off card.
 class MedicationProvider extends ChangeNotifier {
-  MedicationProvider._({
-    required this._repository,
-    required this._auth,
-  }) {
+  MedicationProvider._({required this._repository, required this._auth}) {
     _auth.addListener(_handleAuthChange);
     _handleAuthChange();
   }
@@ -126,8 +123,7 @@ class MedicationProvider extends ChangeNotifier {
   static MedicationProvider create({
     required MedicationRepository repository,
     required AuthProvider authProvider,
-  }) =>
-      MedicationProvider._(repository: repository, auth: authProvider);
+  }) => MedicationProvider._(repository: repository, auth: authProvider);
 
   void _handleAuthChange() {
     final uid = _auth.profile?.uid;
