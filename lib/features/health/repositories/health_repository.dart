@@ -46,7 +46,7 @@ class HealthRepository {
         .collection(AppConstants.catsSubcollection)
         .doc(catId)
         .collection(AppConstants.healthSubcollection)
-        .orderBy('visitDate', descending: true)
+        .orderBy('recordedAt', descending: true)
         .snapshots()
         .map((snap) => snap.docs
             .map((d) {

@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_constants.dart';
 import 'core/services/app_logger.dart';
 import 'core/services/auth_service.dart';
+import 'core/services/content/asset_content_seed_loader.dart';
+import 'core/services/content/content_backend.dart';
+import 'core/services/content/content_repository.dart';
+import 'core/services/content/firestore_content_backend.dart';
 import 'core/services/firebase_bootstrap.dart';
 import 'core/services/firestore_service.dart';
 import 'core/services/notification_service.dart';
@@ -14,8 +18,21 @@ import 'features/authentication/providers/auth_provider.dart';
 import 'features/authentication/repositories/auth_repository.dart';
 import 'features/cats/providers/cat_provider.dart';
 import 'features/cats/repositories/cat_repository.dart';
+import 'features/health/providers/behavior_provider.dart';
+import 'features/health/providers/health_provider.dart';
+import 'features/health/providers/medication_provider.dart';
+import 'features/health/providers/vaccination_provider.dart';
+import 'features/health/providers/weight_provider.dart';
+import 'features/health/repositories/behavior_repository.dart';
+import 'features/health/repositories/health_repository.dart';
+import 'features/health/repositories/medication_repository.dart';
+import 'features/health/repositories/vaccination_repository.dart';
+import 'features/health/repositories/weight_repository.dart';
+import 'features/health/services/vaccination_manager.dart';
 import 'features/notifications/repositories/notification_schedule_repository.dart';
+import 'features/notifications/services/medication_reminder_scheduler.dart';
 import 'features/notifications/services/notification_scheduler_service.dart';
+import 'features/notifications/services/vaccination_reminder_scheduler.dart';
 import 'features/nutrition/providers/nutrition_provider.dart';
 import 'features/nutrition/repositories/feeding_repository.dart';
 import 'features/nutrition/repositories/water_repository.dart';
@@ -93,6 +110,7 @@ class _CatCareAppState extends State<CatCareApp> {
         authProvider: _authProvider,
         authRepository: _authRepository,
         catRepository: _catRepository,
+        storageService: _storageService,
       ),
     );
   }
@@ -103,11 +121,13 @@ class _AppRouterHost extends StatefulWidget {
     required this.authProvider,
     required this.authRepository,
     required this.catRepository,
+    required this.storageService,
   });
 
   final AuthProvider authProvider;
   final AuthRepository authRepository;
   final CatRepository catRepository;
+  final StorageService storageService;
 
   @override
   State<_AppRouterHost> createState() => _AppRouterHostState();
@@ -149,6 +169,55 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       catProvider: catProvider,
     );
 
+    // Phase 5: content (vaccine info + deworming protocols), health
+    // repositories, providers, and reactive notification schedulers.
+    final ContentRepository contentRepository = ContentRepository(
+      primary: FirestoreContentBackend(firestore: firestore.instance),
+      fallback: const SeedContentBackend(seedLoader: AssetContentSeedLoader()),
+    );
+
+    final HealthRepository healthRepo = HealthRepository(
+      firestoreService: firestore,
+      storageService: widget.storageService,
+    );
+    final VaccinationRepository vaccinationRepo = VaccinationRepository(
+      firestoreService: firestore,
+    );
+    final MedicationRepository medicationRepo = MedicationRepository(
+      firestoreService: firestore,
+    );
+    final BehaviorRepository behaviorRepo = BehaviorRepository(
+      firestoreService: firestore,
+    );
+    final WeightRepository weightRepo = WeightRepository(
+      firestoreService: firestore,
+    );
+
+    final HealthProvider healthProvider = HealthProvider.create(
+      repository: healthRepo,
+      authProvider: widget.authProvider,
+    );
+    final VaccinationProvider vaccinationProvider = VaccinationProvider.create(
+      repository: vaccinationRepo,
+      authProvider: widget.authProvider,
+    );
+    final MedicationProvider medicationProvider = MedicationProvider.create(
+      repository: medicationRepo,
+      authProvider: widget.authProvider,
+    );
+    final BehaviorProvider behaviorProvider = BehaviorProvider.create(
+      repository: behaviorRepo,
+      authProvider: widget.authProvider,
+    );
+    final WeightProvider weightProvider = WeightProvider.create(
+      repository: weightRepo,
+      authProvider: widget.authProvider,
+    );
+
+    final VaccinationManager vaccinationManager = VaccinationManager(
+      contentRepository: contentRepository,
+    );
+
     final NotificationScheduleRepository scheduleRepo =
         NotificationScheduleRepository(firestoreService: firestore);
     final NotificationService notificationService = NotificationService();
@@ -160,11 +229,56 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       catProvider: catProvider,
     );
 
+    // Keep the health providers in sync with the active cat. Each
+    // provider has its own auth-listener, but we also want a single
+    // chokepoint here so the wiring is testable.
+    void rebindHealth(String? catId) {
+      if (catId == null) return;
+      healthProvider.bindCat(catId);
+      vaccinationProvider.bindCat(catId);
+      medicationProvider.bindCat(catId);
+      behaviorProvider.bindCat(catId);
+      weightProvider.bindCat(catId);
+    }
+
+    catProvider.addListener(() => rebindHealth(catProvider.activeCatId));
+    // Initial rebind in case the active cat is already known.
+    if (catProvider.activeCatId != null) {
+      rebindHealth(catProvider.activeCatId);
+    }
+
+    // Reactive medication reminders (Phase 5). They watch the active
+    // cat's medications/vaccinations and upsert schedule docs + local
+    // notifications whenever the source list changes.
+    final MedicationReminderScheduler medicationReminders =
+        MedicationReminderScheduler(
+      repository: scheduleRepo,
+      notificationService: notificationService,
+      medicationProvider: medicationProvider,
+      catIdProvider: () => catProvider.activeCatId ?? '',
+    );
+    final VaccinationReminderScheduler vaccinationReminders =
+        VaccinationReminderScheduler(
+      repository: scheduleRepo,
+      notificationService: notificationService,
+      vaccinationProvider: vaccinationProvider,
+      vaccinationManager: vaccinationManager,
+      contentRepository: contentRepository,
+      catIdProvider: () => catProvider.activeCatId ?? '',
+    );
+
     return _Wiring(
       catProvider: catProvider,
       routineProvider: routineProvider,
       nutritionProvider: nutritionProvider,
+      healthProvider: healthProvider,
+      vaccinationProvider: vaccinationProvider,
+      medicationProvider: medicationProvider,
+      behaviorProvider: behaviorProvider,
+      weightProvider: weightProvider,
       scheduler: scheduler,
+      medicationReminders: medicationReminders,
+      vaccinationReminders: vaccinationReminders,
     );
   }
 
@@ -173,8 +287,15 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     // Best-effort dispose - the future may not have completed yet.
     _wiringFuture.then((_Wiring w) {
       w.scheduler.dispose();
+      w.medicationReminders.dispose();
+      w.vaccinationReminders.dispose();
       w.routineProvider.dispose();
       w.nutritionProvider.dispose();
+      w.healthProvider.dispose();
+      w.vaccinationProvider.dispose();
+      w.medicationProvider.dispose();
+      w.behaviorProvider.dispose();
+      w.weightProvider.dispose();
       w.catProvider.dispose();
     });
     super.dispose();
@@ -211,8 +332,29 @@ class _AppRouterHostState extends State<_AppRouterHost> {
             ChangeNotifierProvider<NutritionProvider>.value(
               value: w.nutritionProvider,
             ),
+            ChangeNotifierProvider<HealthProvider>.value(
+              value: w.healthProvider,
+            ),
+            ChangeNotifierProvider<VaccinationProvider>.value(
+              value: w.vaccinationProvider,
+            ),
+            ChangeNotifierProvider<MedicationProvider>.value(
+              value: w.medicationProvider,
+            ),
+            ChangeNotifierProvider<BehaviorProvider>.value(
+              value: w.behaviorProvider,
+            ),
+            ChangeNotifierProvider<WeightProvider>.value(
+              value: w.weightProvider,
+            ),
             ChangeNotifierProvider<NotificationSchedulerService>.value(
               value: w.scheduler,
+            ),
+            ChangeNotifierProvider<MedicationReminderScheduler>.value(
+              value: w.medicationReminders,
+            ),
+            ChangeNotifierProvider<VaccinationReminderScheduler>.value(
+              value: w.vaccinationReminders,
             ),
           ],
           child: MaterialApp.router(
@@ -237,10 +379,24 @@ class _Wiring {
     required this.catProvider,
     required this.routineProvider,
     required this.nutritionProvider,
+    required this.healthProvider,
+    required this.vaccinationProvider,
+    required this.medicationProvider,
+    required this.behaviorProvider,
+    required this.weightProvider,
     required this.scheduler,
+    required this.medicationReminders,
+    required this.vaccinationReminders,
   });
   final CatProvider catProvider;
   final RoutineProvider routineProvider;
   final NutritionProvider nutritionProvider;
+  final HealthProvider healthProvider;
+  final VaccinationProvider vaccinationProvider;
+  final MedicationProvider medicationProvider;
+  final BehaviorProvider behaviorProvider;
+  final WeightProvider weightProvider;
   final NotificationSchedulerService scheduler;
+  final MedicationReminderScheduler medicationReminders;
+  final VaccinationReminderScheduler vaccinationReminders;
 }

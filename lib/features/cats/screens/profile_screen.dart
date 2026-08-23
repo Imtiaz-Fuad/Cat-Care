@@ -150,14 +150,14 @@ class _ProfileBody extends StatelessWidget {
         const _ShortcutTile(
           icon: Icons.medical_services_outlined,
           title: 'Health records',
-          subtitle: 'Coming soon',
-          enabled: false,
+          subtitle: 'Vet visits, diagnoses, lab results and notes.',
+          route: AppRoutes.healthRecords,
         ),
         const _ShortcutTile(
           icon: Icons.medication_outlined,
           title: 'Medications & vaccinations',
-          subtitle: 'Coming soon',
-          enabled: false,
+          subtitle: 'Track active meds and upcoming boosters.',
+          route: AppRoutes.medications,
         ),
         const _ShortcutTile(
           icon: Icons.location_searching,

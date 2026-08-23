@@ -35,7 +35,7 @@ class BehaviorRepository {
         .collection(AppConstants.catsSubcollection)
         .doc(catId)
         .collection(AppConstants.behaviorsSubcollection)
-        .orderBy('loggedAt', descending: true)
+        .orderBy('recordedAt', descending: true)
         .snapshots()
         .map((snap) => snap.docs
             .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
