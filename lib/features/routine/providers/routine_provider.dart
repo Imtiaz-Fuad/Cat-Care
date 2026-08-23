@@ -29,10 +29,10 @@ class RoutineProvider extends ChangeNotifier {
     required CatProvider catProvider,
     RoutineGeneratorService? generator,
     // ignore: prefer_initializing_formals
-  })  : repository = repository,
-        // ignore: prefer_initializing_formals
-        catProvider = catProvider,
-        _generator = generator ?? const RoutineGeneratorService() {
+  }) : repository = repository,
+       // ignore: prefer_initializing_formals
+       catProvider = catProvider,
+       _generator = generator ?? const RoutineGeneratorService() {
     catProvider.addListener(_handleCatChange);
     _catListeners.add(_handleCatChange);
     // Kick the first bind off the current active cat.
@@ -65,15 +65,18 @@ class RoutineProvider extends ChangeNotifier {
   /// today's local midnight.
   List<RoutineTask> get todaysRoutines {
     final DateTime midnight = _todayMidnight();
-    final DateTime tomorrow =
-        midnight.add(const Duration(days: 1));
+    final DateTime tomorrow = midnight.add(const Duration(days: 1));
     return _routines
-        .where((r) =>
-            r.timeOfDay == null ||
-            (r.timeOfDay!.isAfter(midnight.subtract(const Duration(seconds: 1))) &&
-                r.timeOfDay!.isBefore(tomorrow)) ||
-            r.lastCompletedAt == null ||
-            r.lastCompletedAt!.isBefore(midnight))
+        .where(
+          (r) =>
+              r.timeOfDay == null ||
+              (r.timeOfDay!.isAfter(
+                    midnight.subtract(const Duration(seconds: 1)),
+                  ) &&
+                  r.timeOfDay!.isBefore(tomorrow)) ||
+              r.lastCompletedAt == null ||
+              r.lastCompletedAt!.isBefore(midnight),
+        )
         .toList(growable: false);
   }
 
@@ -81,9 +84,11 @@ class RoutineProvider extends ChangeNotifier {
   int get completedTodayCount {
     final DateTime midnight = _todayMidnight();
     return _routines
-        .where((r) =>
-            r.lastCompletedAt != null &&
-            !r.lastCompletedAt!.isBefore(midnight))
+        .where(
+          (r) =>
+              r.lastCompletedAt != null &&
+              !r.lastCompletedAt!.isBefore(midnight),
+        )
         .length;
   }
 
@@ -209,8 +214,7 @@ class RoutineProvider extends ChangeNotifier {
     );
     int added = 0;
     _runGuarded(() async {
-      final List<RoutineTask> addedTasks =
-          await repository.seedIfEmpty(
+      final List<RoutineTask> addedTasks = await repository.seedIfEmpty(
         ownerId: ownerId,
         catId: cat.id,
         defaults: defaults,
@@ -236,10 +240,13 @@ class RoutineProvider extends ChangeNotifier {
     final String? ownerId = _ownerId;
     final String? catId = catProvider.activeCatId;
     if (ownerId == null || catId == null) {
+      // No active cat yet. Drop the stream and flip [_streamReady]
+      // true so the UI exits the loading state and shows the empty /
+      // no-active-cat view instead of spinning forever.
       _sub?.cancel();
       _sub = null;
       _routines = const <RoutineTask>[];
-      _streamReady = false;
+      _streamReady = true;
       _seededForActive = false;
       notifyListeners();
       return;
@@ -267,21 +274,25 @@ class RoutineProvider extends ChangeNotifier {
       // the seed call uses `seedIfEmpty` so it can race safely.
       _sub?.cancel();
       _seededForActive = false;
-      _sub = repository.watchRoutines(ownerId: ownerId, catId: catId).listen(
-        (List<RoutineTask> next) {
-          _routines = next;
-          _streamReady = true;
-          notifyListeners();
-        },
-        onError: (Object error, StackTrace stack) {
-          AppLogger.e('RoutineProvider: stream error', error, stack);
-          _lastError = error is AppFailure
-              ? error
-              : UnknownFailure(error.toString(),
-                  code: 'routine-stream-error');
-          notifyListeners();
-        },
-      );
+      _sub = repository
+          .watchRoutines(ownerId: ownerId, catId: catId)
+          .listen(
+            (List<RoutineTask> next) {
+              _routines = next;
+              _streamReady = true;
+              notifyListeners();
+            },
+            onError: (Object error, StackTrace stack) {
+              AppLogger.e('RoutineProvider: stream error', error, stack);
+              _lastError = error is AppFailure
+                  ? error
+                  : UnknownFailure(
+                      error.toString(),
+                      code: 'routine-stream-error',
+                    );
+              notifyListeners();
+            },
+          );
     }
 
     if (!_seededForActive && lifeStage != null) {
@@ -312,8 +323,7 @@ class RoutineProvider extends ChangeNotifier {
         _lastError = failure;
         AppLogger.w('RoutineProvider action failed: $failure');
       } catch (error, stack) {
-        _lastError =
-            UnknownFailure(error.toString(), code: 'routine-unknown');
+        _lastError = UnknownFailure(error.toString(), code: 'routine-unknown');
         AppLogger.e('RoutineProvider: unexpected error', error, stack);
       } finally {
         if (!_disposed) _setBusy(false);

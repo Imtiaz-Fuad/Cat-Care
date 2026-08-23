@@ -120,7 +120,9 @@ void main() {
   group('RoutineProvider initial state', () {
     test('with no active cat, totals are zero and percent is zero', () {
       provider = RoutineProvider(repository: repo, catProvider: cats);
-      expect(provider.hasLoaded, isFalse);
+      // No active cat is a known empty state (the screen should show
+      // "add a cat" instead of a spinner), so hasLoaded reports true.
+      expect(provider.hasLoaded, isTrue);
       expect(provider.totalRoutineCount, 0);
       expect(provider.completedTodayCount, 0);
       expect(provider.completionPercent, 0);

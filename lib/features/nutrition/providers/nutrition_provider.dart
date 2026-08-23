@@ -324,13 +324,16 @@ class NutritionProvider extends ChangeNotifier {
     final String? ownerId = _ownerId;
     final String? catId = catProvider.activeCatId;
     if (ownerId == null || catId == null) {
+      // No active cat yet (signed out, signing in, or no cats). Drop
+      // the streams and flip [_streamReady] true so the screen exits
+      // the loading state and shows its empty / no-active-cat view.
       _feedingSub?.cancel();
       _waterSub?.cancel();
       _feedingSub = null;
       _waterSub = null;
       _feedings = const <FeedingEntry>[];
       _water = const <WaterEntry>[];
-      _streamReady = false;
+      _streamReady = true;
       notifyListeners();
       return;
     }

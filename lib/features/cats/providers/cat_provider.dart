@@ -138,11 +138,23 @@ class CatProvider extends ChangeNotifier {
     final String? uid = _uidForWrite();
     if (uid == null) return null;
     CatProfile? created;
-    _runGuarded(() async {
+    AppFailure? failure;
+    try {
+      _setBusy(true);
+      clearError();
       created = await _repository.createCat(ownerId: uid, draft: draft);
-      await setActiveCat(created!.id);
-    });
-    return _lastError == null ? created : null;
+      await setActiveCat(created.id);
+    } on AppFailure catch (error) {
+      failure = error;
+      AppLogger.w('CatProvider action failed: $failure');
+    } catch (error, stack) {
+      failure = UnknownFailure(error.toString(), code: 'cats-unknown');
+      AppLogger.e('CatProvider: unexpected error', error, stack);
+    } finally {
+      if (failure != null) _lastError = failure;
+      if (!_disposed) _setBusy(false);
+    }
+    return failure == null ? created : null;
   }
 
   /// Apply a draft over an existing cat.
@@ -229,11 +241,13 @@ class CatProvider extends ChangeNotifier {
   void _handleAuthChange() {
     final String? uid = _auth.profile?.uid;
     if (uid == null) {
-      // Signed out — drop everything.
+      // Signed out — drop everything. Flip [_streamReady] true so the
+      // UI's loading branch exits and shows the sign-in / no-active-cat
+      // empty state instead of spinning forever while auth resolves.
       _catsSub?.cancel();
       _catsSub = null;
       _cats = const <CatProfile>[];
-      _streamReady = false;
+      _streamReady = true;
       _activeCatId = null;
       notifyListeners();
       return;
@@ -266,6 +280,10 @@ class CatProvider extends ChangeNotifier {
             _lastError = error is AppFailure
                 ? error
                 : UnknownFailure(error.toString(), code: 'cats-stream-error');
+            // Mark the stream "ready" so the UI exits its loading
+            // branch and shows the error / empty state instead of
+            // spinning forever.
+            _streamReady = true;
             notifyListeners();
           },
         );
