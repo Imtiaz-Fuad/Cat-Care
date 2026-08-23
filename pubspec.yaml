@@ -82,6 +82,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - .env
     - .env.example
     - assets/images/
     - lib/content/seed/
