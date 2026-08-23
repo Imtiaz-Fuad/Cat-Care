@@ -10,6 +10,11 @@ class AppConstants {
   static const String routinesSubcollection = 'routines';
   static const String feedingsSubcollection = 'feedings';
   static const String waterSubcollection = 'water';
+  static const String weightsSubcollection = 'weights';
+  static const String behaviorsSubcollection = 'behavior';
+  static const String healthSubcollection = 'health';
+  static const String vaccinationsSubcollection = 'vaccinations';
+  static const String medicationsSubcollection = 'medications';
   static const String contentCollection = 'content';
   static const String vetClinicsCollection = 'vet_clinics';
   static const String notificationSchedulesSubcollection =
@@ -22,6 +27,36 @@ class AppConstants {
   static const String firstLaunchKey = 'pref.first_launch';
   static const String guestDeviceIdKey = 'pref.guest_device_id';
   static const String activeCatIdKey = 'pref.active_cat_id';
+
+  // Firestore composite path helpers. Keep all reads/writes here so the
+  // single-collection-per-cat rule is consistent across features.
+  static String catCollectionPath(String userId, String catId) =>
+      '$usersCollection/$userId/$catsSubcollection/$catId';
+
+  static String healthCollectionPath(String userId, String catId) =>
+      '${catCollectionPath(userId, catId)}/$healthSubcollection';
+
+  static String vaccinationCollectionPath(String userId, String catId) =>
+      '${catCollectionPath(userId, catId)}/$vaccinationsSubcollection';
+
+  static String medicationCollectionPath(String userId, String catId) =>
+      '${catCollectionPath(userId, catId)}/$medicationsSubcollection';
+
+  static String behaviorCollectionPath(String userId, String catId) =>
+      '${catCollectionPath(userId, catId)}/$behaviorsSubcollection';
+
+  static String weightCollectionPath(String userId, String catId) =>
+      '${catCollectionPath(userId, catId)}/$weightsSubcollection';
+
+  // Storage paths for health record attachments. Scoped under the owning
+  // record so deletions never leak unrelated files.
+  static String healthAttachmentStoragePath({
+    required String userId,
+    required String catId,
+    required String recordId,
+    required String fileName,
+  }) =>
+      '${catCollectionPath(userId, catId)}/$healthSubcollection/$recordId/$fileName';
 
   // Notification channels (Android). iOS uses the same logical IDs.
   static const String notificationsChannelRoutine = 'catcare_routine';

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/models/medication.dart';
 import '../../../core/models/routine_task.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/routine_item_tile.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/status_chip.dart';
+import '../../health/providers/medication_provider.dart';
 import '../providers/routine_provider.dart';
 import '../widgets/routine_edit_sheet.dart';
 import '../widgets/routine_summary_header.dart';
@@ -137,6 +139,7 @@ class _Body extends StatelessWidget {
             ),
           ),
         ),
+        const SliverToBoxAdapter(child: _TodaysMedsCard()),
         for (final _Bucket bucket in _Bucket.values)
           if (grouped[bucket]!.isNotEmpty)
             _BucketSection(bucket: bucket, tasks: grouped[bucket]!),
@@ -262,3 +265,129 @@ class _TaskTile extends StatelessWidget {
 
 /// Tiny helper used by callers needing today's date label.
 String todayLabel() => DateFormat.MMMMEEEEd().format(DateTime.now());
+
+/// Compact card shown on the Routine screen: lists the medications that are
+/// active today and exposes a one-tap check-off per item. Backed by
+/// [MedicationProvider.toggleToday], which writes to Firestore via the
+/// existing medication repository.
+class _TodaysMedsCard extends StatelessWidget {
+  const _TodaysMedsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MedicationProvider>(
+      builder: (BuildContext context, MedicationProvider provider, Widget? _) {
+        final List<Medication> meds = provider.active;
+        if (meds.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        final DateFormat tf = DateFormat('HH:mm');
+        final String todayKey = _todayKey(DateTime.now());
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Icon(
+                        Icons.medication_outlined,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Today\'s medications',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  for (final Medication m in meds)
+                    _MedCheckRow(
+                      medication: m,
+                      checked: m.dailyCheckOff[todayKey] ?? false,
+                      timeLabel: m.reminderTimes.isEmpty
+                          ? null
+                          : tf.format(m.reminderTimes.first),
+                      onToggle: () => provider.toggleToday(m),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  static String _todayKey(DateTime day) {
+    final String y = day.year.toString().padLeft(4, '0');
+    final String m = day.month.toString().padLeft(2, '0');
+    final String d = day.day.toString().padLeft(2, '0');
+    return '$y-$m-$d';
+  }
+}
+
+class _MedCheckRow extends StatelessWidget {
+  const _MedCheckRow({
+    required this.medication,
+    required this.checked,
+    required this.timeLabel,
+    required this.onToggle,
+  });
+
+  final Medication medication;
+  final bool checked;
+  final String? timeLabel;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onToggle,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: <Widget>[
+            Icon(
+              checked
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked,
+              color: checked ? scheme.primary : scheme.outline,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    medication.name,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      decoration: checked
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                    ),
+                  ),
+                  Text(
+                    '${medication.dose} • ${medication.frequency}'
+                    '${timeLabel != null ? ' • $timeLabel' : ''}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

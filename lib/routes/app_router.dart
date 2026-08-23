@@ -12,6 +12,10 @@ import '../features/cats/screens/cat_profile_screen.dart';
 import '../features/cats/screens/cat_switcher_screen.dart';
 import '../features/cats/screens/onboarding/onboarding_screen.dart';
 import '../features/cats/screens/profile_screen.dart';
+import '../features/health/screens/health_records_screen.dart';
+import '../features/health/screens/medication_list_screen.dart';
+import '../features/health/screens/vaccination_list_screen.dart';
+import '../features/health/screens/weight_trend_screen.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/nutrition/screens/nutrition_screen.dart';
 import '../features/routine/screens/routine_screen.dart';
@@ -149,47 +153,94 @@ class AppRouter {
 }
 
 class _TopLevelRoute {
-  const _TopLevelRoute(this.path, this.title, this.subtitle);
+  const _TopLevelRoute(this.path, this.title, this.subtitle, [this.builder]);
   final String path;
   final String title;
   final String subtitle;
 
+  /// Optional override builder. When supplied, the [title]/[subtitle]
+  /// still drive the placeholder fallback but the router prefers the
+  /// real screen for Phase 5+ routes that have shipped.
+  final Widget Function(BuildContext, GoRouterState)? builder;
+
   GoRoute get route => GoRoute(
     path: path,
-    builder: (_, _) => PlaceholderScreen(title: title, subtitle: subtitle),
+    builder: (BuildContext context, GoRouterState state) => builder != null
+        ? builder!(context, state)
+        : PlaceholderScreen(title: title, subtitle: subtitle),
   );
 }
 
-const List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
+/// Routes implemented in Phase 5 — these override the default
+/// placeholder with their real widget so navigation lands on a
+/// working screen. The list is not `const` because the override
+/// builder is a runtime lambda.
+final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
   _TopLevelRoute(
     AppRoutes.healthRecords,
     'Health Records',
     'Coming in Phase 5.',
+    (BuildContext _, GoRouterState _) => const HealthRecordsScreen(),
   ),
-  _TopLevelRoute(AppRoutes.medications, 'Medications', 'Coming in Phase 5.'),
-  _TopLevelRoute(AppRoutes.vaccinations, 'Vaccinations', 'Coming in Phase 5.'),
-  _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
-  _TopLevelRoute(AppRoutes.aiAssistant, 'AI Assistant', 'Coming in Phase 7.'),
-  _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
-  _TopLevelRoute(AppRoutes.addFeeding, 'Add Feeding', 'Coming in Phase 4.'),
   _TopLevelRoute(
+    AppRoutes.medications,
+    'Medications',
+    'Coming in Phase 5.',
+    (BuildContext _, GoRouterState _) => const MedicationListScreen(),
+  ),
+  _TopLevelRoute(
+    AppRoutes.vaccinations,
+    'Vaccinations',
+    'Coming in Phase 5.',
+    (BuildContext _, GoRouterState _) => const VaccinationListScreen(),
+  ),
+  const _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
+  const _TopLevelRoute(
+    AppRoutes.aiAssistant,
+    'AI Assistant',
+    'Coming in Phase 7.',
+  ),
+  const _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
+  const _TopLevelRoute(
+    AppRoutes.addFeeding,
+    'Add Feeding',
+    'Coming in Phase 4.',
+  ),
+  const _TopLevelRoute(
     AppRoutes.nutritionReport,
     'Nutrition Report',
     'Coming in Phase 4.',
   ),
-  _TopLevelRoute(AppRoutes.weightTrend, 'Weight Trend', 'Coming in Phase 5.'),
   _TopLevelRoute(
+    AppRoutes.weightTrend,
+    'Weight Trend',
+    'Coming in Phase 5.',
+    (BuildContext _, GoRouterState _) => const WeightTrendScreen(),
+  ),
+  const _TopLevelRoute(
     AppRoutes.emergencyGuidance,
     'Emergency Guidance',
     'Coming in Phase 7.',
   ),
-  _TopLevelRoute(AppRoutes.weeklyReport, 'Weekly Report', 'Coming in Phase 7.'),
-  _TopLevelRoute(AppRoutes.grooming, 'Grooming', 'Coming in Phase 4.'),
-  _TopLevelRoute(AppRoutes.foodGuide, 'Food Guide', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.catSafety, 'Cat Safety', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.careGuides, 'Care Guides', 'Coming in Phase 8.'),
-  _TopLevelRoute(AppRoutes.kittenCare, 'Kitten Care', 'Coming in Phase 8.'),
+  const _TopLevelRoute(
+    AppRoutes.weeklyReport,
+    'Weekly Report',
+    'Coming in Phase 7.',
+  ),
+  const _TopLevelRoute(AppRoutes.grooming, 'Grooming', 'Coming in Phase 4.'),
+  const _TopLevelRoute(AppRoutes.foodGuide, 'Food Guide', 'Coming in Phase 8.'),
+  const _TopLevelRoute(AppRoutes.catSafety, 'Cat Safety', 'Coming in Phase 8.'),
+  const _TopLevelRoute(
+    AppRoutes.careGuides,
+    'Care Guides',
+    'Coming in Phase 8.',
+  ),
+  const _TopLevelRoute(
+    AppRoutes.kittenCare,
+    'Kitten Care',
+    'Coming in Phase 8.',
+  ),
 ];
 
 class _PlaceholderForRoute extends StatelessWidget {
