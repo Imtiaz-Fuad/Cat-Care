@@ -41,7 +41,6 @@ dependencies:
   # Cross-platform permissions / files / utils
   permission_handler: ^11.3.1
   image_picker: ^1.1.2
-  file_picker: ^8.1.4
   path_provider: ^2.1.5
   path: ^1.9.0
   uuid: ^4.5.1
