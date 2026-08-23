@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/accent_color_extractor.dart';
+
 /// Render a cat photo in one of three shapes per design §5:
 ///
 /// * [CatPhotoVariant.hero] — large, fills the screen width; used at
@@ -59,6 +61,7 @@ class CatPhoto extends StatelessWidget {
       accentHex,
       scheme.primaryContainer,
     );
+    final Color? accentBorder = AccentColorExtractor.tryParseHex(accentHex);
 
     return Semantics(
       label: semanticLabel ?? 'Cat photo',
@@ -69,18 +72,31 @@ class CatPhoto extends StatelessWidget {
         height: dim,
         child: ClipRRect(
           borderRadius: radius,
-          child:
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
               image ??
-              ColoredBox(
-                color: placeholderColor,
-                child: Center(
-                  child: Icon(
-                    Icons.pets,
-                    size: dim / 2.5,
-                    color: scheme.onPrimaryContainer.withValues(alpha: 0.6),
+                  ColoredBox(
+                    color: placeholderColor,
+                    child: Center(
+                      child: Icon(
+                        Icons.pets,
+                        size: dim / 2.5,
+                        color: scheme.onPrimaryContainer.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ),
+              if (accentBorder != null)
+                IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: accentBorder, width: 2),
+                      borderRadius: radius,
+                    ),
                   ),
                 ),
-              ),
+            ],
+          ),
         ),
       ),
     );

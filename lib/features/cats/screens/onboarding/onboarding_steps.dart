@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/theme/accent_color_extractor.dart';
 import '../../models/cat_draft.dart';
 import '../../widgets/cat_photo.dart';
 import 'onboarding_controller.dart';
@@ -59,6 +60,9 @@ class OnboardingPhotoStep extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 16),
+          if (draft.accentHex != null)
+            Center(child: _AccentPreview(accentHex: draft.accentHex!)),
           if (controller.isBusy) ...<Widget>[
             const SizedBox(height: 12),
             const Center(
@@ -555,5 +559,47 @@ String _priorityLabel(String id) {
       return 'Vaccinations';
     default:
       return id;
+  }
+}
+
+/// Small swatch + label confirming the palette was extracted from the
+/// photo. Visible only after [OnboardingController.analyzePhoto] runs.
+class _AccentPreview extends StatelessWidget {
+  const _AccentPreview({required this.accentHex});
+
+  final String accentHex;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color? color = AccentColorExtractor.tryParseHex(accentHex);
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final TextTheme text = Theme.of(context).textTheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            width: 18,
+            height: 18,
+            decoration: BoxDecoration(
+              color: color ?? scheme.primary,
+              shape: BoxShape.circle,
+              border: Border.all(color: scheme.outlineVariant),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Accent preview',
+            style: text.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+    );
   }
 }
