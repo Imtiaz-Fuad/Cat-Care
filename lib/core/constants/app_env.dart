@@ -1,9 +1,11 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import '../services/app_logger.dart';
+
 /// Build-flavor keys and runtime environment helpers.
 ///
 /// Values are loaded from `.env` at startup via `flutter_dotenv`. The
-/// loader is explicit (`AppEnv.load`) so callers can fail fast when the
+/// loader is explicit (`AppEnv.initialize`) so callers can fail fast when the
 /// file is missing in development or CI rather than discovering a null
 /// value deep in a service.
 class AppEnv {
@@ -21,13 +23,41 @@ class AppEnv {
   /// `--dart-define=FLAVOR=prod` (consumed by `AppEnv.initialize`).
   static String get flavor => _flavor;
 
+  /// True once [initialize] has finished (success or skipped). Used by
+  /// `FirebaseBootstrap` to decide whether flavor-aware logging should
+  /// fire.
+  static bool initialized = false;
+
   /// Reads `.env` and captures the active flavor from `--dart-define`.
   /// Call this from `main()` before `runApp`.
+  ///
+  /// The loader is **defensive**: a missing or unreadable `.env` only
+  /// logs a warning. It does NOT throw — `main()` has no
+  /// `runZonedGuarded` wrapper, so an exception here would kill startup
+  /// and the user would be stuck on the native splash forever.
   static Future<void> initialize() async {
-    await dotenv.load(fileName: '.env');
-    const String fromDefine =
-        String.fromEnvironment('FLAVOR', defaultValue: flavorDev);
+    try {
+      await dotenv.load(fileName: '.env');
+    } catch (error, stack) {
+      // `.env` is intentionally not bundled in release builds (see
+      // commit e88dbe2 — dropped from flutter assets for CI reasons).
+      // `flutter_dotenv` throws when the asset is missing, which used
+      // to wedge `main()` on the native splash. Warn and continue with
+      // empty values; flavor-aware code paths still work via
+      // `--dart-define=FLAVOR=...`.
+      AppLogger.w(
+        'AppEnv: .env not loaded — falling back to dart-defines + '
+        'empty values.',
+        error,
+        stack,
+      );
+    }
+    const String fromDefine = String.fromEnvironment(
+      'FLAVOR',
+      defaultValue: flavorDev,
+    );
     _flavor = _normalizeFlavor(fromDefine);
+    initialized = true;
   }
 
   static String _normalizeFlavor(String raw) {
@@ -52,11 +82,15 @@ class AppEnv {
   static String get firebaseProjectId {
     switch (_flavor) {
       case flavorProd:
-        return get('FIREBASE_PROJECT_ID_PROD',
-            fallback: get('FIREBASE_PROJECT_ID'));
+        return get(
+          'FIREBASE_PROJECT_ID_PROD',
+          fallback: get('FIREBASE_PROJECT_ID'),
+        );
       case flavorStaging:
-        return get('FIREBASE_PROJECT_ID_STAGING',
-            fallback: get('FIREBASE_PROJECT_ID'));
+        return get(
+          'FIREBASE_PROJECT_ID_STAGING',
+          fallback: get('FIREBASE_PROJECT_ID'),
+        );
       case flavorDev:
       default:
         return get('FIREBASE_PROJECT_ID');
