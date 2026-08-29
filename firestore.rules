@@ -38,9 +38,16 @@ service cloud.firestore {
     // A user can read and write any document under their own `/users/{uid}`
     // tree. The rule covers the cats subcollection and all of its
     // subcollections (routines, feedings, water, weights, behavior, health,
-    // vaccinations, medications), plus any future per-user data we add here.
+    // vaccinations, medications, weeklyReports), plus any future per-user
+    // data we add here.
     match /users/{uid}/{document=**} {
       allow read, write: if isOwner(uid);
     }
+
+    // ---- AI audit log ------------------------------------------------------
+    // (Removed in Phase 7 Option C+: the AI feature now talks to Gemini
+    // directly from the client, so there is no server-side log to keep
+    // behind rules. If we re-introduce server-side logging later, restore
+    // a deny-all match block here.)
   }
 }
