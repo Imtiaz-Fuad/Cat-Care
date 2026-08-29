@@ -3,6 +3,10 @@ import 'package:go_router/go_router.dart';
 
 import '../core/widgets/app_scaffold.dart';
 import '../core/widgets/placeholder_screen.dart';
+import '../features/ai/screens/ai_assistant_screen.dart';
+import '../features/ai/screens/emergency_guidance_screen.dart';
+import '../features/ai/screens/food_label_screen.dart';
+import '../features/ai/screens/weekly_report_screen.dart';
 import '../features/authentication/providers/auth_provider.dart';
 import '../features/authentication/screens/login_screen.dart';
 import '../features/authentication/screens/splash_screen.dart';
@@ -195,10 +199,11 @@ final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     (BuildContext _, GoRouterState _) => const VaccinationListScreen(),
   ),
   const _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
-  const _TopLevelRoute(
+  _TopLevelRoute(
     AppRoutes.aiAssistant,
     'AI Assistant',
     'Coming in Phase 7.',
+    (BuildContext _, GoRouterState _) => const AiAssistantScreen(),
   ),
   const _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
   const _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
@@ -218,15 +223,23 @@ final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     'Coming in Phase 5.',
     (BuildContext _, GoRouterState _) => const WeightTrendScreen(),
   ),
-  const _TopLevelRoute(
+  _TopLevelRoute(
     AppRoutes.emergencyGuidance,
     'Emergency Guidance',
     'Coming in Phase 7.',
+    (BuildContext _, GoRouterState _) => const EmergencyGuidanceScreen(),
   ),
-  const _TopLevelRoute(
+  _TopLevelRoute(
     AppRoutes.weeklyReport,
     'Weekly Report',
     'Coming in Phase 7.',
+    (BuildContext _, GoRouterState _) => const WeeklyReportScreen(),
+  ),
+  _TopLevelRoute(
+    AppRoutes.foodLabel,
+    'Food Label Scan',
+    'Coming in Phase 7.',
+    (BuildContext _, GoRouterState _) => const FoodLabelScreen(),
   ),
   const _TopLevelRoute(AppRoutes.grooming, 'Grooming', 'Coming in Phase 4.'),
   const _TopLevelRoute(AppRoutes.foodGuide, 'Food Guide', 'Coming in Phase 8.'),

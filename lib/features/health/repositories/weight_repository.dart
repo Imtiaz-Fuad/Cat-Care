@@ -46,6 +46,38 @@ class WeightRepository {
         );
   }
 
+  /// One-shot range fetch used by the AI weekly-report builder. The
+  /// caller passes `since`; we return every entry in
+  /// `[since, now]` newest-first.
+  Future<List<WeightEntry>> getWeightsForRange({
+    required String ownerId,
+    required String catId,
+    DateTime? since,
+  }) async {
+    var query = _firestore.instance
+        .collection(AppConstants.usersCollection)
+        .doc(ownerId)
+        .collection(AppConstants.catsSubcollection)
+        .doc(catId)
+        .collection(AppConstants.weightsSubcollection)
+        .orderBy('recordedAt', descending: true);
+    if (since != null) {
+      query = query.where(
+        'recordedAt',
+        isGreaterThanOrEqualTo: since.toIso8601String(),
+      );
+    }
+    final snap = await query.get();
+    return snap.docs
+        .map((QueryDocumentSnapshot<Map<String, dynamic>> d) {
+          return WeightEntry.fromJson(<String, dynamic>{
+            ...d.data(),
+            'id': d.id,
+          });
+        })
+        .toList(growable: false);
+  }
+
   Future<String> add(String userId, String catId, WeightEntry entry) async {
     final String id = entry.id.isEmpty ? newRecordId() : entry.id;
     final WeightEntry stamped = entry.copyWith(id: id);

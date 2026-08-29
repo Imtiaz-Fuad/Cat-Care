@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/constants/app_env.dart';
 import 'core/services/app_logger.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/content/asset_content_seed_loader.dart';
@@ -16,6 +18,9 @@ import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/authentication/providers/auth_provider.dart';
 import 'features/authentication/repositories/auth_repository.dart';
+import 'features/ai/providers/ai_provider.dart';
+import 'features/ai/repositories/ai_repository.dart';
+import 'features/ai/utils/cat_summary_builder.dart';
 import 'features/cats/providers/cat_provider.dart';
 import 'features/cats/repositories/cat_repository.dart';
 import 'features/health/providers/behavior_provider.dart';
@@ -267,6 +272,28 @@ class _AppRouterHostState extends State<_AppRouterHost> {
           catIdProvider: () => catProvider.activeCatId ?? '',
         );
 
+    // Phase 7: AI Assistant + reports. The Flutter client talks to
+    // the Generative Language API directly with the key from
+    // `.env` (see `docs/CLIENT_GEMINI_KEY.md`). The provider caches
+    // the chat history and last generated report so screens can be
+    // navigated back to without re-hitting the network.
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final AiRepository aiRepository = AiRepository(
+      apiKey: AppEnv.geminiApiKey,
+      prefs: prefs,
+    );
+    final CatSummaryBuilder summaryBuilder = CatSummaryBuilder(
+      feedingRepository: feedingRepo,
+      waterRepository: waterRepo,
+      weightRepository: weightRepo,
+    );
+    final AiProvider aiProvider = AiProvider(
+      repository: aiRepository,
+      summaryBuilder: summaryBuilder,
+      authProvider: widget.authProvider,
+      catProvider: catProvider,
+    );
+
     return _Wiring(
       catProvider: catProvider,
       routineProvider: routineProvider,
@@ -279,6 +306,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       scheduler: scheduler,
       medicationReminders: medicationReminders,
       vaccinationReminders: vaccinationReminders,
+      aiProvider: aiProvider,
     );
   }
 
@@ -296,6 +324,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       w.medicationProvider.dispose();
       w.behaviorProvider.dispose();
       w.weightProvider.dispose();
+      w.aiProvider.dispose();
       w.catProvider.dispose();
     });
     super.dispose();
@@ -356,6 +385,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
             ChangeNotifierProvider<VaccinationReminderScheduler>.value(
               value: w.vaccinationReminders,
             ),
+            ChangeNotifierProvider<AiProvider>.value(value: w.aiProvider),
           ],
           child: MaterialApp.router(
             title: AppConstants.appName,
@@ -387,6 +417,7 @@ class _Wiring {
     required this.scheduler,
     required this.medicationReminders,
     required this.vaccinationReminders,
+    required this.aiProvider,
   });
   final CatProvider catProvider;
   final RoutineProvider routineProvider;
@@ -399,4 +430,5 @@ class _Wiring {
   final NotificationSchedulerService scheduler;
   final MedicationReminderScheduler medicationReminders;
   final VaccinationReminderScheduler vaccinationReminders;
+  final AiProvider aiProvider;
 }

@@ -78,6 +78,16 @@ class AppEnv {
     return dotenv.maybeGet(key) ?? fallback;
   }
 
+  /// Gemini API key. The Flutter client talks to the Generative
+  /// Language API directly; there is no backend in between. The key
+  /// is loaded from `GEMINI_API_KEY` in `.env` and bundled into the
+  /// release AAB — see `docs/CLIENT_GEMINI_KEY.md` for the accepted
+  /// trade-off and the AI Studio restriction guidance.
+  ///
+  /// In dev, `.env` is loaded via `flutter_dotenv`. In CI/release
+  /// where the asset may be absent, prefer `--dart-define=GEMINI_API_KEY=…`.
+  static String get geminiApiKey => get('GEMINI_API_KEY');
+
   /// Returns the Firebase project id for the active flavor.
   static String get firebaseProjectId {
     switch (_flavor) {

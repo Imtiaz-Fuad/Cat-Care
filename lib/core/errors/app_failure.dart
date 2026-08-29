@@ -33,3 +33,10 @@ class PermissionFailure extends AppFailure {
 class UnknownFailure extends AppFailure {
   const UnknownFailure(super.message, {super.code});
 }
+
+/// AI free-tier quota exhausted. Maps to HttpsError('resource-exhausted')
+/// in the Cloud Function. UI should show a friendly "limit finished"
+/// message and offer to try again later.
+class AiQuotaExceededFailure extends AppFailure {
+  const AiQuotaExceededFailure(super.message, {super.code});
+}

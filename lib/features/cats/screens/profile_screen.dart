@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../../core/models/cat_profile.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../routes/app_routes.dart';
+import '../../ai/providers/ai_provider.dart';
 import '../../authentication/providers/auth_provider.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
 import '../../routine/providers/routine_provider.dart';
@@ -168,8 +169,26 @@ class _ProfileBody extends StatelessWidget {
         const _ShortcutTile(
           icon: Icons.smart_toy_outlined,
           title: 'AI assistant',
-          subtitle: 'Coming soon',
-          enabled: false,
+          subtitle: 'Ask care questions for your active cat.',
+          route: AppRoutes.aiAssistant,
+        ),
+        const _ShortcutTile(
+          icon: Icons.assignment_outlined,
+          title: 'Weekly report',
+          subtitle: 'A 7-day care summary for your active cat.',
+          route: AppRoutes.weeklyReport,
+        ),
+        const _ShortcutTile(
+          icon: Icons.qr_code_scanner_outlined,
+          title: 'Food label scan',
+          subtitle: 'Analyze a packaged cat food label.',
+          route: AppRoutes.foodLabel,
+        ),
+        const _ShortcutTile(
+          icon: Icons.local_hospital_outlined,
+          title: 'Emergency guidance',
+          subtitle: 'Safety signs and what to do.',
+          route: AppRoutes.emergencyGuidance,
         ),
         const SizedBox(height: 16),
         Padding(
@@ -205,7 +224,13 @@ class _ProfileBody extends StatelessWidget {
         ],
       ),
     );
-    if (ok == true) await auth.signOut();
+    if (ok == true) {
+      if (!context.mounted) return;
+      // Clear AI caches before sign-out so the next account does not
+      // inherit this session's chat history or generated reports.
+      context.read<AiProvider>().reset();
+      await auth.signOut();
+    }
   }
 }
 
