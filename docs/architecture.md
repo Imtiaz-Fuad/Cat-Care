@@ -504,27 +504,60 @@ SharedPreferences should not be used to determine authentication status.
 
 ---
 
-# AI Architecture (Future)
+# AI Architecture
 
 ```
-Flutter
+Flutter (cat_care)
     │
+    │  HTTPS · ?key=$GEMINI_API_KEY
     ▼
-Firebase Authentication
-
-Cloud Firestore
-
-Firebase Storage
-
-Cloud Functions
-      │
-      ▼
-AI Providers
+Generative Language API  (gemini-1.5-flash)
 ```
 
-The Flutter application must never directly communicate with AI providers using secret API keys.
+CatCare calls Google's Gemini `generateContent` endpoint **directly
+from the device**. There is no intermediary Cloud Function and no
+backend deployment involved in the AI path.
 
-All AI requests should pass through a Cloud Function.
+### Flow
+
+1. The user invokes one of three AI surfaces — chat, weekly report,
+   or food-label extraction — from a screen wired to `AiProvider`.
+2. `AiProvider` delegates to `AiRepository`, which first checks the
+   per-device daily cap stored in `SharedPreferences`
+   (`ai.local.calls.{chat|weekly|food}`). If the cap is reached,
+   the repository throws `AiQuotaExceededFailure` and the UI flips
+   `aiAvailable` to `false`, disabling the input.
+3. If the cap is OK, the repository POSTs a Gemini-shape JSON body
+   to
+   `https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}`.
+   Auth is the `?key=` query parameter (no `Authorization` header).
+4. The Gemini reply is parsed leniently (`_parseJsonLenient`) and
+   rendered into a domain model.
+
+### Where the key lives
+
+| Surface             | Location                                          |
+| ------------------- | ------------------------------------------------- |
+| Source of truth     | `assets/.env` (`GEMINI_API_KEY=…`)                |
+| Build-time override | `--dart-define=GEMINI_API_KEY=…` (CI / release)   |
+| Runtime accessor    | `AppEnv.geminiApiKey`                             |
+
+See `docs/CLIENT_GEMINI_KEY.md` for restriction guidance (Generative
+Language API only), on-device rate-limit details (20 chat + 5 weekly
++ 5 food-label per UTC day), and the leak-response procedure.
+
+### Diagrams
+
+* Chat: `AiAssistantScreen` → `AiProvider.sendChatMessage` →
+  `AiRepository.chat` → `lib/features/ai/prompts/chat_*.dart` +
+  `gemini-1.5-flash:generateContent?key=…`.
+* Weekly report: `WeeklyReportScreen` → `AiProvider.requestWeeklyReport` →
+  `AiRepository.weeklyReport` → JSON-mode `generateContent`. The parsed
+  report is cached by `(catId, weekId)` in `SharedPreferences` so
+  re-opening the screen never re-bills Gemini.
+* Food label: `FoodLabelScreen` → `AiProvider.extractFoodLabel` →
+  `AiRepository.extractFoodLabel` → `generateContent` with an inline
+  base64 image part, response parsed to `FoodLabelExtraction`.
 
 ---
 
@@ -650,6 +683,15 @@ What **must** stay out of the repository regardless of this convention:
   Places, OpenAI, etc.) — those belong in Firebase Functions config or
   Secret Manager, never committed.
 * `.env` files with developer-specific overrides.
+
+## Third-party AI keys (Gemini)
+
+CatCare ships **one** third-party AI key (`GEMINI_API_KEY`) bundled
+into the Flutter snapshot. Unlike the Firebase `api_key` above, this
+one is **revocable and rate-limited** — it is not a project
+identifier. See [`CLIENT_GEMINI_KEY.md`](CLIENT_GEMINI_KEY.md) for
+the AI-Studio restriction checklist, the per-device daily caps, and
+the leak-response procedure.
 
 ## Firestore Security Rules
 

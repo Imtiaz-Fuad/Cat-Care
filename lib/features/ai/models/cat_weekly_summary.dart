@@ -16,8 +16,8 @@
 /// `upcomingVaccinations`; those fields are skipped for MVP because
 /// pulling them in would require three more repositories, three more
 /// UI guarantees about activity streams being ready, and a longer
-/// per-call latency budget. See `docs/RESTRICT_KEY.md` §"MVP scope"
-/// for the upgrade path.
+/// per-call latency budget. See `docs/CLIENT_GEMINI_KEY.md` §"MVP
+/// scope limitations" for the upgrade path.
 class CatWeeklySummary {
   const CatWeeklySummary({
     required this.daysWindow,
