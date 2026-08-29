@@ -20,6 +20,8 @@ import 'features/authentication/providers/auth_provider.dart';
 import 'features/authentication/repositories/auth_repository.dart';
 import 'features/ai/providers/ai_provider.dart';
 import 'features/ai/repositories/ai_repository.dart';
+import 'features/ai/utils/prompt_templates.dart';
+import 'features/ai/utils/weekly_report_cache.dart';
 import 'features/ai/utils/cat_summary_builder.dart';
 import 'features/cats/providers/cat_provider.dart';
 import 'features/cats/repositories/cat_repository.dart';
@@ -278,9 +280,15 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     // the chat history and last generated report so screens can be
     // navigated back to without re-hitting the network.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final PromptTemplates promptTemplates =
+        await PromptTemplates.loadFromBundle();
+    final WeeklyReportCache weeklyReportCache =
+        WeeklyReportCache(prefs: prefs);
     final AiRepository aiRepository = AiRepository(
       apiKey: AppEnv.geminiApiKey,
       prefs: prefs,
+      templates: promptTemplates,
+      cache: weeklyReportCache,
     );
     final CatSummaryBuilder summaryBuilder = CatSummaryBuilder(
       feedingRepository: feedingRepo,

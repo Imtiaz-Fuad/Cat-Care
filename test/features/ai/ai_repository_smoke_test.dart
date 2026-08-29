@@ -210,6 +210,55 @@ void main() {
       expect(cfg['responseMimeType'], 'application/json');
     });
 
+    test(
+        'weeklyReport caches result and second call within the same week '
+        'does not POST again', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      final _FakeHttpTransport transport = _FakeHttpTransport(
+        <String, dynamic>{
+          'reply': _geminiTextReply('cached weekly summary'),
+        },
+      );
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final AiRepository repo = AiRepository(
+        apiKey: 'test-key',
+        httpClient: transport,
+        prefs: prefs,
+      );
+
+      final WeeklyReportResult first = await repo.weeklyReport(
+        cat: _stubCat(),
+        summary: _populatedSummary(),
+        weekId: '2026-W34',
+        force: false,
+        locale: 'en',
+      );
+      expect(first.fromCache, isFalse);
+      expect(first.text, 'cached weekly summary');
+      expect(transport.calls, hasLength(1));
+
+      final WeeklyReportResult second = await repo.weeklyReport(
+        cat: _stubCat(),
+        summary: _populatedSummary(),
+        weekId: '2026-W34',
+        force: false,
+        locale: 'en',
+      );
+      expect(second.fromCache, isTrue);
+      expect(second.text, 'cached weekly summary');
+      expect(transport.calls, hasLength(1));
+
+      final WeeklyReportResult third = await repo.weeklyReport(
+        cat: _stubCat(),
+        summary: _populatedSummary(),
+        weekId: '2026-W34',
+        force: true,
+        locale: 'en',
+      );
+      expect(third.fromCache, isFalse);
+      expect(transport.calls, hasLength(2));
+    });
+
     test('extractFoodLabel sends inline image + parses lenient JSON',
         () async {
       final _FakeHttpTransport transport = _FakeHttpTransport(

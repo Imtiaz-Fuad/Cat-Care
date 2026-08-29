@@ -249,6 +249,10 @@ class AiProvider extends ChangeNotifier {
     _weeklyBusy = false;
     _foodLabelBusy = false;
     notifyListeners();
+    // Best-effort cache wipe. If the clear fails the next user just
+    // sees a stale weekly report until they refresh.
+    // ignore: discarded_futures
+    _repository.clearWeeklyReportCache();
   }
 
   // ---------------------------------------------------------------------------

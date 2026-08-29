@@ -8,6 +8,8 @@ import '../../../core/errors/app_failure.dart';
 import '../../../core/models/cat_profile.dart';
 import '../../../core/services/app_logger.dart';
 import '../models/cat_weekly_summary.dart';
+import '../utils/prompt_templates.dart';
+import '../utils/weekly_report_cache.dart';
 
 /// Client-side entry point for every AI surface (chat, weekly report,
 /// food-label photo extraction).
@@ -49,6 +51,8 @@ class AiRepository {
     Duration? requestTimeout,
     RateLimitBuckets? buckets,
     DateTime Function()? clock,
+    PromptTemplates? templates,
+    WeeklyReportCache? cache,
     String model = defaultModel,
     String baseUrl = defaultBaseUrl,
   }) : _apiKey = apiKey,
@@ -57,6 +61,8 @@ class AiRepository {
        _requestTimeout = requestTimeout ?? const Duration(seconds: 60),
        _buckets = buckets ?? RateLimitBuckets.defaults,
        _clock = clock ?? DateTime.now,
+       _templates = templates ?? _inlineFallbackTemplates(),
+       _cache = cache ?? WeeklyReportCache(prefs: prefs),
        _model = model,
        _baseUrl = _stripTrailingSlash(baseUrl);
 
@@ -77,12 +83,51 @@ class AiRepository {
     return s;
   }
 
+  /// Inline fallback templates. Mirrors the wording that lived in
+  /// the old private helpers so unit tests (and any future caller
+  /// that forgets to inject prompts) still get a sane system
+  /// instruction instead of an empty string.
+  static PromptTemplates _inlineFallbackTemplates() {
+    const String chatEn =
+        'You are a caring assistant for cat owners in Bangladesh. '
+        'You do not diagnose — always recommend confirming with a vet.';
+    const String chatBn =
+        'আপনি বাংলাদেশের বিড়াল মালিকদের জন্য একটি সহানুভূতিশীল সহকারী। '
+        'রোগ নির্ণয় করবেন না — প্রয়োজনে পশুচিকিত্সকের কাছে যাওয়ার পরামর্শ দিন।';
+    const String weeklyEn =
+        'You write a friendly weekly summary for a cat owner. '
+        "Reply in the user's language (English or বাংলা). "
+        'Keep it short and actionable. Do not diagnose.';
+    const String weeklyBn =
+        'আপনি বিড়ালের যত্নের একটি সাপ্তাহিক সারাংশ লেখেন। '
+        'উত্তর সংক্ষিপ্ত, বন্ধুসুলভ এবং কার্যকর পরামর্শযুক্ত রাখুন। '
+        'রোগ নির্ণয় করবেন না।';
+    const String foodLabelEn =
+        'You extract guaranteed-analysis fields from cat-food label '
+        'photos. Reply with a single JSON object using the exact keys: '
+        'brand, foodName, guaranteedAnalysis { proteinPct, fatPct, '
+        'fiberPct, moisturePct }, ingredientsRaw, notes, missingData '
+        '(boolean). If you cannot read a field, set it to null. If the '
+        'photo is unreadable, set missingData to true.';
+    const String foodLabelBn = foodLabelEn;
+    return PromptTemplates.Raw(
+      chatEn: chatEn,
+      chatBn: chatBn,
+      weeklyEn: weeklyEn,
+      weeklyBn: weeklyBn,
+      foodLabelEn: foodLabelEn,
+      foodLabelBn: foodLabelBn,
+    );
+  }
+
   final String _apiKey;
   final HttpTransport _http;
   final SharedPreferences? _prefs;
   final Duration _requestTimeout;
   final RateLimitBuckets _buckets;
   final DateTime Function() _clock;
+  final PromptTemplates _templates;
+  final WeeklyReportCache _cache;
   final String _model;
   final String _baseUrl;
   // ---------------------------------------------------------------------------
@@ -164,6 +209,15 @@ class AiRepository {
         noData: true,
       );
     }
+
+    // Cache hit short-circuits the API call (and the rate-limit
+    // counter) within the same ISO week. `force: true` always
+    // re-runs and overwrites the cached entry.
+    if (!force) {
+      final WeeklyReportResult? cached = await _cache.get(cat.id, weekId);
+      if (cached != null) return cached;
+    }
+
     if (_apiKey.isEmpty) {
       throw const NetworkFailure(
         'Gemini API key is missing. Set GEMINI_API_KEY in .env and rebuild.',
@@ -199,14 +253,21 @@ class AiRepository {
     final Map<String, dynamic> response = await _post(body);
     final String text = _readReplyText(response);
     final bool noData = text.trim().isEmpty;
-    return WeeklyReportResult(
+    final WeeklyReportResult result = WeeklyReportResult(
       text: text,
       weekId: weekId,
       generatedAt: _clock(),
       fromCache: false,
       noData: noData,
     );
+    await _cache.put(cat.id, weekId, result);
+    return result;
   }
+
+  /// Wipe the on-device weekly-report cache. Called from
+  /// [AiProvider.reset] on sign-out so the next user does not
+  /// inherit the previous owner's cached reports.
+  Future<void> clearWeeklyReportCache() => _cache.clear();
 
   /// Extract the guaranteed-analysis fields from a cat-food label
   /// photo. The image is sent inline as base64 in the request body's
@@ -293,33 +354,17 @@ class AiRepository {
   }
 
   Map<String, dynamic> _chatSystemInstruction({required String locale}) {
-    final String bn =
-        'আপনি বাংলাদেশের বিড়াল মালিকদের জন্য একটি সহানুভূতিশীল সহকারী। '
-        'রোগ নির্ণয় করবেন না — প্রয়োজনে পশুচিকিত্সকের কাছে যাওয়ার পরামর্শ দিন।';
-    final String en =
-        'You are a caring assistant for cat owners in Bangladesh. '
-        'You do not diagnose — always recommend confirming with a vet.';
-    return <String, dynamic>{
-      'parts': <Map<String, dynamic>>[
-        <String, dynamic>{'text': locale == 'bn' ? bn : en},
-      ],
-    };
+    return _templates.envelopeFor(
+      feature: PromptFeature.chat,
+      locale: locale,
+    );
   }
 
   Map<String, dynamic> _weeklySystemInstruction({required String locale}) {
-    final String bn =
-        'আপনি বিড়ালের যত্নের একটি সাপ্তাহিক সারাংশ লেখেন। '
-        'উত্তর সংক্ষিপ্ত, বন্ধুসুলভ এবং কার্যকর পরামর্শযুক্ত রাখুন। '
-        'রোগ নির্ণয় করবেন না।';
-    final String en =
-        'You write a friendly weekly summary for a cat owner. '
-        "Reply in the user's language (English or বাংলা). "
-        'Keep it short and actionable. Do not diagnose.';
-    return <String, dynamic>{
-      'parts': <Map<String, dynamic>>[
-        <String, dynamic>{'text': locale == 'bn' ? bn : en},
-      ],
-    };
+    return _templates.envelopeFor(
+      feature: PromptFeature.weekly,
+      locale: locale,
+    );
   }
 
   String _weeklyUserPrompt({
@@ -353,19 +398,10 @@ class AiRepository {
   }
 
   Map<String, dynamic> _foodLabelSystemInstruction() {
-    return <String, dynamic>{
-      'parts': <Map<String, dynamic>>[
-        <String, dynamic>{
-          'text':
-              'You extract guaranteed-analysis fields from cat-food label '
-              'photos. Reply with a single JSON object using the exact keys: '
-              'brand, foodName, guaranteedAnalysis { proteinPct, fatPct, '
-              'fiberPct, moisturePct }, ingredientsRaw, notes, missingData '
-              '(boolean). If you cannot read a field, set it to null. If the '
-              'photo is unreadable, set missingData to true.',
-        },
-      ],
-    };
+    return _templates.envelopeFor(
+      feature: PromptFeature.foodLabel,
+      locale: 'en',
+    );
   }
 
   String _foodLabelUserPrompt({required String locale}) {
