@@ -169,7 +169,11 @@ class AiRepository {
     await _enforceRateLimit(RateLimitFeature.chat);
 
     final Map<String, dynamic> body = <String, dynamic>{
-      'systemInstruction': _chatSystemInstruction(locale: locale),
+      'systemInstruction': _chatSystemInstruction(
+        locale: locale,
+        cat: cat,
+        summary: summary,
+      ),
       'contents': _chatContents(history: history, userMessage: trimmed),
       'generationConfig': <String, dynamic>{
         'temperature': 0.4,
@@ -353,11 +357,60 @@ class AiRepository {
     return out;
   }
 
-  Map<String, dynamic> _chatSystemInstruction({required String locale}) {
-    return _templates.envelopeFor(
+  /// System instruction for chat turns. The first part is the
+  /// externalised guardrail prompt (English or Bangla, loaded from
+  /// `assets/prompts/system_instructions.md`); the second part is a
+  /// compact live-context block so the model can answer with the
+  /// active cat's name + recent stats in scope.
+  ///
+  /// The Gemini API accepts multiple `parts[]` inside one
+  /// `systemInstruction` — they are concatenated as a single system
+  /// message. Keeping the guardrail first preserves the
+  /// "do not diagnose / always recommend a vet" framing regardless
+  /// of how the model prioritises the later context block.
+  Map<String, dynamic> _chatSystemInstruction({
+    required String locale,
+    required CatProfile cat,
+    required CatWeeklySummary summary,
+  }) {
+    final Map<String, dynamic> base = _templates.envelopeFor(
       feature: PromptFeature.chat,
       locale: locale,
     );
+    final List<dynamic> parts = List<dynamic>.from(
+      base['parts'] as List<dynamic>,
+    );
+    parts.add(<String, dynamic>{
+      'text': _chatContextBlock(cat: cat, summary: summary, locale: locale),
+    });
+    return <String, dynamic>{'parts': parts};
+  }
+
+  /// Compact live-context string for chat. The wording is identical
+  /// in both locales to the weekly-report header/metrics so the
+  /// model sees the same numbers across surfaces — only the
+  /// surrounding gloss changes.
+  String _chatContextBlock({
+    required CatProfile cat,
+    required CatWeeklySummary summary,
+    required String locale,
+  }) {
+    final bool bangla = locale == 'bn';
+    final String header = bangla
+        ? 'বিড়াল: ${cat.name} (${cat.breed ?? "unknown breed"}, '
+              '${cat.birthday != null ? "জন্ম ${cat.birthday}" : "age unknown"}).'
+        : 'Cat: ${cat.name} (${cat.breed ?? "unknown breed"}, '
+              '${cat.birthday != null ? "born ${cat.birthday}" : "age unknown"}).';
+    final String metrics = bangla
+        ? 'গত ${summary.daysWindow} দিনে: '
+              '${summary.feedingCount}টি খাবার, '
+              '${summary.waterCount}টি পানি, '
+              '${summary.lastWeights.length}টি ওজন রেকর্ড।'
+        : 'Past ${summary.daysWindow} days: '
+              '${summary.feedingCount} feedings, '
+              '${summary.waterCount} water refills, '
+              '${summary.lastWeights.length} weight entries.';
+    return '$header $metrics';
   }
 
   Map<String, dynamic> _weeklySystemInstruction({required String locale}) {
@@ -382,20 +435,55 @@ class AiRepository {
               'Week $weekId.';
     final String metrics = locale == 'bn'
         ? 'গত ${summary.daysWindow} দিনে: '
-              '${summary.feedingCount}টি খাবার, '
-              '${summary.waterCount}টি পানি, '
+              '${summary.feedingCount}টি খাবার '
+              '(মোট ${_fmtAmount(summary.totalFeedingAmount)}) '
+              '${summary.feedingDaysWithLogs} দিনে, '
+              '${summary.waterCount}টি পানি '
+              '(মোট ${_fmtAmount(summary.totalWaterMl)} মিলি) '
+              '${summary.waterDaysWithLogs} দিনে, '
               '${summary.lastWeights.length}টি ওজন রেকর্ড।'
         : 'Past ${summary.daysWindow} days: '
-              '${summary.feedingCount} feedings, '
-              '${summary.waterCount} water refills, '
+              '${summary.feedingCount} feedings '
+              '(total ${_fmtAmount(summary.totalFeedingAmount)}) '
+              'across ${summary.feedingDaysWithLogs} days, '
+              '${summary.waterCount} water refills '
+              '(total ${_fmtAmount(summary.totalWaterMl)} ml) '
+              'across ${summary.waterDaysWithLogs} days, '
               '${summary.lastWeights.length} weight entries.';
+    final String weightsLine = _weeklyWeightsLine(
+      summary: summary,
+      locale: locale,
+    );
     final String ask = locale == 'bn'
         ? 'এই সপ্তাহের একটি সংক্ষিপ্ত সারাংশ (৪-৬ বাক্য) লিখুন এবং '
               'একটি JSON অবজেক্ট {"text":"..."} রিটার্ন করুন।'
         : 'Write a short weekly summary (4-6 sentences) and return it as '
               'a JSON object {"text":"..."}.';
-    return '$header\n$metrics\n$ask';
+    final String tail = weightsLine.isEmpty ? '' : '\n$weightsLine';
+    return '$header\n$metrics\n$ask$tail';
   }
+
+  /// Render the last recorded weights as a compact string the model
+  /// can quote. Returns the empty string when there are no entries
+  /// — the caller omits the line in that case.
+  String _weeklyWeightsLine({
+    required CatWeeklySummary summary,
+    required String locale,
+  }) {
+    if (summary.lastWeights.isEmpty) return '';
+    final String joined = summary.lastWeights
+        .map((WeightPoint w) => w.kg.toStringAsFixed(2))
+        .join(locale == 'bn' ? ', ' : ', ');
+    return locale == 'bn'
+        ? 'সাম্প্রতিক ওজন (কেজি, নতুন → পুরাতন): $joined'
+        : 'Recent weights (kg, newest -> oldest): $joined';
+  }
+
+  /// Format a mixed-unit total with at most one decimal. Locale is
+  /// unused today — the value already mixes grams/cups/cans from the
+  /// feeding log, so this is intentionally a numeric string only.
+  static String _fmtAmount(double v) =>
+      v == v.truncateToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
   Map<String, dynamic> _foodLabelSystemInstruction() {
     return _templates.envelopeFor(
