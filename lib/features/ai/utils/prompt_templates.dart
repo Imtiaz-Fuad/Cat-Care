@@ -40,13 +40,13 @@ class PromptTemplates {
     required String foodLabelEn,
     required String foodLabelBn,
   }) : this._(
-          chatEn: chatEn,
-          chatBn: chatBn,
-          weeklyEn: weeklyEn,
-          weeklyBn: weeklyBn,
-          foodLabelEn: foodLabelEn,
-          foodLabelBn: foodLabelBn,
-        );
+         chatEn: chatEn,
+         chatBn: chatBn,
+         weeklyEn: weeklyEn,
+         weeklyBn: weeklyBn,
+         foodLabelEn: foodLabelEn,
+         foodLabelBn: foodLabelBn,
+       );
 
   /// English chat system instruction.
   final String chatEn;
@@ -86,12 +86,13 @@ class PromptTemplates {
   /// Parse an already-loaded markdown body. Public so tests can
   /// exercise the parser against fixtures without a real bundle.
   static PromptTemplates parse(String body) {
-    final Map<String, Map<String, String>> sections =
-        _extractSections(body);
+    final Map<String, Map<String, String>> sections = _extractSections(body);
     String en(String key) =>
-        sections[key]?['en'] ?? (throw PromptTemplateException.missing(key, 'en'));
+        sections[key]?['en'] ??
+        (throw PromptTemplateException.missing(key, 'en'));
     String bn(String key) =>
-        sections[key]?['bn'] ?? (throw PromptTemplateException.missing(key, 'bn'));
+        sections[key]?['bn'] ??
+        (throw PromptTemplateException.missing(key, 'bn'));
     return PromptTemplates._(
       chatEn: en('chat'),
       chatBn: bn('chat'),
@@ -130,7 +131,9 @@ class PromptTemplates {
   }) {
     return <String, dynamic>{
       'parts': <Map<String, dynamic>>[
-        <String, dynamic>{'text': systemInstructionFor(feature: feature, locale: locale)},
+        <String, dynamic>{
+          'text': systemInstructionFor(feature: feature, locale: locale),
+        },
       ],
     };
   }
@@ -140,8 +143,10 @@ class PromptTemplates {
   // ---------------------------------------------------------------------------
 
   static final RegExp _sectionHeader = RegExp(r'^#\s+(\S+)\s*$');
-  static final RegExp _localeComment =
-      RegExp(r'<!--\s*(en|bn):\s*(.*?)\s*-->', dotAll: true);
+  static final RegExp _localeComment = RegExp(
+    r'<!--\s*(en|bn):\s*(.*?)\s*-->',
+    dotAll: true,
+  );
 
   static Map<String, Map<String, String>> _extractSections(String body) {
     final Map<String, Map<String, String>> result =

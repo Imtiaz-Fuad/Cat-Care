@@ -52,46 +52,41 @@ void main() {
       expect(got.noData, isFalse);
     });
 
-    test('keys are namespaced by prefix so clear() leaves other prefs alone',
-        () async {
-      SharedPreferences.setMockInitialValues(<String, Object>{
-        'other.key': 'leave-me',
-      });
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('ai.weeklyReport.cat-1.2026-W34', 'old');
-      await prefs.setString('ai.weeklyReport.cat-1.2026-W35', 'old');
-      await prefs.setString('ai.weeklyReport.cat-2.2026-W34', 'old');
+    test(
+      'keys are namespaced by prefix so clear() leaves other prefs alone',
+      () async {
+        SharedPreferences.setMockInitialValues(<String, Object>{
+          'other.key': 'leave-me',
+        });
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('ai.weeklyReport.cat-1.2026-W34', 'old');
+        await prefs.setString('ai.weeklyReport.cat-1.2026-W35', 'old');
+        await prefs.setString('ai.weeklyReport.cat-2.2026-W34', 'old');
 
-      final WeeklyReportCache cache = WeeklyReportCache(prefs: prefs);
-      await cache.clear();
+        final WeeklyReportCache cache = WeeklyReportCache(prefs: prefs);
+        await cache.clear();
 
-      expect(prefs.getString('other.key'), 'leave-me');
-      expect(prefs.getString('ai.weeklyReport.cat-1.2026-W34'), isNull);
-      expect(prefs.getString('ai.weeklyReport.cat-1.2026-W35'), isNull);
-      expect(prefs.getString('ai.weeklyReport.cat-2.2026-W34'), isNull);
-    });
+        expect(prefs.getString('other.key'), 'leave-me');
+        expect(prefs.getString('ai.weeklyReport.cat-1.2026-W34'), isNull);
+        expect(prefs.getString('ai.weeklyReport.cat-1.2026-W35'), isNull);
+        expect(prefs.getString('ai.weeklyReport.cat-2.2026-W34'), isNull);
+      },
+    );
 
     test('custom prefix is honoured', () async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final WeeklyReportCache cache =
-          WeeklyReportCache(prefs: prefs, prefix: 'test.cache');
+      final WeeklyReportCache cache = WeeklyReportCache(
+        prefs: prefs,
+        prefix: 'test.cache',
+      );
       await cache.put(
         'cat-9',
         '2026-W34',
-        const WeeklyReportResult(
-          text: 'scoped',
-          weekId: '2026-W34',
-        ),
+        const WeeklyReportResult(text: 'scoped', weekId: '2026-W34'),
       );
 
-      expect(
-        prefs.getString('test.cache.cat-9.2026-W34'),
-        isNotNull,
-      );
-      expect(
-        prefs.getString('ai.weeklyReport.cat-9.2026-W34'),
-        isNull,
-      );
+      expect(prefs.getString('test.cache.cat-9.2026-W34'), isNotNull);
+      expect(prefs.getString('ai.weeklyReport.cat-9.2026-W34'), isNull);
     });
 
     test('no-prefs constructor is a safe no-op', () async {

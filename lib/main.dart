@@ -282,8 +282,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final PromptTemplates promptTemplates =
         await PromptTemplates.loadFromBundle();
-    final WeeklyReportCache weeklyReportCache =
-        WeeklyReportCache(prefs: prefs);
+    final WeeklyReportCache weeklyReportCache = WeeklyReportCache(prefs: prefs);
     final AiRepository aiRepository = AiRepository(
       apiKey: AppEnv.geminiApiKey,
       prefs: prefs,

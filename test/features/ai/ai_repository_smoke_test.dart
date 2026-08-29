@@ -59,38 +59,38 @@ CatProfile _stubCat({String id = 'cat-1'}) =>
     CatProfile(id: id, ownerId: 'user-1', name: 'Whiskers');
 
 CatWeeklySummary _emptySummary({int daysWindow = 7}) => CatWeeklySummary(
-      daysWindow: daysWindow,
-      feedingCount: 0,
-      totalFeedingAmount: 0,
-      waterCount: 0,
-      totalWaterMl: 0,
-      lastWeights: const <WeightPoint>[],
-      feedingDaysWithLogs: 0,
-      waterDaysWithLogs: 0,
-    );
+  daysWindow: daysWindow,
+  feedingCount: 0,
+  totalFeedingAmount: 0,
+  waterCount: 0,
+  totalWaterMl: 0,
+  lastWeights: const <WeightPoint>[],
+  feedingDaysWithLogs: 0,
+  waterDaysWithLogs: 0,
+);
 
 CatWeeklySummary _populatedSummary({int daysWindow = 7}) => CatWeeklySummary(
-      daysWindow: daysWindow,
-      feedingCount: 12,
-      totalFeedingAmount: 240,
-      waterCount: 8,
-      totalWaterMl: 1200,
-      lastWeights: <WeightPoint>[WeightPoint(recordedAt: _t0, kg: 4.2)],
-      feedingDaysWithLogs: 5,
-      waterDaysWithLogs: 4,
-    );
+  daysWindow: daysWindow,
+  feedingCount: 12,
+  totalFeedingAmount: 240,
+  waterCount: 8,
+  totalWaterMl: 1200,
+  lastWeights: <WeightPoint>[WeightPoint(recordedAt: _t0, kg: 4.2)],
+  feedingDaysWithLogs: 5,
+  waterDaysWithLogs: 4,
+);
 
 Map<String, dynamic> _geminiTextReply(String text) => <String, dynamic>{
-      'candidates': <Map<String, dynamic>>[
-        <String, dynamic>{
-          'content': <String, dynamic>{
-            'parts': <Map<String, dynamic>>[
-              <String, dynamic>{'text': text},
-            ],
-          },
-        },
-      ],
-    };
+  'candidates': <Map<String, dynamic>>[
+    <String, dynamic>{
+      'content': <String, dynamic>{
+        'parts': <Map<String, dynamic>>[
+          <String, dynamic>{'text': text},
+        ],
+      },
+    },
+  ],
+};
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -98,9 +98,9 @@ void main() {
 
   group('AiRepository (client-side Gemini)', () {
     test('chat POSTs to Gemini with ?key= and history parts', () async {
-      final _FakeHttpTransport transport = _FakeHttpTransport(
-        <String, dynamic>{'reply': _geminiTextReply('hello from gemini')},
-      );
+      final _FakeHttpTransport transport = _FakeHttpTransport(<String, dynamic>{
+        'reply': _geminiTextReply('hello from gemini'),
+      });
       final AiRepository repo = AiRepository(
         apiKey: 'test-key',
         httpClient: transport,
@@ -137,27 +137,29 @@ void main() {
       expect((contents.last as Map<String, dynamic>)['role'], 'user');
     });
 
-    test('chat rejects empty user message without hitting the network',
-        () async {
-      final _FakeHttpTransport transport = _FakeHttpTransport(
-        const <String, dynamic>{},
-      );
-      final AiRepository repo = AiRepository(
-        apiKey: 'test-key',
-        httpClient: transport,
-      );
+    test(
+      'chat rejects empty user message without hitting the network',
+      () async {
+        final _FakeHttpTransport transport = _FakeHttpTransport(
+          const <String, dynamic>{},
+        );
+        final AiRepository repo = AiRepository(
+          apiKey: 'test-key',
+          httpClient: transport,
+        );
 
-      await expectLater(
-        () => repo.chat(
-          cat: _stubCat(),
-          history: const <ChatTurn>[],
-          userMessage: '',
-          summary: _populatedSummary(),
-        ),
-        throwsA(isA<ValidationFailure>()),
-      );
-      expect(transport.calls, isEmpty);
-    });
+        await expectLater(
+          () => repo.chat(
+            cat: _stubCat(),
+            history: const <ChatTurn>[],
+            userMessage: '',
+            summary: _populatedSummary(),
+          ),
+          throwsA(isA<ValidationFailure>()),
+        );
+        expect(transport.calls, isEmpty);
+      },
+    );
 
     test('weeklyReport short-circuits on empty summary', () async {
       final _FakeHttpTransport transport = _FakeHttpTransport(
@@ -182,11 +184,9 @@ void main() {
     });
 
     test('weeklyReport sends JSON-mime generationConfig', () async {
-      final _FakeHttpTransport transport = _FakeHttpTransport(
-        <String, dynamic>{
-          'reply': _geminiTextReply('looks like a steady week'),
-        },
-      );
+      final _FakeHttpTransport transport = _FakeHttpTransport(<String, dynamic>{
+        'reply': _geminiTextReply('looks like a steady week'),
+      });
       final AiRepository repo = AiRepository(
         apiKey: 'test-key',
         httpClient: transport,
@@ -210,15 +210,12 @@ void main() {
       expect(cfg['responseMimeType'], 'application/json');
     });
 
-    test(
-        'weeklyReport caches result and second call within the same week '
+    test('weeklyReport caches result and second call within the same week '
         'does not POST again', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
-      final _FakeHttpTransport transport = _FakeHttpTransport(
-        <String, dynamic>{
-          'reply': _geminiTextReply('cached weekly summary'),
-        },
-      );
+      final _FakeHttpTransport transport = _FakeHttpTransport(<String, dynamic>{
+        'reply': _geminiTextReply('cached weekly summary'),
+      });
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       final AiRepository repo = AiRepository(
         apiKey: 'test-key',
@@ -259,19 +256,16 @@ void main() {
       expect(transport.calls, hasLength(2));
     });
 
-    test('extractFoodLabel sends inline image + parses lenient JSON',
-        () async {
-      final _FakeHttpTransport transport = _FakeHttpTransport(
-        <String, dynamic>{
-          'reply': _geminiTextReply(
-            '{"brand":"Acme","foodName":"Salmon Feast",'
-            '"guaranteedAnalysis":{"proteinPct":10,"fatPct":5,'
-            '"fiberPct":2,"moisturePct":80},'
-            '"ingredientsRaw":"salmon, water, taurine",'
-            '"notes":"wet food","missingData":false}',
-          ),
-        },
-      );
+    test('extractFoodLabel sends inline image + parses lenient JSON', () async {
+      final _FakeHttpTransport transport = _FakeHttpTransport(<String, dynamic>{
+        'reply': _geminiTextReply(
+          '{"brand":"Acme","foodName":"Salmon Feast",'
+          '"guaranteedAnalysis":{"proteinPct":10,"fatPct":5,'
+          '"fiberPct":2,"moisturePct":80},'
+          '"ingredientsRaw":"salmon, water, taurine",'
+          '"notes":"wet food","missingData":false}',
+        ),
+      });
       final AiRepository repo = AiRepository(
         apiKey: 'test-key',
         httpClient: transport,
@@ -291,12 +285,12 @@ void main() {
       expect(result.missingData, isFalse);
       final _CapturedCall call = transport.calls.single;
       expect(call.path, 'gemini-1.5-flash:generateContent');
-      final List<dynamic> parts = ((call.body['contents'] as List<dynamic>)
-              .first as Map<String, dynamic>)['parts']
-          as List<dynamic>;
+      final List<dynamic> parts =
+          ((call.body['contents'] as List<dynamic>).first
+                  as Map<String, dynamic>)['parts']
+              as List<dynamic>;
       expect(parts, hasLength(2));
-      final Map<String, dynamic> inline =
-          parts.first as Map<String, dynamic>;
+      final Map<String, dynamic> inline = parts.first as Map<String, dynamic>;
       expect(inline['inlineData'], isA<Map<String, dynamic>>());
       expect(
         (inline['inlineData'] as Map<String, dynamic>)['mimeType'],
@@ -311,18 +305,14 @@ void main() {
     test('rate limiter enforces per-feature daily cap', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final _FakeHttpTransport transport = _FakeHttpTransport(
-        <String, dynamic>{'reply': _geminiTextReply('ok')},
-      );
+      final _FakeHttpTransport transport = _FakeHttpTransport(<String, dynamic>{
+        'reply': _geminiTextReply('ok'),
+      });
       final AiRepository repo = AiRepository(
         apiKey: 'test-key',
         httpClient: transport,
         prefs: prefs,
-        buckets: const RateLimitBuckets(
-          chat: 1,
-          weeklyReport: 0,
-          foodLabel: 0,
-        ),
+        buckets: const RateLimitBuckets(chat: 1, weeklyReport: 0, foodLabel: 0),
         clock: () => DateTime.utc(2024, 5, 1),
       );
 

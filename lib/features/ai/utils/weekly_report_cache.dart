@@ -20,8 +20,8 @@ import '../repositories/ai_repository.dart' show WeeklyReportResult;
 /// `reset()` (sign-out).
 class WeeklyReportCache {
   WeeklyReportCache({SharedPreferences? prefs, String? prefix})
-      : _prefs = prefs,
-        _prefix = prefix ?? defaultPrefix;
+    : _prefs = prefs,
+      _prefix = prefix ?? defaultPrefix;
 
   /// Default key prefix used in production. Exposed for tests that
   /// want a clean namespace.
