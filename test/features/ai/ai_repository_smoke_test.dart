@@ -121,7 +121,7 @@ void main() {
       expect(reply.language, 'en-US');
       expect(transport.calls, hasLength(1));
       final _CapturedCall call = transport.calls.single;
-      expect(call.path, 'gemini-1.5-flash:generateContent');
+      expect(call.path, '/gemini-2.5-flash:generateContent');
       expect(
         call.baseUrl,
         'https://generativelanguage.googleapis.com/v1beta/models',
@@ -203,7 +203,7 @@ void main() {
       expect(result.noData, isFalse);
       expect(result.text, 'looks like a steady week');
       final _CapturedCall call = transport.calls.single;
-      expect(call.path, 'gemini-1.5-flash:generateContent');
+      expect(call.path, '/gemini-2.5-flash:generateContent');
       expect(call.queryParameters['key'], 'test-key');
       final Map<String, dynamic> cfg =
           call.body['generationConfig'] as Map<String, dynamic>;
@@ -284,7 +284,7 @@ void main() {
       expect(result.ingredientsRaw, 'salmon, water, taurine');
       expect(result.missingData, isFalse);
       final _CapturedCall call = transport.calls.single;
-      expect(call.path, 'gemini-1.5-flash:generateContent');
+      expect(call.path, '/gemini-2.5-flash:generateContent');
       final List<dynamic> parts =
           ((call.body['contents'] as List<dynamic>).first
                   as Map<String, dynamic>)['parts']

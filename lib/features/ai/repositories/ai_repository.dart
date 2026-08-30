@@ -68,10 +68,34 @@ class AiRepository {
 
   /// Gemini model id used for every AI surface. Pinned here so the
   /// whole app upgrades in lockstep. Override for tests.
-  static const String defaultModel = 'gemini-1.5-flash';
+  ///
+  /// `gemini-1.5-flash` was retired from the `v1beta` path in 2025;
+  /// requests against it now come back with a non-JSON body that
+  /// DioHttpTransport cannot decode ("Backend returned a non-object
+  /// response."). `gemini-2.5-flash` is the supported successor on
+  /// the same free-tier.
+  static const String defaultModel = 'gemini-2.5-flash';
 
-  /// Gemini REST endpoint. Stable per-model path; the API key is
-  /// passed as `?key=` per Google's documented contract.
+  /// Gemini REST endpoint. The key is passed as `?key=` per
+  /// Google's documented contract.
+  ///
+  /// We target `v1beta` rather than `v1`:
+  ///   * `gemini-2.5-flash` lives on both, but only `v1beta`
+  ///     supports the `systemInstruction` ("developer instruction")
+  ///     field on `generateContent`. `v1` returns
+  ///     `400 Developer instruction is not enabled for api
+  ///     version v1. Use api version v1beta instead.`
+  ///   * `gemini-1.5-flash` was retired on `v1beta` in 2025,
+  ///     which is why we are pinned to `gemini-2.5-flash` —
+  ///     `v1beta` is fine for the 2.x family.
+  ///
+  /// **Path-convention invariant:** [defaultBaseUrl] MUST NOT end
+  /// in a slash, because [DioHttpTransport.post] concatenates it
+  /// with a leading-slash path (`/$_model:generateContent`). If
+  /// the base ever ends in `/` we end up hitting
+  /// `…/v1beta/models//gemini-2.5-flash:generateContent` (double
+  /// slash) or, worse, `…/v1beta/modelsgemini-2.5-flash:
+  /// generateContent` (no slash).
   static const String defaultBaseUrl =
       'https://generativelanguage.googleapis.com/v1beta/models';
 
@@ -177,7 +201,7 @@ class AiRepository {
       'contents': _chatContents(history: history, userMessage: trimmed),
       'generationConfig': <String, dynamic>{
         'temperature': 0.4,
-        'maxOutputTokens': 512,
+        'maxOutputTokens': 2048,
       },
     };
     final Map<String, dynamic> response = await _post(body);
@@ -561,7 +585,7 @@ class AiRepository {
     try {
       final Map<String, dynamic> raw = await _http.post(
         baseUrl: _baseUrl,
-        path: '$_model:generateContent',
+        path: '/$_model:generateContent',
         queryParameters: <String, dynamic>{'key': _apiKey},
         headers: <String, String>{'Content-Type': 'application/json'},
         body: body,
