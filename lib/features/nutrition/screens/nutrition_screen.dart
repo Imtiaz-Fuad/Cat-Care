@@ -9,6 +9,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/meal_card.dart';
 import '../../../core/widgets/progress_ring.dart';
 import '../../../core/widgets/section_header.dart';
+import '../../cats/widgets/cat_photo.dart';
 import '../providers/nutrition_provider.dart';
 import '../widgets/feeding_edit_sheet.dart';
 import '../widgets/water_edit_sheet.dart';
@@ -189,62 +190,112 @@ class _NutritionHeader extends StatelessWidget {
     final int foodTarget = provider.target.dailyFoodGrams.toInt();
     final int waterTarget = provider.target.dailyWaterMl.toInt();
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Today for ${cat.name}',
-                style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: _RingStat(
-                      label: 'Food',
-                      centerLabel: '${foodGrams.toInt()} / $foodTarget g',
-                      progress: foodProgress,
-                      color: scheme.primary,
-                    ),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          // Hero greeting row — avatar + cat name + small subtitle.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4, 4, 4, 12),
+            child: Row(
+              children: <Widget>[
+                SizedBox(
+                  width: 52,
+                  height: 52,
+                  child: CatPhoto(
+                    networkUrl: cat.photoUrl,
+                    variant: CatPhotoVariant.avatar,
+                    accentHex: cat.themeAccentHex,
+                    semanticLabel: 'Photo of ${cat.name}',
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _RingStat(
-                      label: 'Water',
-                      centerLabel: '${waterMl.toInt()} / $waterTarget ml',
-                      progress: waterProgress,
-                      color: scheme.tertiary,
-                    ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Today for ${cat.name}',
+                        style: text.bodyMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        cat.name,
+                        style: text.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _openFeedingSheet(context),
-                      icon: const Icon(Icons.restaurant_outlined, size: 18),
-                      label: const Text('Log meal'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _openWaterSheet(context),
-                      icon: const Icon(Icons.water_drop_outlined, size: 18),
-                      label: const Text('Log water'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
-        ),
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Today\'s nutrition',
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: _RingStat(
+                          label: 'Food',
+                          centerLabel: '${foodGrams.toInt()} / $foodTarget g',
+                          progress: foodProgress,
+                          color: scheme.secondary,
+                          icon: Icons.restaurant_outlined,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _RingStat(
+                          label: 'Water',
+                          centerLabel: '${waterMl.toInt()} / $waterTarget ml',
+                          progress: waterProgress,
+                          color: scheme.primary,
+                          icon: Icons.water_drop_outlined,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _openFeedingSheet(context),
+                          icon: const Icon(Icons.restaurant_outlined, size: 18),
+                          label: const Text('Log meal'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _openWaterSheet(context),
+                          icon: const Icon(Icons.water_drop_outlined, size: 18),
+                          label: const Text('Log water'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -256,12 +307,14 @@ class _RingStat extends StatelessWidget {
     required this.centerLabel,
     required this.progress,
     required this.color,
+    this.icon,
   });
 
   final String label;
   final String centerLabel;
   final double progress;
   final Color color;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -273,11 +326,25 @@ class _RingStat extends StatelessWidget {
           progress: progress,
           centerLabel: centerLabel,
           color: color,
+          size: 100,
+          strokeWidth: 7,
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: text.labelLarge?.copyWith(color: scheme.onSurfaceVariant),
+        const SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            if (icon != null) ...<Widget>[
+              Icon(icon, size: 14, color: color),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: text.labelLarge?.copyWith(
+                color: scheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
       ],
     );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 /// Dots + label strip shown at the top of the onboarding flow.
 /// Renders `total` dots with the `current` one enlarged and tinted.
+/// The label under the dots is uppercased to read as a friendly
+/// section header (e.g. "PHOTO", "NAME", "PREFERENCES").
 /// Lifted out of [OnboardingScreen] so step widgets (e.g. for
 /// accessibility captures) can render it in isolation.
 class OnboardingStepIndicator extends StatelessWidget {
@@ -44,11 +46,15 @@ class OnboardingStepIndicator extends StatelessWidget {
           ],
         ),
         if (label != null) ...<Widget>[
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
-            '$label',
+            (label ?? '').toUpperCase(),
             textAlign: TextAlign.center,
-            style: text.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+            style: text.labelSmall?.copyWith(
+              color: scheme.onSurfaceVariant,
+              letterSpacing: 1.4,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ],

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../../../core/widgets/progress_ring.dart';
 
@@ -21,23 +21,24 @@ class RoutineSummaryHeader extends StatelessWidget {
     final double progress = total == 0 ? 0 : completedToday / total;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         child: Row(
           children: <Widget>[
             ProgressRing(
               progress: progress,
               centerLabel: '$completedToday\n$total',
-              size: 84,
-              strokeWidth: 8,
+              color: scheme.secondary,
+              size: 88,
+              strokeWidth: 7,
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 18),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     'Today\'s progress',
-                    style: text.titleSmall?.copyWith(
+                    style: text.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -48,7 +49,7 @@ class RoutineSummaryHeader extends StatelessWidget {
                         : 'You\'ve completed $completedToday of $total '
                               'tasks today. Tap a tile to edit,'
                               ' tap the circle to mark done.',
-                    style: text.bodySmall?.copyWith(
+                    style: text.bodyMedium?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
                   ),

@@ -23,7 +23,6 @@ class RoutineItemTile extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final TextTheme text = Theme.of(context).textTheme;
     final bool done = task.completed;
-    final String time = _formatTime(task.timeOfDay);
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -33,28 +32,17 @@ class RoutineItemTile extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              ConstrainedBox(
-                constraints: const BoxConstraints(minWidth: 52),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      time,
-                      style: text.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: done
-                            ? scheme.onSurfaceVariant
-                            : scheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _categoryLabel(task.category),
-                      style: text.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: scheme.secondary.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  _iconForCategory(task.category),
+                  size: 22,
+                  color: scheme.secondary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -107,6 +95,19 @@ class RoutineItemTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
+              if (task.timeOfDay != null) ...<Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    _formatTime(task.timeOfDay),
+                    style: text.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: done ? scheme.onSurfaceVariant : scheme.onSurface,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
               _DoneToggle(done: done, onChanged: onToggle),
             ],
           ),
@@ -122,22 +123,26 @@ class RoutineItemTile extends StatelessWidget {
     return '$hh:$mm';
   }
 
-  static String _categoryLabel(String category) {
+  static IconData _iconForCategory(String category) {
     switch (category) {
       case 'feeding':
-        return 'Feed';
+        return Icons.restaurant_outlined;
       case 'medicine':
-        return 'Med';
+        return Icons.medication_outlined;
       case 'water':
-        return 'Water';
+        return Icons.water_drop_outlined;
       case 'play':
-        return 'Play';
+        return Icons.toys_outlined;
       case 'grooming':
-        return 'Groom';
+        return Icons.shower_outlined;
       case 'litter':
-        return 'Litter';
+        return Icons.cleaning_services_outlined;
+      case 'health':
+        return Icons.medical_services_outlined;
+      case 'rest':
+        return Icons.bedtime_outlined;
       default:
-        return category;
+        return Icons.schedule_outlined;
     }
   }
 }
