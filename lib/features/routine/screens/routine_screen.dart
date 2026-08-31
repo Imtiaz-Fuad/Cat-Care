@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/models/cat_profile.dart';
 import '../../../core/models/medication.dart';
 import '../../../core/models/routine_task.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/routine_item_tile.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/status_chip.dart';
+import '../../cats/providers/cat_provider.dart';
+import '../../cats/widgets/cat_photo.dart';
 import '../../health/providers/medication_provider.dart';
 import '../providers/routine_provider.dart';
 import '../widgets/routine_edit_sheet.dart';
@@ -25,44 +28,52 @@ class RoutineScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<RoutineProvider>(
-      builder: (BuildContext context, RoutineProvider provider, Widget? _) {
-        final List<RoutineTask> tasks = provider.routines;
-        final bool loading = !provider.hasLoaded;
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Routine'),
-            actions: <Widget>[
-              IconButton(
-                tooltip: 'Regenerate defaults',
-                icon: const Icon(Icons.refresh_rounded),
-                onPressed: provider.isBusy
-                    ? null
-                    : () => _confirmRegenerate(context, provider),
+    return Consumer2<RoutineProvider, CatProvider>(
+      builder:
+          (
+            BuildContext context,
+            RoutineProvider provider,
+            CatProvider catProvider,
+            Widget? _,
+          ) {
+            final List<RoutineTask> tasks = provider.routines;
+            final bool loading = !provider.hasLoaded;
+            final CatProfile? cat = catProvider.activeCat;
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Routine'),
+                actions: <Widget>[
+                  IconButton(
+                    tooltip: 'Regenerate defaults',
+                    icon: const Icon(Icons.refresh_rounded),
+                    onPressed: provider.isBusy
+                        ? null
+                        : () => _confirmRegenerate(context, provider),
+                  ),
+                  IconButton(
+                    tooltip: 'Add routine',
+                    icon: const Icon(Icons.add),
+                    onPressed: () => _openEditor(context),
+                  ),
+                ],
               ),
-              IconButton(
-                tooltip: 'Add routine',
-                icon: const Icon(Icons.add),
-                onPressed: () => _openEditor(context),
-              ),
-            ],
-          ),
-          body: loading
-              ? const Center(child: CircularProgressIndicator())
-              : _Body(
-                  tasks: tasks,
-                  completedToday: provider.completedTodayCount,
-                  total: provider.totalRoutineCount,
-                ),
-          floatingActionButton: loading
-              ? null
-              : FloatingActionButton.extended(
-                  onPressed: () => _openEditor(context),
-                  icon: const Icon(Icons.add),
-                  label: const Text('New task'),
-                ),
-        );
-      },
+              body: loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _Body(
+                      tasks: tasks,
+                      completedToday: provider.completedTodayCount,
+                      total: provider.totalRoutineCount,
+                      cat: cat,
+                    ),
+              floatingActionButton: loading
+                  ? null
+                  : FloatingActionButton.extended(
+                      onPressed: () => _openEditor(context),
+                      icon: const Icon(Icons.add),
+                      label: const Text('New task'),
+                    ),
+            );
+          },
     );
   }
 
@@ -111,11 +122,13 @@ class _Body extends StatelessWidget {
     required this.tasks,
     required this.completedToday,
     required this.total,
+    required this.cat,
   });
 
   final List<RoutineTask> tasks;
   final int completedToday;
   final int total;
+  final CatProfile? cat;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +143,8 @@ class _Body extends StatelessWidget {
     final Map<_Bucket, List<RoutineTask>> grouped = _group(tasks);
     return CustomScrollView(
       slivers: <Widget>[
+        if (cat != null)
+          SliverToBoxAdapter(child: _RoutineHeroHeader(cat: cat!)),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -203,7 +218,15 @@ class _BucketSection extends StatelessWidget {
         SectionHeader(
           title: bucket.label,
           subtitle: '$done of ${tasks.length} done',
-          trailing: Icon(bucket.icon, color: scheme.primary),
+          trailing: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: scheme.secondary.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(bucket.icon, color: scheme.secondary, size: 18),
+          ),
         ),
         for (final RoutineTask t in tasks)
           Padding(
@@ -266,6 +289,60 @@ class _TaskTile extends StatelessWidget {
 /// Tiny helper used by callers needing today's date label.
 String todayLabel() => DateFormat.MMMMEEEEd().format(DateTime.now());
 
+/// Hero greeting header for the Routine screen — avatar + cat name
+/// followed by a calm "let's keep {name} comfortable today" line.
+class _RoutineHeroHeader extends StatelessWidget {
+  const _RoutineHeroHeader({required this.cat});
+
+  final CatProfile cat;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme text = Theme.of(context).textTheme;
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 16, 12),
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: 52,
+            height: 52,
+            child: CatPhoto(
+              networkUrl: cat.photoUrl,
+              variant: CatPhotoVariant.avatar,
+              accentHex: cat.themeAccentHex,
+              semanticLabel: 'Photo of ${cat.name}',
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Today for ${cat.name}',
+                  style: text.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  cat.name,
+                  style: text.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Compact card shown on the Routine screen: lists the medications that are
 /// active today and exposes a one-tap check-off per item. Backed by
 /// [MedicationProvider.toggleToday], which writes to Firestore via the
@@ -275,6 +352,7 @@ class _TodaysMedsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Consumer<MedicationProvider>(
       builder: (BuildContext context, MedicationProvider provider, Widget? _) {
         final List<Medication> meds = provider.active;
@@ -287,25 +365,35 @@ class _TodaysMedsCard extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
-                      Icon(
-                        Icons.medication_outlined,
-                        size: 18,
-                        color: Theme.of(context).colorScheme.primary,
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: scheme.secondary.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.medication_outlined,
+                          size: 18,
+                          color: scheme.secondary,
+                        ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Text(
                         'Today\'s medications',
-                        style: Theme.of(context).textTheme.titleSmall,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   for (final Medication m in meds)
                     _MedCheckRow(
                       medication: m,

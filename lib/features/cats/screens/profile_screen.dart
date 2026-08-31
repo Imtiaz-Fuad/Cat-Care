@@ -69,15 +69,15 @@ class _ProfileBody extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Card(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Row(
                     children: <Widget>[
                       SizedBox(
-                        width: 64,
-                        height: 64,
+                        width: 72,
+                        height: 72,
                         child: CatPhoto(
                           networkUrl: cat.photoUrl,
                           variant: CatPhotoVariant.avatar,
@@ -92,9 +92,11 @@ class _ProfileBody extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               cat.name,
-                              style: text.titleLarge?.copyWith(
+                              style: text.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.w700,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -399,10 +401,16 @@ class _ShortcutTile extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return ListTile(
       enabled: enabled,
-      leading: CircleAvatar(
-        backgroundColor: scheme.primaryContainer,
-        foregroundColor: scheme.onPrimaryContainer,
-        child: Icon(icon),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: scheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.center,
+        child: Icon(icon, color: scheme.onSecondaryContainer, size: 22),
       ),
       title: Text(title),
       subtitle: Text(

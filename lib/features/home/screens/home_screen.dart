@@ -10,6 +10,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/progress_ring.dart';
 import '../../../core/widgets/upcoming_card.dart';
 import '../../cats/providers/cat_provider.dart';
+import '../../cats/widgets/cat_photo.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
 import '../../nutrition/widgets/feeding_edit_sheet.dart';
 import '../../nutrition/widgets/water_edit_sheet.dart';
@@ -95,22 +96,45 @@ class _HomeBody extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.only(bottom: 24),
               children: <Widget>[
+                // Hero greeting header — avatar + cat name + small subtitle.
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: Text(
-                    _greeting(),
-                    style: text.bodyMedium?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                  child: Text(
-                    cat.name,
-                    style: text.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 16, 12),
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 52,
+                        height: 52,
+                        child: CatPhoto(
+                          networkUrl: cat.photoUrl,
+                          variant: CatPhotoVariant.avatar,
+                          accentHex: cat.themeAccentHex,
+                          semanticLabel: 'Photo of ${cat.name}',
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              _greeting(),
+                              style: text.bodyMedium?.copyWith(
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              cat.name,
+                              style: text.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Padding(
@@ -134,6 +158,7 @@ class _HomeBody extends StatelessWidget {
                             : '${t.category[0].toUpperCase()}${t.category.substring(1)}',
                         timeLabel: _formatTime(t.timeOfDay),
                         icon: _iconForCategory(t.category),
+                        iconColor: scheme.secondary,
                         onTap: () => _openRoutineEditor(context, task: t),
                       ),
                     ),
@@ -174,6 +199,8 @@ class _HomeBody extends StatelessWidget {
                           label: 'Food',
                           centerLabel: '${foodG.toInt()} / $foodTarget g',
                           progress: nutritionProvider.foodProgress,
+                          accentColor: scheme.secondary,
+                          accentIcon: Icons.restaurant_outlined,
                           onTap: () => _openFeedingSheet(context),
                         ),
                       ),
@@ -183,6 +210,8 @@ class _HomeBody extends StatelessWidget {
                           label: 'Water',
                           centerLabel: '${waterMl.toInt()} / $waterTarget ml',
                           progress: nutritionProvider.waterProgress,
+                          accentColor: scheme.primary,
+                          accentIcon: Icons.water_drop_outlined,
                           onTap: () => _openWaterSheet(context),
                         ),
                       ),
@@ -199,24 +228,43 @@ class _HomeBody extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              'Recent meals',
-                              style: text.labelLarge?.copyWith(
-                                color: scheme.onSurfaceVariant,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 4,
+                              ),
+                              child: Text(
+                                'Recent meals',
+                                style: text.labelLarge?.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 6),
                             for (final FeedingEntry meal in recentMeals)
                               Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6,
+                                ),
                                 child: Row(
                                   children: <Widget>[
-                                    Icon(
-                                      Icons.restaurant_outlined,
-                                      size: 16,
-                                      color: scheme.primary,
+                                    Container(
+                                      width: 32,
+                                      height: 32,
+                                      decoration: BoxDecoration(
+                                        color: scheme.secondary.withValues(
+                                          alpha: 0.18,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.restaurant_outlined,
+                                        size: 16,
+                                        color: scheme.secondary,
+                                      ),
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 12),
                                     Expanded(
                                       child: Text(
                                         meal.foodName,
@@ -229,6 +277,7 @@ class _HomeBody extends StatelessWidget {
                                       DateFormat.Hm().format(meal.time),
                                       style: text.labelMedium?.copyWith(
                                         color: scheme.onSurfaceVariant,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ],
@@ -358,14 +407,17 @@ class _CompletionCard extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Card(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+        padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         child: Row(
           children: <Widget>[
             ProgressRing(
               progress: total <= 0 ? 0 : percent / 100,
               centerLabel: '$percent%',
+              color: scheme.secondary,
+              size: 88,
+              strokeWidth: 7,
             ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 18),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,12 +452,16 @@ class _NutritionSummaryCard extends StatelessWidget {
     required this.label,
     required this.centerLabel,
     required this.progress,
+    required this.accentColor,
+    required this.accentIcon,
     required this.onTap,
   });
 
   final String label;
   final String centerLabel;
   final double progress;
+  final Color accentColor;
+  final IconData accentIcon;
   final VoidCallback onTap;
 
   @override
@@ -417,22 +473,30 @@ class _NutritionSummaryCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(14, 16, 14, 14),
           child: Column(
             children: <Widget>[
               ProgressRing(
                 progress: progress,
                 centerLabel: centerLabel,
-                color: scheme.primary,
-                size: 80,
-                strokeWidth: 6,
+                color: accentColor,
+                size: 84,
+                strokeWidth: 7,
               ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: text.labelLarge?.copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(accentIcon, size: 14, color: accentColor),
+                  const SizedBox(width: 6),
+                  Text(
+                    label,
+                    style: text.labelLarge?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

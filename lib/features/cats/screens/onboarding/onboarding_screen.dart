@@ -102,18 +102,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Add a cat')),
+      appBar: AppBar(
+        title: const Text('Add a cat'),
+        leading: IconButton(
+          tooltip: 'Close',
+          icon: const Icon(Icons.close),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go('/home'),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             OnboardingStepIndicator(
               current: _controller.step,
               total: OnboardingController.stepCount,
               label: _stepLabels[_controller.step],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Expanded(
               child: AnimatedBuilder(
                 animation: _controller,
@@ -142,47 +151,83 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (BuildContext context, Widget? _) {
-                  final bool atLast =
-                      _controller.step == OnboardingController.stepCount - 1;
-                  return Row(
-                    children: <Widget>[
-                      if (_controller.step > 0)
-                        TextButton.icon(
-                          onPressed: () {
-                            _controller.back();
-                            _animateTo(_controller.step);
-                          },
-                          icon: const Icon(Icons.arrow_back),
-                          label: const Text('Back'),
-                        )
-                      else
-                        TextButton(
-                          onPressed: () => context.canPop()
-                              ? context.pop()
-                              : context.go('/home'),
-                          child: const Text('Skip for now'),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: scheme.surface,
+                border: Border(
+                  top: BorderSide(
+                    color: scheme.outlineVariant.withValues(alpha: 0.45),
+                  ),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 18),
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (BuildContext context, Widget? _) {
+                    final bool atLast =
+                        _controller.step == OnboardingController.stepCount - 1;
+                    final bool canGoNext = atLast
+                        ? _controller.canFinish
+                        : _controller.canAdvance;
+                    return Row(
+                      children: <Widget>[
+                        if (_controller.step > 0)
+                          TextButton.icon(
+                            onPressed: () {
+                              _controller.back();
+                              _animateTo(_controller.step);
+                            },
+                            icon: const Icon(Icons.arrow_back, size: 18),
+                            label: const Text('Back'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: scheme.primary,
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          )
+                        else
+                          TextButton(
+                            onPressed: () => context.canPop()
+                                ? context.pop()
+                                : context.go('/home'),
+                            style: TextButton.styleFrom(
+                              foregroundColor: scheme.onSurfaceVariant,
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            child: const Text('Skip for now'),
+                          ),
+                        const Spacer(),
+                        FilledButton(
+                          onPressed: !canGoNext
+                              ? null
+                              : (atLast
+                                    ? _finish
+                                    : () {
+                                        _controller.next();
+                                        _animateTo(_controller.step);
+                                      }),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 36,
+                              vertical: 16,
+                            ),
+                            shape: const StadiumBorder(),
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                          child: Text(atLast ? 'Finish' : 'Next'),
                         ),
-                      const Spacer(),
-                      FilledButton(
-                        onPressed: atLast
-                            ? (_controller.canFinish ? _finish : null)
-                            : (_controller.canAdvance
-                                  ? () {
-                                      _controller.next();
-                                      _animateTo(_controller.step);
-                                    }
-                                  : null),
-                        child: Text(atLast ? 'Finish' : 'Next'),
-                      ),
-                    ],
-                  );
-                },
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ],

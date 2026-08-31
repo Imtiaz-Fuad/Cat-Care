@@ -24,8 +24,10 @@ class AppScaffold extends StatelessWidget {
       (CatProvider c) => c.activeCat?.themeAccentHex,
     );
     final Color? accent = AccentColorExtractor.tryParseHex(accentHex);
+    // Selected pill uses the cat-derived accent at a soft alpha for a
+    // warm, premium feel. Fallback to the sage primary tint.
     final Color indicatorColor =
-        accent?.withValues(alpha: 0.22) ??
+        accent?.withValues(alpha: 0.18) ??
         scheme.primary.withValues(alpha: 0.12);
     return Scaffold(
       body: navigationShell,
@@ -35,7 +37,10 @@ class AppScaffold extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
+        backgroundColor: scheme.surface,
+        surfaceTintColor: Colors.transparent,
         indicatorColor: indicatorColor,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: <NavigationDestination>[
           for (final AppDestination d in destinations)
             NavigationDestination(
