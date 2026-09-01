@@ -26,6 +26,7 @@ class CatPhoto extends StatelessWidget {
     this.variant = CatPhotoVariant.avatar,
     this.accentHex,
     this.semanticLabel,
+    this.useCatEmojiFallback = false,
   });
 
   final String? networkUrl;
@@ -33,6 +34,7 @@ class CatPhoto extends StatelessWidget {
   final CatPhotoVariant variant;
   final String? accentHex;
   final String? semanticLabel;
+  final bool useCatEmojiFallback;
 
   @override
   Widget build(BuildContext context) {
@@ -79,11 +81,18 @@ class CatPhoto extends StatelessWidget {
                   ColoredBox(
                     color: placeholderColor,
                     child: Center(
-                      child: Icon(
-                        Icons.pets,
-                        size: dim / 2.5,
-                        color: scheme.onPrimaryContainer.withValues(alpha: 0.6),
-                      ),
+                      child: useCatEmojiFallback
+                          ? Text(
+                              '🐱',
+                              style: TextStyle(fontSize: dim / 2.5),
+                            )
+                          : Icon(
+                              Icons.pets,
+                              size: dim / 2.5,
+                              color: scheme.onPrimaryContainer.withValues(
+                                alpha: 0.6,
+                              ),
+                            ),
                     ),
                   ),
               if (accentBorder != null)

@@ -253,7 +253,7 @@ class _ChatBubble extends StatelessWidget {
                 maxWidth: MediaQuery.of(context).size.width * 0.82,
               ),
               child: isUser
-                  ? _UserBubble(text: turn.text, scheme: scheme)
+                  ? _UserBubble(text: turn.text)
                   : _AssistantBubble(
                       text: turn.text,
                       scheme: scheme,
@@ -284,24 +284,24 @@ class _ChatBubble extends StatelessWidget {
 }
 
 class _UserBubble extends StatelessWidget {
-  const _UserBubble({required this.text, required this.scheme});
+  const _UserBubble({required this.text});
 
   final String text;
-  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: scheme.tertiary,
+        color: const Color(0xFFA5482A),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: scheme.onTertiary,
+          color: const Color(0xFFFFF8F3),
           height: 1.35,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -355,6 +355,7 @@ class _AssistantBubble extends StatelessWidget {
                     style: textTheme.bodyMedium?.copyWith(
                       color: scheme.onSecondaryContainer,
                       height: 1.4,
+                      fontWeight: FontWeight.w600,
                     ),
                     children: <TextSpan>[
                       TextSpan(
@@ -370,6 +371,7 @@ class _AssistantBubble extends StatelessWidget {
                   style: textTheme.bodyMedium?.copyWith(
                     color: scheme.onSecondaryContainer,
                     height: 1.4,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
         ),
@@ -379,7 +381,7 @@ class _AssistantBubble extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
-        color: scheme.secondaryContainer,
+        color: const Color(0xFFFFF0E7),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -493,7 +495,7 @@ class _AiLanguagePill extends StatelessWidget {
       height: 32,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: scheme.secondaryContainer,
+        color: const Color(0xFFFFE9DD),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -537,7 +539,7 @@ class _PillSegment extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? scheme.surface : Colors.transparent,
+            color: selected ? const Color(0xFFFFF0E7) : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             boxShadow: selected
                 ? <BoxShadow>[
@@ -551,8 +553,8 @@ class _PillSegment extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: text.labelMedium?.copyWith(
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              style: text.labelMedium?.copyWith(
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               color: selected ? scheme.onSurface : scheme.onSurfaceVariant,
             ),
           ),
@@ -623,12 +625,95 @@ class _AiInsightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme text = Theme.of(context).textTheme;
-    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: Container(
         decoration: BoxDecoration(
-          color: scheme.secondaryContainer,
+          color: const Color(0xFFFFF0E7),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                const Icon(Icons.auto_awesome, size: 18, color: Color(0xFF9A452A)),
+                const SizedBox(width: 8),
+                Text(
+                  locale == 'bn' ? 'AI Health Insight' : 'AI Health Insight',
+                  style: text.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF5A2A1B),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "$catName's water intake has been 15% lower this week. This might be due to the cooler weather, but try refreshing his bowl more often.",
+              style: text.bodyMedium?.copyWith(
+                color: const Color(0xFF5A2A1B),
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _InsightPill(
+              icon: Icons.water_drop_outlined,
+              label: locale == 'bn' ? 'Log Water' : 'Log Water',
+              filled: true,
+              onTap: onLogWater,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LegacyAiInsightCard extends StatelessWidget {
+  const _LegacyAiInsightCard({
+    required this.catName,
+    required this.locale,
+    required this.onLogWater,
+  });
+
+  final String catName;
+  final String locale;
+  final VoidCallback onLogWater;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme text = Theme.of(context).textTheme;
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final WeeklyReportResult? report = null;
+    final String insightText = report?.text ??
+        (locale == 'bn'
+            ? 'à¦¸à¦¾à¦ªà§à¦¤à¦¾à¦¹à¦¿à¦• à¦°à¦¿à¦ªà§‹à¦°à§à¦Ÿ à¦¤à§ˆà¦°à¦¿à¦° à¦œà¦¨à§à¦¯ à¦à¦–à¦¨à§‹ à¦¯à¦¥à§‡à¦·à§à¦Ÿ à¦¤à¦¥à§à¦¯ à¦¨à§‡à¦‡à¥¤'
+            : 'Not enough weekly data yet. Log a few meals, water entries, or health records to see your report.');
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF0E7),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+        child: Text(
+          insightText,
+          style: text.bodyMedium?.copyWith(
+            color: const Color(0xFF5A2A1B),
+            height: 1.4,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF0E7),
           borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
@@ -640,7 +725,7 @@ class _AiInsightCard extends StatelessWidget {
                 Icon(
                   Icons.auto_awesome,
                   size: 18,
-                  color: scheme.onSecondaryContainer,
+                  color: const Color(0xFF9A452A),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -662,7 +747,7 @@ class _AiInsightCard extends StatelessWidget {
                         'this week. This might be due to the cooler '
                         'weather, but try refreshing his bowl more often.',
               style: text.bodyMedium?.copyWith(
-                color: scheme.onSecondaryContainer,
+                color: const Color(0xFF5A2A1B),
                 height: 1.4,
               ),
             ),
@@ -900,13 +985,14 @@ class _AiComposer extends StatelessWidget {
               minLines: 1,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => onSend(),
-              style: text.bodyMedium,
+              style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
                 hintText: hintText,
                 hintStyle: text.bodyMedium?.copyWith(
                   color: scheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -914,12 +1000,12 @@ class _AiComposer extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         Material(
-          color: scheme.tertiary,
+          color: const Color(0xFFA5482A),
           shape: const CircleBorder(),
           child: IconButton(
             tooltip: 'Send',
             onPressed: enabled ? onSend : null,
-            icon: Icon(Icons.send_rounded, color: scheme.onTertiary),
+            icon: const Icon(Icons.send_rounded, color: Color(0xFFFFF8F3)),
           ),
         ),
       ],

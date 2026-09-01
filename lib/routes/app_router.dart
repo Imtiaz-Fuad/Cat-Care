@@ -40,6 +40,7 @@ class AppRouter {
     AppRoutes.home,
     AppRoutes.routine,
     AppRoutes.nutrition,
+    AppRoutes.aiAssistant,
     AppRoutes.profile,
   ];
 
@@ -58,6 +59,11 @@ class AppRouter {
       label: 'Nutrition',
       icon: Icons.restaurant_outlined,
       selectedIcon: Icons.restaurant_rounded,
+    ),
+    AppDestination(
+      label: 'Ask AI',
+      icon: Icons.auto_awesome_outlined,
+      selectedIcon: Icons.auto_awesome,
     ),
     AppDestination(
       label: 'Profile',
@@ -148,6 +154,8 @@ class AppRouter {
         return const RoutineScreen();
       case AppRoutes.nutrition:
         return const NutritionScreen();
+      case AppRoutes.aiAssistant:
+        return const AiAssistantScreen();
       case AppRoutes.profile:
         return const ProfileScreen();
       default:
@@ -199,12 +207,6 @@ final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     (BuildContext _, GoRouterState _) => const VaccinationListScreen(),
   ),
   const _TopLevelRoute(AppRoutes.vetFinder, 'Vet Finder', 'Coming in Phase 6.'),
-  _TopLevelRoute(
-    AppRoutes.aiAssistant,
-    'AI Assistant',
-    'Coming in Phase 7.',
-    (BuildContext _, GoRouterState _) => const AiAssistantScreen(),
-  ),
   const _TopLevelRoute(AppRoutes.settings, 'Settings', 'Coming in Phase 8.'),
   const _TopLevelRoute(AppRoutes.reminders, 'Reminders', 'Coming in Phase 4.'),
   const _TopLevelRoute(
