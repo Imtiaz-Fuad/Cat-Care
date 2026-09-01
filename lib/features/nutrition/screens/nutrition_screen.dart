@@ -203,9 +203,10 @@ class _NutritionHeader extends StatelessWidget {
                   width: 52,
                   height: 52,
                   child: CatPhoto(
-                    networkUrl: cat.photoUrl,
+                    networkUrl: null,
                     variant: CatPhotoVariant.avatar,
                     accentHex: cat.themeAccentHex,
+                    useCatEmojiFallback: true,
                     semanticLabel: 'Photo of ${cat.name}',
                   ),
                 ),
@@ -236,6 +237,10 @@ class _NutritionHeader extends StatelessWidget {
             ),
           ),
           Card(
+            color: const Color(0xFFFFF0E7),
+            elevation: 6,
+            shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.38),
+            margin: const EdgeInsets.symmetric(vertical: 3),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
               child: Column(

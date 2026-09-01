@@ -61,8 +61,6 @@ class RoutineScreen extends StatelessWidget {
                   ? const Center(child: CircularProgressIndicator())
                   : _Body(
                       tasks: tasks,
-                      completedToday: provider.completedTodayCount,
-                      total: provider.totalRoutineCount,
                       cat: cat,
                     ),
               floatingActionButton: loading
@@ -120,14 +118,10 @@ class RoutineScreen extends StatelessWidget {
 class _Body extends StatelessWidget {
   const _Body({
     required this.tasks,
-    required this.completedToday,
-    required this.total,
     required this.cat,
   });
 
   final List<RoutineTask> tasks;
-  final int completedToday;
-  final int total;
   final CatProfile? cat;
 
   @override
@@ -140,7 +134,11 @@ class _Body extends StatelessWidget {
         icon: Icons.event_note_outlined,
       );
     }
-    final Map<_Bucket, List<RoutineTask>> grouped = _group(tasks);
+    final List<RoutineTask> visibleTasks = _withoutDuplicates(tasks);
+    final Map<_Bucket, List<RoutineTask>> grouped = _group(visibleTasks);
+    final int visibleCompleted = visibleTasks
+        .where((RoutineTask task) => task.completed)
+        .length;
     return CustomScrollView(
       slivers: <Widget>[
         if (cat != null)
@@ -149,8 +147,8 @@ class _Body extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: RoutineSummaryHeader(
-              completedToday: completedToday,
-              total: total,
+              completedToday: visibleCompleted,
+              total: visibleTasks.length,
             ),
           ),
         ),
@@ -182,6 +180,20 @@ class _Body extends StatelessWidget {
       });
     }
     return out;
+  }
+
+  /// Keep one visible row for a routine with the same title, category, and
+  /// scheduled time. This is presentation-only; persisted records remain
+  /// unchanged so no routine data is deleted implicitly from the UI.
+  List<RoutineTask> _withoutDuplicates(List<RoutineTask> tasks) {
+    final Set<String> seen = <String>{};
+    return tasks.where((RoutineTask task) {
+      final DateTime? time = task.timeOfDay;
+      final String key = '${task.title.trim().toLowerCase()}|'
+          '${task.category.trim().toLowerCase()}|'
+          '${time?.hour ?? -1}:${time?.minute ?? -1}';
+      return seen.add(key);
+    }).toList(growable: false);
   }
 
   static _Bucket _bucketFor(DateTime? t) {
@@ -245,7 +257,9 @@ class _TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final RoutineProvider provider = context.read<RoutineProvider>();
-    return Stack(
+    final bool overdue = _isOverdue(task);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         RoutineItemTile(
           task: task,
@@ -258,14 +272,16 @@ class _TaskTile extends StatelessWidget {
             builder: (BuildContext ctx) => RoutineEditSheet(existing: task),
           ),
         ),
-        if (_isOverdue(task))
-          Positioned(
-            top: 8,
-            right: 8,
-            child: StatusChip(
-              label: 'Overdue',
-              color: Theme.of(context).colorScheme.error,
-              icon: Icons.error_outline,
+        if (overdue)
+          Align(
+            alignment: AlignmentDirectional.centerEnd,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4, right: 8),
+              child: StatusChip(
+                label: 'Overdue',
+                color: Theme.of(context).colorScheme.error,
+                icon: Icons.error_outline,
+              ),
             ),
           ),
       ],
@@ -308,9 +324,10 @@ class _RoutineHeroHeader extends StatelessWidget {
             width: 52,
             height: 52,
             child: CatPhoto(
-              networkUrl: cat.photoUrl,
+              networkUrl: null,
               variant: CatPhotoVariant.avatar,
               accentHex: cat.themeAccentHex,
+              useCatEmojiFallback: true,
               semanticLabel: 'Photo of ${cat.name}',
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,7 @@ import '../../../core/widgets/daily_insight_card.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/progress_ring.dart';
 import '../../../core/widgets/upcoming_card.dart';
+import '../../../routes/app_routes.dart';
 import '../../cats/providers/cat_provider.dart';
 import '../../cats/widgets/cat_photo.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
@@ -105,9 +107,10 @@ class _HomeBody extends StatelessWidget {
                         width: 52,
                         height: 52,
                         child: CatPhoto(
-                          networkUrl: cat.photoUrl,
+                          networkUrl: null,
                           variant: CatPhotoVariant.avatar,
                           accentHex: cat.themeAccentHex,
+                          useCatEmojiFallback: true,
                           semanticLabel: 'Photo of ${cat.name}',
                         ),
                       ),
@@ -145,6 +148,12 @@ class _HomeBody extends StatelessWidget {
                     percent: percent,
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+                  child: _WeeklyReportCard(
+                    onTap: () => context.push(AppRoutes.weeklyReport),
+                  ),
+                ),
                 if (upcoming.isNotEmpty) ...<Widget>[
                   const SizedBox(height: 4),
                   const _SectionTitle(title: 'Next up'),
@@ -158,7 +167,7 @@ class _HomeBody extends StatelessWidget {
                             : '${t.category[0].toUpperCase()}${t.category.substring(1)}',
                         timeLabel: _formatTime(t.timeOfDay),
                         icon: _iconForCategory(t.category),
-                        iconColor: scheme.secondary,
+                        iconColor: const Color(0xFF9A452A),
                         onTap: () => _openRoutineEditor(context, task: t),
                       ),
                     ),
@@ -390,6 +399,71 @@ class _HomeBody extends StatelessWidget {
   }
 }
 
+class _WeeklyReportCard extends StatelessWidget {
+  const _WeeklyReportCard({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    final TextTheme text = Theme.of(context).textTheme;
+    return Card(
+      color: const Color(0xFFFFE9DD),
+      elevation: 7,
+      shadowColor: const Color(0xFFD97850).withValues(alpha: 0.42),
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+          child: Row(
+            children: <Widget>[
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFA5482A).withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.assignment_outlined,
+                  color: Color(0xFF9A452A),
+                  size: 23,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Weekly report',
+                      style: text.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF5A2A1B),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'See your cat’s 7-day care summary',
+                      style: text.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Color(0xFF9A452A)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CompletionCard extends StatelessWidget {
   const _CompletionCard({
     required this.completed,
@@ -406,6 +480,10 @@ class _CompletionCard extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Card(
+      color: const Color(0xFFFFF0E7),
+      elevation: 6,
+      shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.38),
+      margin: const EdgeInsets.symmetric(vertical: 3),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         child: Row(

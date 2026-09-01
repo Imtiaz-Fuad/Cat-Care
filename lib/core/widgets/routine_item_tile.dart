@@ -22,6 +22,7 @@ class RoutineItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final TextTheme text = Theme.of(context).textTheme;
+    const Color routineAccent = Color(0xFF9A452A);
     final bool done = task.completed;
     return Card(
       child: InkWell(
@@ -36,13 +37,13 @@ class RoutineItemTile extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: scheme.secondary.withValues(alpha: 0.18),
+                  color: routineAccent.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   _iconForCategory(task.category),
                   size: 22,
-                  color: scheme.secondary,
+                  color: routineAccent,
                 ),
               ),
               const SizedBox(width: 12),
@@ -53,6 +54,7 @@ class RoutineItemTile extends StatelessWidget {
                     Text(
                       task.title,
                       style: text.titleSmall?.copyWith(
+                        fontFamily: 'Nunito',
                         fontWeight: FontWeight.w600,
                         decoration: done ? TextDecoration.lineThrough : null,
                         color: done
@@ -101,7 +103,8 @@ class RoutineItemTile extends StatelessWidget {
                   child: Text(
                     _formatTime(task.timeOfDay),
                     style: text.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w600,
                       color: done ? scheme.onSurfaceVariant : scheme.onSurface,
                     ),
                   ),

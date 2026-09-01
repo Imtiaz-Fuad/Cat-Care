@@ -20,6 +20,10 @@ class RoutineSummaryHeader extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final double progress = total == 0 ? 0 : completedToday / total;
     return Card(
+      color: const Color(0xFFFFF0E7),
+      elevation: 6,
+      shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.38),
+      margin: const EdgeInsets.symmetric(vertical: 3),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
         child: Row(

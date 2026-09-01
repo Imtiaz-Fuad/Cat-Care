@@ -163,34 +163,10 @@ class _ProfileBody extends StatelessWidget {
           route: AppRoutes.medications,
         ),
         const _ShortcutTile(
-          icon: Icons.location_searching,
-          title: 'Find a vet nearby',
-          subtitle: 'Coming soon',
-          enabled: false,
-        ),
-        const _ShortcutTile(
-          icon: Icons.smart_toy_outlined,
-          title: 'AI assistant',
-          subtitle: 'Ask care questions for your active cat.',
-          route: AppRoutes.aiAssistant,
-        ),
-        const _ShortcutTile(
-          icon: Icons.assignment_outlined,
-          title: 'Weekly report',
-          subtitle: 'A 7-day care summary for your active cat.',
-          route: AppRoutes.weeklyReport,
-        ),
-        const _ShortcutTile(
           icon: Icons.qr_code_scanner_outlined,
           title: 'Food label scan',
           subtitle: 'Analyze a packaged cat food label.',
           route: AppRoutes.foodLabel,
-        ),
-        const _ShortcutTile(
-          icon: Icons.local_hospital_outlined,
-          title: 'Emergency guidance',
-          subtitle: 'Safety signs and what to do.',
-          route: AppRoutes.emergencyGuidance,
         ),
         const SizedBox(height: 16),
         Padding(
@@ -246,87 +222,37 @@ class _TodayStatsCard extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Consumer2<RoutineProvider, NutritionProvider>(
-      builder:
-          (
-            BuildContext context,
-            RoutineProvider routine,
-            NutritionProvider nutrition,
-            Widget? _,
-          ) {
-            final int done = routine.completedTodayCount;
-            final int total = routine.totalRoutineCount;
-            final int percent = routine.completionPercent;
-            final int meals = nutrition.todaysMealCount;
-            final int foodG = nutrition.todaysFoodGrams.toInt();
-            final int foodTarget = nutrition.target.dailyFoodGrams.toInt();
-            final int waterMl = nutrition.todaysWaterMl.toInt();
-            final int waterTarget = nutrition.target.dailyWaterMl.toInt();
-            return Card(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "Today's snapshot",
-                      style: text.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      DateFormat('EEEE, MMM d').format(DateTime.now()),
-                      style: text.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: _StatBlock(
-                            icon: Icons.check_box_outlined,
-                            label: 'Routine',
-                            value: '$done / $total',
-                            sub: '$percent% done',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _StatBlock(
-                            icon: Icons.restaurant_outlined,
-                            label: 'Food',
-                            value: '$foodG / $foodTarget g',
-                            sub: '$meals meal${meals == 1 ? '' : 's'}',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _StatBlock(
-                            icon: Icons.water_drop_outlined,
-                            label: 'Water',
-                            value: '$waterMl / $waterTarget ml',
-                            sub: percent < 50 ? 'Below target' : 'On track',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+      builder: (BuildContext context, RoutineProvider routine,
+          NutritionProvider nutrition, Widget? _) {
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text("Today's snapshot",
+                    style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Text(DateFormat('EEEE, MMM d').format(DateTime.now()),
+                    style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+                const SizedBox(height: 16),
+                Row(children: <Widget>[
+                  Expanded(child: _StatBlock(icon: Icons.check_box_outlined, label: 'Routine', value: '${routine.completedTodayCount} / ${routine.totalRoutineCount}', sub: '${routine.completionPercent}% done')),
+                  const SizedBox(width: 12),
+                  Expanded(child: _StatBlock(icon: Icons.restaurant_outlined, label: 'Food', value: '${nutrition.todaysFoodGrams.toInt()} / ${nutrition.target.dailyFoodGrams.toInt()} g', sub: '${nutrition.todaysMealCount} meal${nutrition.todaysMealCount == 1 ? '' : 's'}')),
+                  const SizedBox(width: 12),
+                  Expanded(child: _StatBlock(icon: Icons.water_drop_outlined, label: 'Water', value: '${nutrition.todaysWaterMl.toInt()} / ${nutrition.target.dailyWaterMl.toInt()} ml', sub: routine.completionPercent < 50 ? 'Below target' : 'On track')),
+                ]),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
 
 class _StatBlock extends StatelessWidget {
-  const _StatBlock({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.sub,
-  });
-
+  const _StatBlock({required this.icon, required this.label, required this.value, required this.sub});
   final IconData icon;
   final String label;
   final String value;
@@ -338,45 +264,14 @@ class _StatBlock extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(icon, size: 16, color: scheme.primary),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  label,
-                  style: text.labelSmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            sub,
-            style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(16)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
+        Row(children: <Widget>[Icon(icon, size: 16, color: scheme.primary), const SizedBox(width: 6), Expanded(child: Text(label, style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis))]),
+        const SizedBox(height: 8),
+        Text(value, style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+        const SizedBox(height: 2),
+        Text(sub, style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
+      ]),
     );
   }
 }
