@@ -101,49 +101,121 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
     final TextTheme text = Theme.of(context).textTheme;
     return Consumer<AuthProvider>(
       builder: (BuildContext context, AuthProvider auth, _) {
         final bool busy = auth.isBusy;
+        const Color terracotta = Color(0xFFA5482A);
+        const Color ink = Color(0xFF241F1D);
         return Scaffold(
-          body: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 420),
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
+          body: DecoratedBox(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[
+                  Color(0xFFFFFDFC),
+                  Color(0xFFF9EFEC),
+                  Color(0xFFF0F7F4),
+                ],
+                stops: <double>[0, 0.48, 1],
+              ),
+            ),
+            child: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 28,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        inputDecorationTheme: InputDecorationTheme(
+                          filled: true,
+                          fillColor: Colors.white.withValues(alpha: 0.82),
+                          labelStyle: const TextStyle(color: Color(0xFF6D5750)),
+                          floatingLabelStyle: const TextStyle(color: terracotta),
+                          prefixIconColor: terracotta,
+                          suffixIconColor: terracotta,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFE7C8BE),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: terracotta,
+                              width: 1.5,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: Color(0xFFD9534F)),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFD9534F),
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Icon(Icons.pets, size: 64, color: scheme.primary),
-                        const SizedBox(height: 12),
+                        Center(
+                          child: Container(
+                            width: 68,
+                            height: 68,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF6E3DE),
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            child: const Icon(
+                              Icons.pets,
+                              size: 34,
+                              color: terracotta,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
                         Text(
                           AppConstants.appName,
                           textAlign: TextAlign.center,
-                          style: text.headlineMedium,
+                          style: text.headlineMedium?.copyWith(
+                            color: ink,
+                            fontSize: 30,
+                            letterSpacing: -0.5,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           _mode == AuthMode.signIn
                               ? 'Sign in to keep your cats in sync.'
                               : 'Create an account to back up your data.',
                           textAlign: TextAlign.center,
                           style: text.bodyMedium?.copyWith(
-                            color: scheme.onSurfaceVariant,
+                            color: const Color(0xFF4D403B),
                           ),
                         ),
                         if (auth.lastError != null) ...<Widget>[
                           const SizedBox(height: 16),
                           _ErrorBanner(message: auth.lastError!.message),
                         ],
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 30),
                         TextFormField(
                           controller: _email,
                           enabled: !busy,
@@ -206,13 +278,32 @@ class _LoginScreenState extends State<LoginScreen> {
                             alignment: AlignmentDirectional.centerEnd,
                             child: TextButton(
                               onPressed: busy ? null : _resetPassword,
+                              style: TextButton.styleFrom(
+                                foregroundColor: terracotta,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 8,
+                                ),
+                              ),
                               child: const Text('Forgot password?'),
                             ),
                           ),
                         ],
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 14),
                         FilledButton(
                           onPressed: busy ? null : _submit,
+                          style: FilledButton.styleFrom(
+                            backgroundColor: terracotta,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(52),
+                            elevation: 2,
+                            shadowColor: terracotta.withValues(alpha: 0.28),
+                            shape: const StadiumBorder(),
+                            textStyle: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                           child: busy
                               ? const SizedBox(
                                   width: 18,
@@ -227,18 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       : 'Create account',
                                 ),
                         ),
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: busy ? null : _signInWithGoogle,
-                          icon: const Icon(Icons.account_circle_outlined),
-                          label: const Text('Continue with Google'),
-                        ),
-                        const SizedBox(height: 8),
-                        TextButton(
-                          onPressed: busy ? null : _signInAsGuest,
-                          child: const Text('Continue as guest'),
-                        ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         TextButton(
                           onPressed: busy
                               ? null
@@ -251,9 +331,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             _mode == AuthMode.signIn
                                 ? 'New here? Create an account'
                                 : 'Already have an account? Sign in',
+                            style: const TextStyle(color: terracotta),
                           ),
                         ),
                       ],
+                    ),
+                      ),
                     ),
                   ),
                 ),

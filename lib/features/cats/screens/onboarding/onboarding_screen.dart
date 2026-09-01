@@ -102,19 +102,58 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add a cat'),
-        leading: IconButton(
-          tooltip: 'Close',
-          icon: const Icon(Icons.close),
-          onPressed: () =>
-              context.canPop() ? context.pop() : context.go('/home'),
+    final ColorScheme baseScheme = Theme.of(context).colorScheme;
+    const Color terracotta = Color(0xFFA5482A);
+    final ColorScheme warmScheme = baseScheme.copyWith(
+      primary: terracotta,
+      onPrimary: Colors.white,
+      primaryContainer: const Color(0xFFF6E3DE),
+      onPrimaryContainer: const Color(0xFF5A2A1B),
+      secondary: const Color(0xFFD98E70),
+      onSecondary: Colors.white,
+      secondaryContainer: const Color(0xFFF9E8E1),
+      onSecondaryContainer: const Color(0xFF5C2E21),
+      surface: const Color(0xFFFFFDFC),
+      surfaceContainerLowest: const Color(0xFFFFFDFC),
+      outline: const Color(0xFFE4C6BC),
+      outlineVariant: const Color(0xFFECD9D2),
+      onSurface: const Color(0xFF2A211E),
+      onSurfaceVariant: const Color(0xFF6B5750),
+    );
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: warmScheme,
+        scaffoldBackgroundColor: const Color(0xFFF7F3F0),
+        appBarTheme: Theme.of(context).appBarTheme.copyWith(
+          backgroundColor: const Color(0xFFFFFDFC),
+          foregroundColor: const Color(0xFF2A211E),
         ),
       ),
-      body: SafeArea(
-        child: Column(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Add a cat'),
+          leading: IconButton(
+            tooltip: 'Close',
+            icon: const Icon(Icons.close),
+            onPressed: () =>
+                context.canPop() ? context.pop() : context.go('/home'),
+          ),
+        ),
+        body: DecoratedBox(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                Color(0xFFFFFDFC),
+                Color(0xFFF9EFEC),
+                Color(0xFFFFF5EF),
+              ],
+              stops: <double>[0, 0.58, 1],
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
           children: <Widget>[
             const SizedBox(height: 12),
             OnboardingStepIndicator(
@@ -153,10 +192,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             DecoratedBox(
               decoration: BoxDecoration(
-                color: scheme.surface,
+                color: warmScheme.surface,
                 border: Border(
                   top: BorderSide(
-                    color: scheme.outlineVariant.withValues(alpha: 0.45),
+                    color: warmScheme.outlineVariant.withValues(alpha: 0.45),
                   ),
                 ),
               ),
@@ -181,7 +220,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             icon: const Icon(Icons.arrow_back, size: 18),
                             label: const Text('Back'),
                             style: TextButton.styleFrom(
-                              foregroundColor: scheme.primary,
+                              foregroundColor: warmScheme.primary,
                               textStyle: const TextStyle(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -193,7 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 ? context.pop()
                                 : context.go('/home'),
                             style: TextButton.styleFrom(
-                              foregroundColor: scheme.onSurfaceVariant,
+                              foregroundColor: warmScheme.onSurfaceVariant,
                               textStyle: const TextStyle(
                                 fontWeight: FontWeight.w500,
                               ),
@@ -231,6 +270,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
           ],
+            ),
+          ),
         ),
       ),
     );
