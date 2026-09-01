@@ -62,9 +62,15 @@ class MedicationDetailScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(med.dose, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 4),
-              Text('Frequency: ${med.frequency}'),
+              Text(
+                'Frequency: ${med.frequency}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 12),
-              _MetaRow(label: 'Start', value: fmt.format(med.startDate)),
+              _MetaRow(label: 'Started', value: fmt.format(med.startDate)),
               if (med.endDate != null)
                 _MetaRow(label: 'End', value: fmt.format(med.endDate!)),
               _MetaRow(
@@ -171,10 +177,22 @@ class _MetaRow extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              style: text.bodySmall?.copyWith(
+                color: scheme.onSurfaceVariant,
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          Expanded(child: Text(value, style: text.bodyMedium)),
+          Expanded(
+            child: Text(
+              value,
+              style: text.bodyMedium?.copyWith(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
         ],
       ),
     );

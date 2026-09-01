@@ -137,6 +137,9 @@ class _MedicationTile extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final DateFormat fmt = DateFormat('MMM d, y');
     return Card(
+      color: const Color(0xFFFFF0E7),
+      elevation: 5,
+      shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.3),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => Navigator.of(context).push<void>(
@@ -170,13 +173,21 @@ class _MedicationTile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 'Frequency: ${medication.frequency}',
-                style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                style: text.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Started ${fmt.format(medication.startDate)}'
                 '${medication.endDate != null ? " → ${fmt.format(medication.endDate!)}" : ""}',
-                style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                style: text.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               if (medication.reminderTimes.isNotEmpty) ...<Widget>[
                 const SizedBox(height: 8),

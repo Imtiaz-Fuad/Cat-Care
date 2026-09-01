@@ -173,7 +173,18 @@ class _ProfileBody extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: OutlinedButton.icon(
             icon: const Icon(Icons.logout_rounded),
-            label: const Text('Sign out'),
+            label: const Text(
+              'Sign out',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF8C341F),
+              backgroundColor: const Color(0xFFF6DDD3),
+              side: const BorderSide(color: Color(0xFFD79A84)),
+            ),
             onPressed: () => _confirmSignOut(context),
           ),
         ),
@@ -301,13 +312,19 @@ class _ShortcutTile extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: scheme.secondaryContainer,
+          color: const Color(0xFFF6DDD3),
           borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.center,
-        child: Icon(icon, color: scheme.onSecondaryContainer, size: 22),
+        child: Icon(icon, color: const Color(0xFF8C341F), size: 22),
       ),
-      title: Text(title),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w600,
+        ),
+      ),
       subtitle: Text(
         subtitle,
         style: TextStyle(
