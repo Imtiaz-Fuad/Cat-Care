@@ -45,14 +45,14 @@ class WeightTrendScreen extends StatelessWidget {
               ),
             ),
             icon: const Icon(Icons.add),
-            label: const Text('Log weight'),
+            label: const Text('Add weight'),
           ),
           body: p.records.isEmpty
               ? const EmptyState(
                   icon: Icons.monitor_weight_outlined,
-                  title: 'No weights logged',
+                  title: 'No weights added yet',
                   subtitle:
-                      'A monthly weigh-in helps catch health trends early.',
+                      'Weigh-in monthly for best results.',
                 )
               : ListView(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
@@ -79,7 +79,9 @@ class WeightTrendScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'History',
-                      style: Theme.of(context).textTheme.titleSmall,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     for (final WeightEntry w in p.records)
@@ -106,8 +108,14 @@ class _WeightTile extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     return Card(
       child: ListTile(
-        title: Text('${entry.weightKg.toStringAsFixed(2)} kg'),
-        subtitle: Text(fmt.format(entry.recordedAt)),
+        title: Text(
+          '${entry.weightKg.toStringAsFixed(2)} kg',
+          style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          fmt.format(entry.recordedAt),
+          style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
         trailing: (entry.notes != null && entry.notes!.isNotEmpty)
             ? Icon(
                 Icons.notes,
@@ -125,12 +133,25 @@ class _WeightTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(entry.recordedAt.toString(), style: text.titleSmall),
+                  Text(
+                    entry.recordedAt.toString(),
+                    style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                  ),
                   const SizedBox(height: 8),
                   if (entry.notes != null && entry.notes!.isNotEmpty)
-                    Text(entry.notes!)
+                    Text(
+                      entry.notes!,
+                      style: text.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
                   else
-                    const Text('No notes for this entry.'),
+                    Text(
+                      'No notes for this entry.',
+                      style: text.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                 ],
               ),
             ),

@@ -200,51 +200,28 @@ class _HomeBody extends StatelessWidget {
                 ],
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                  child: Card(
-                    color: const Color(0xFFFFF0E7),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(20),
-                      onTap: () => Navigator.of(context).push<void>(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const BehaviorEntryScreen(),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: _HomeShortcutCard(
+                          icon: Icons.pets_outlined,
+                          label: 'Behavior check',
+                          onTap: () => Navigator.of(context).push<void>(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const BehaviorEntryScreen(),
+                            ),
+                          ),
                         ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        child: Row(
-                          children: <Widget>[
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF3C8B5),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.pets_outlined,
-                                color: Color(0xFFA9472A),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Behavior check-in',
-                                style: text.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                            const Icon(
-                              Icons.chevron_right_rounded,
-                              color: Color(0xFFA9472A),
-                            ),
-                          ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _HomeShortcutCard(
+                          icon: Icons.monitor_weight_outlined,
+                          label: 'Weight check',
+                          onTap: () => context.push(AppRoutes.weightTrend),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -446,6 +423,49 @@ class _HomeBody extends StatelessWidget {
       return 'You\'re off to a good start. Two more routines and today is on track.';
     }
     return 'Start the day gently: log breakfast or a quick play session.';
+  }
+}
+
+class _HomeShortcutCard extends StatelessWidget {
+  const _HomeShortcutCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: const Color(0xFFFFF0E7),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(icon, size: 22, color: const Color(0xFFA9472A)),
+              const SizedBox(width: 6),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

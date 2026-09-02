@@ -31,13 +31,38 @@ class _WeightEntryScreenState extends State<WeightEntryScreen> {
   @override
   Widget build(BuildContext context) {
     final DateFormat fmt = DateFormat('MMM d, y');
+    final TextStyle bodyStyle = const TextStyle(
+      fontFamily: 'Nunito',
+      fontWeight: FontWeight.w600,
+    );
+    final OutlineInputBorder warmBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(
+        color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log weight'),
+        title: const Text(
+          'Log weight',
+          style: TextStyle(fontFamily: 'Nunito', fontWeight: FontWeight.w600),
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: _saving ? null : _save,
-            child: const Text('Save'),
+            style: TextButton.styleFrom(
+              backgroundColor: const Color(0xFFA9472A),
+              foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           IconButton(
             tooltip: 'Trend',
@@ -61,9 +86,11 @@ class _WeightEntryScreenState extends State<WeightEntryScreen> {
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Weight (kg)',
-                  border: OutlineInputBorder(),
+                  labelStyle: bodyStyle,
+                  enabledBorder: warmBorder,
+                  focusedBorder: warmBorder,
                 ),
                 validator: (String? v) {
                   if (v == null || v.trim().isEmpty) return 'Required';
@@ -90,12 +117,14 @@ class _WeightEntryScreenState extends State<WeightEntryScreen> {
                   }
                 },
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    enabledBorder: warmBorder,
+                    focusedBorder: warmBorder,
                     prefixIcon: Icon(Icons.event_outlined),
                     labelText: 'Date',
+                    labelStyle: bodyStyle,
                   ),
-                  child: Text(fmt.format(_date)),
+                  child: Text(fmt.format(_date), style: bodyStyle),
                 ),
               ),
               const SizedBox(height: 16),
@@ -103,9 +132,11 @@ class _WeightEntryScreenState extends State<WeightEntryScreen> {
                 controller: _notesCtrl,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Notes (optional)',
-                  border: OutlineInputBorder(),
+                  labelStyle: bodyStyle,
+                  enabledBorder: warmBorder,
+                  focusedBorder: warmBorder,
                 ),
               ),
               if (_saving) ...<Widget>[
