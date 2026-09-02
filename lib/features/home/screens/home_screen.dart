@@ -41,13 +41,6 @@ class HomeScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Today'),
-            actions: <Widget>[
-              IconButton(
-                tooltip: 'Log meal',
-                icon: const Icon(Icons.restaurant_outlined),
-                onPressed: () => _openFeedingSheet(context),
-              ),
-            ],
           ),
           body: loading
               ? const Center(child: CircularProgressIndicator())
@@ -86,12 +79,6 @@ class _HomeBody extends StatelessWidget {
                 .todaysFeedings
                 .take(3)
                 .toList();
-            final double foodG = nutritionProvider.todaysFoodGrams;
-            final double waterMl = nutritionProvider.todaysWaterMl;
-            final int foodTarget = nutritionProvider.target.dailyFoodGrams
-                .toInt();
-            final int waterTarget = nutritionProvider.target.dailyWaterMl
-                .toInt();
             final String insight = _insightFor(
               routineProvider: routineProvider,
               nutritionProvider: nutritionProvider,
@@ -219,36 +206,6 @@ class _HomeBody extends StatelessWidget {
                           icon: Icons.monitor_weight_outlined,
                           label: 'Weight check',
                           onTap: () => context.push(AppRoutes.weightTrend),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 4),
-                _SectionTitle(title: 'Today for ${cat.name}'),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: _NutritionSummaryCard(
-                          label: 'Food',
-                          centerLabel: '${foodG.toInt()} / $foodTarget g',
-                          progress: nutritionProvider.foodProgress,
-                          accentColor: scheme.secondary,
-                          accentIcon: Icons.restaurant_outlined,
-                          onTap: () => _openFeedingSheet(context),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _NutritionSummaryCard(
-                          label: 'Water',
-                          centerLabel: '${waterMl.toInt()} / $waterTarget ml',
-                          progress: nutritionProvider.waterProgress,
-                          accentColor: scheme.primary,
-                          accentIcon: Icons.water_drop_outlined,
-                          onTap: () => _openWaterSheet(context),
                         ),
                       ),
                     ],

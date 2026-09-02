@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/models/cat_life_stage.dart';
 import '../../../core/models/cat_profile.dart';
 import '../providers/cat_provider.dart';
+import 'onboarding/onboarding_screen.dart';
 import '../widgets/cat_photo.dart';
 
 /// Cat profile surface — see `docs/catcare.design` § "Cat profile"
@@ -32,7 +33,7 @@ class CatProfileScreen extends StatelessWidget {
           );
         }
         if (profile == null) {
-          return _MissingProfileScaffold(catId: catId);
+          return const _MissingProfileScaffold();
         }
         return _ProfileBody(profile: profile, cats: cats);
       },
@@ -187,10 +188,10 @@ class _ProfileBody extends StatelessWidget {
   Future<void> _handleMenu(BuildContext context, String action) async {
     switch (action) {
       case 'edit':
-        // Edit reuses onboarding in edit mode. Phase 3 ships the
-        // create flow only; the edit wiring lands in Phase 7.
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Editing is coming in a later phase.')),
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => OnboardingScreen(editingProfile: profile),
+          ),
         );
       case 'delete':
         final bool? confirm = await showDialog<bool>(
@@ -204,10 +205,17 @@ class _ProfileBody extends StatelessWidget {
             actions: <Widget>[
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(false),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF2E7D32),
+                ),
                 child: const Text('Cancel'),
               ),
               FilledButton.tonal(
                 onPressed: () => Navigator.of(ctx).pop(true),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFFB3261E),
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text('Delete'),
               ),
             ],
@@ -239,9 +247,7 @@ class _ProfileBody extends StatelessWidget {
 }
 
 class _MissingProfileScaffold extends StatelessWidget {
-  const _MissingProfileScaffold({required this.catId});
-
-  final String catId;
+  const _MissingProfileScaffold();
 
   @override
   Widget build(BuildContext context) {
@@ -253,13 +259,35 @@ class _MissingProfileScaffold extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const Icon(Icons.error_outline, size: 56),
-              const SizedBox(height: 16),
-              Text('We couldn\'t find cat $catId.'),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () => context.go('/cats/switch'),
-                child: const Text('Pick another cat'),
+              Card(
+                color: const Color(0xFFA9472A),
+                elevation: 5,
+                shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.35),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(22),
+                  side: BorderSide(
+                    color: const Color(0xFFF3C8B5).withValues(alpha: 0.8),
+                  ),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(22),
+                  onTap: () => context.go('/cats/switch'),
+                  child: const SizedBox(
+                    width: double.infinity,
+                    height: 88,
+                    child: Center(
+                      child: Text(
+                        'Pick another cat',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'Nunito',
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

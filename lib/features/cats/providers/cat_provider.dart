@@ -164,7 +164,7 @@ class CatProvider extends ChangeNotifier {
   }) async {
     final String? uid = _uidForWrite();
     if (uid == null) return;
-    _runGuarded(
+    await _runGuarded(
       () async =>
           _repository.updateCat(ownerId: uid, catId: catId, draft: draft),
     );
@@ -174,7 +174,7 @@ class CatProvider extends ChangeNotifier {
   Future<void> deleteCat({required String catId, String? photoUrl}) async {
     final String? uid = _uidForWrite();
     if (uid == null) return;
-    _runGuarded(() async {
+    await _runGuarded(() async {
       await _repository.deleteCat(
         ownerId: uid,
         catId: catId,
@@ -198,7 +198,7 @@ class CatProvider extends ChangeNotifier {
     final String? uid = _uidForWrite();
     if (uid == null) return null;
     String? url;
-    _runGuarded(() async {
+    await _runGuarded(() async {
       url = await _repository.uploadCatPhoto(
         ownerId: uid,
         catId: catId,
@@ -316,23 +316,21 @@ class CatProvider extends ChangeNotifier {
     return uid;
   }
 
-  void _runGuarded(Future<void> Function() action) {
+  Future<void> _runGuarded(Future<void> Function() action) async {
     if (_disposed) return;
     _setBusy(true);
     clearError();
-    () async {
-      try {
-        await action();
-      } on AppFailure catch (failure) {
-        _lastError = failure;
-        AppLogger.w('CatProvider action failed: $failure');
-      } catch (error, stack) {
-        _lastError = UnknownFailure(error.toString(), code: 'cats-unknown');
-        AppLogger.e('CatProvider: unexpected error', error, stack);
-      } finally {
-        if (!_disposed) _setBusy(false);
-      }
-    }();
+    try {
+      await action();
+    } on AppFailure catch (failure) {
+      _lastError = failure;
+      AppLogger.w('CatProvider action failed: $failure');
+    } catch (error, stack) {
+      _lastError = UnknownFailure(error.toString(), code: 'cats-unknown');
+      AppLogger.e('CatProvider: unexpected error', error, stack);
+    } finally {
+      if (!_disposed) _setBusy(false);
+    }
   }
 
   void _setBusy(bool value) {

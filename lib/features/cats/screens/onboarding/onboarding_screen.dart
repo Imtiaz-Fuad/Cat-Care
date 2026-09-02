@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/errors/app_failure.dart';
+import '../../../../core/models/cat_profile.dart';
+import '../../models/cat_draft.dart';
 import '../../providers/cat_provider.dart';
 import '../../services/cat_photo_picker.dart';
 import '../../widgets/onboarding_step_indicator.dart';
@@ -21,7 +23,9 @@ import 'onboarding_steps.dart';
 ///      `/home` (if the user now has cats) or stay on a refreshed
 ///      onboarding screen (rare, e.g. manual reset).
 class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.editingProfile});
+
+  final CatProfile? editingProfile;
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -29,8 +33,30 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   late final PageController _pages = PageController();
-  late final OnboardingController _controller = OnboardingController();
+  late final OnboardingController _controller = OnboardingController(
+    initial: widget.editingProfile == null
+        ? null
+        : _draftFromProfile(widget.editingProfile!),
+  );
   late final CatPhotoPicker _picker = CatPhotoPicker();
+
+  static CatDraft _draftFromProfile(CatProfile profile) => CatDraft(
+    name: profile.name,
+    photoUrl: profile.photoUrl,
+    accentHex: profile.themeAccentHex,
+    birthday: profile.birthday,
+    sex: profile.sex,
+    breed: profile.breed,
+    neutered: profile.neutered,
+    indoor: profile.indoor,
+    color: profile.color,
+    weightKg: profile.weightKg,
+    allergies: profile.allergies,
+    diseases: profile.diseases,
+    medications: profile.medications,
+    notes: profile.notes,
+    priorities: profile.priorities,
+  );
 
   static const List<String> _stepLabels = <String>[
     'Photo',
@@ -82,6 +108,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _finish() async {
     if (!_controller.canFinish) return;
     final CatProvider cats = context.read<CatProvider>();
+    if (widget.editingProfile != null) {
+      await cats.updateCat(
+        catId: widget.editingProfile!.id,
+        draft: _controller.draft,
+      );
+      if (!mounted) return;
+      if (cats.lastError == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cat profile updated')),
+        );
+        context.pop();
+      }
+      return;
+    }
     final Object? result = await cats.createCat(_controller.draft);
     if (!mounted) return;
     if (result != null) {
@@ -131,7 +171,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Add a cat'),
+          title: Text(widget.editingProfile == null ? 'Add a cat' : 'Edit cat'),
           leading: IconButton(
             tooltip: 'Close',
             icon: const Icon(Icons.close),
@@ -261,7 +301,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               letterSpacing: 0.2,
                             ),
                           ),
-                          child: Text(atLast ? 'Finish' : 'Next'),
+                          child: Text(
+                            atLast
+                                ? (widget.editingProfile == null
+                                      ? 'Finish'
+                                      : 'Save')
+                                : 'Next',
+                          ),
                         ),
                       ],
                     );
