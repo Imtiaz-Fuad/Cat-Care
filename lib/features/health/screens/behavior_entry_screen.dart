@@ -39,11 +39,29 @@ class _BehaviorEntryScreenState extends State<BehaviorEntryScreen> {
     final TextTheme text = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Behavior check-in'),
+        title: const Text(
+          'Behavior check-in',
+          style: TextStyle(
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: _saving ? null : _save,
-            child: const Text('Save'),
+            style: TextButton.styleFrom(
+              backgroundColor: const Color(0xFFA9472A),
+              foregroundColor: Colors.white,
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+            ),
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           IconButton(
             tooltip: 'History',
@@ -60,7 +78,13 @@ class _BehaviorEntryScreenState extends State<BehaviorEntryScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
           children: <Widget>[
-            Text('How is your cat doing?', style: text.titleMedium),
+            Text(
+              'How is your cat doing?',
+              style: text.titleMedium?.copyWith(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 16),
             _RatingRow(
               title: 'Appetite',
@@ -120,6 +144,10 @@ class _BehaviorEntryScreenState extends State<BehaviorEntryScreen> {
               decoration: const InputDecoration(
                 labelText: 'Notes (optional)',
                 border: OutlineInputBorder(),
+                labelStyle: TextStyle(
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             if (_saving) ...<Widget>[
@@ -184,7 +212,13 @@ class _RatingRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(title),
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: 'Nunito',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 6),
           Row(
             children: <Widget>[
@@ -202,7 +236,10 @@ class _RatingRow extends StatelessWidget {
               const Spacer(),
               Text(
                 value == null ? '—' : '$value / 5',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: const TextStyle(
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
@@ -224,7 +261,13 @@ class _SleepField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: <Widget>[
-          const Text('Sleep'),
+          const Text(
+            'Sleep',
+            style: TextStyle(
+              fontFamily: 'Nunito',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Slider(
@@ -241,6 +284,10 @@ class _SleepField extends StatelessWidget {
             child: Text(
               hours == null ? '—' : '${hours!.toStringAsFixed(1)}h',
               textAlign: TextAlign.end,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -266,23 +313,50 @@ class _TriStateRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: <Widget>[
-          Expanded(child: Text(title)),
-          SegmentedButton<bool?>(
-            showSelectedIcon: false,
-            segments: const <ButtonSegment<bool?>>[
-              ButtonSegment<bool?>(value: true, label: Text('Yes')),
-              ButtonSegment<bool?>(value: false, label: Text('No')),
-            ],
-            selected: <bool?>{value},
-            emptySelectionAllowed: true,
-            onSelectionChanged: (Set<bool?> s) => onChanged(s.firstOrNull),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          ChoiceChip(
+            label: const Text(
+              'Yes',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            selected: value == true,
+            selectedColor: const Color(0xFF2E7D32),
+            labelStyle: TextStyle(
+              color: value == true ? Colors.white : null,
+              fontWeight: FontWeight.w600,
+            ),
+            onSelected: (_) => onChanged(value == true ? null : true),
+          ),
+          const SizedBox(width: 6),
+          ChoiceChip(
+            label: const Text(
+              'No',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            selected: value == false,
+            selectedColor: const Color(0xFFF3C7BC),
+            labelStyle: const TextStyle(
+              color: Color(0xFF8C341F),
+              fontWeight: FontWeight.w600,
+            ),
+            onSelected: (_) => onChanged(value == false ? null : false),
           ),
         ],
       ),
     );
   }
-}
-
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
 }

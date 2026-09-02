@@ -13,6 +13,7 @@ import '../../../core/widgets/upcoming_card.dart';
 import '../../../routes/app_routes.dart';
 import '../../cats/providers/cat_provider.dart';
 import '../../cats/widgets/cat_photo.dart';
+import '../../health/screens/behavior_entry_screen.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
 import '../../nutrition/widgets/feeding_edit_sheet.dart';
 import '../../nutrition/widgets/water_edit_sheet.dart';
@@ -197,6 +198,55 @@ class _HomeBody extends StatelessWidget {
                     ),
                   ),
                 ],
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                  child: Card(
+                    color: const Color(0xFFFFF0E7),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => Navigator.of(context).push<void>(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const BehaviorEntryScreen(),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF3C8B5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.pets_outlined,
+                                color: Color(0xFFA9472A),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Behavior check-in',
+                                style: text.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.chevron_right_rounded,
+                              color: Color(0xFFA9472A),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 4),
                 _SectionTitle(title: 'Today for ${cat.name}'),
                 Padding(
