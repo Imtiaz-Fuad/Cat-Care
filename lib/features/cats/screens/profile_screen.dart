@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:intl/intl.dart';
-
 import '../../../core/models/cat_profile.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../routes/app_routes.dart';
 import '../../ai/providers/ai_provider.dart';
 import '../../authentication/providers/auth_provider.dart';
-import '../../nutrition/providers/nutrition_provider.dart';
-import '../../routine/providers/routine_provider.dart';
 import '../providers/cat_provider.dart';
 import '../widgets/cat_photo.dart';
 
@@ -127,10 +123,6 @@ class _ProfileBody extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: _TodayStatsCard(cat: cat),
-        ),
         const SizedBox(height: 12),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -220,70 +212,6 @@ class _ProfileBody extends StatelessWidget {
       context.read<AiProvider>().reset();
       await auth.signOut();
     }
-  }
-}
-
-class _TodayStatsCard extends StatelessWidget {
-  const _TodayStatsCard({required this.cat});
-
-  final CatProfile cat;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme text = Theme.of(context).textTheme;
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    return Consumer2<RoutineProvider, NutritionProvider>(
-      builder: (BuildContext context, RoutineProvider routine,
-          NutritionProvider nutrition, Widget? _) {
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text("Today's snapshot",
-                    style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                Text(DateFormat('EEEE, MMM d').format(DateTime.now()),
-                    style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
-                const SizedBox(height: 16),
-                Row(children: <Widget>[
-                  Expanded(child: _StatBlock(icon: Icons.check_box_outlined, label: 'Routine', value: '${routine.completedTodayCount} / ${routine.totalRoutineCount}', sub: '${routine.completionPercent}% done')),
-                  const SizedBox(width: 12),
-                  Expanded(child: _StatBlock(icon: Icons.restaurant_outlined, label: 'Food', value: '${nutrition.todaysFoodGrams.toInt()} / ${nutrition.target.dailyFoodGrams.toInt()} g', sub: '${nutrition.todaysMealCount} meal${nutrition.todaysMealCount == 1 ? '' : 's'}')),
-                  const SizedBox(width: 12),
-                  Expanded(child: _StatBlock(icon: Icons.water_drop_outlined, label: 'Water', value: '${nutrition.todaysWaterMl.toInt()} / ${nutrition.target.dailyWaterMl.toInt()} ml', sub: routine.completionPercent < 50 ? 'Below target' : 'On track')),
-                ]),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _StatBlock extends StatelessWidget {
-  const _StatBlock({required this.icon, required this.label, required this.value, required this.sub});
-  final IconData icon;
-  final String label;
-  final String value;
-  final String sub;
-
-  @override
-  Widget build(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
-    final TextTheme text = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(16)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-        Row(children: <Widget>[Icon(icon, size: 16, color: scheme.primary), const SizedBox(width: 6), Expanded(child: Text(label, style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis))]),
-        const SizedBox(height: 8),
-        Text(value, style: text.titleSmall?.copyWith(fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
-        const SizedBox(height: 2),
-        Text(sub, style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
-      ]),
-    );
   }
 }
 

@@ -109,9 +109,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!_controller.canFinish) return;
     final CatProvider cats = context.read<CatProvider>();
     if (widget.editingProfile != null) {
+      CatDraft draft = _controller.draft;
+      if (_controller.photoBytes != null) {
+        final String? photoUrl = await cats.uploadPhoto(
+          catId: widget.editingProfile!.id,
+          bytes: _controller.photoBytes!,
+        );
+        if (photoUrl == null) {
+          if (mounted && cats.lastError != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(cats.lastError!.message)));
+          }
+          return;
+        }
+        draft = draft.copyWith(photoUrl: photoUrl);
+      }
       await cats.updateCat(
         catId: widget.editingProfile!.id,
-        draft: _controller.draft,
+        draft: draft,
       );
       if (!mounted) return;
       if (cats.lastError == null) {
@@ -125,14 +141,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final Object? result = await cats.createCat(_controller.draft);
     if (!mounted) return;
     if (result != null) {
+      if (_controller.photoBytes != null) {
+        final String? uploadedUrl = await cats.uploadPhoto(
+          catId: (result as CatProfile).id,
+          bytes: _controller.photoBytes!,
+        );
+        if (uploadedUrl == null) {
+          if (mounted && cats.lastError != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(cats.lastError!.message)));
+          }
+          return;
+        }
+      }
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Cat profile saved')));
-      if (context.canPop()) {
-        context.pop();
-      } else {
-        context.go('/home');
-      }
+      context.go('/home');
     } else if (cats.lastError != null) {
       ScaffoldMessenger.of(
         context,

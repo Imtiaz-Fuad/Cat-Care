@@ -119,7 +119,9 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.catSwitch,
-          builder: (_, _) => const CatSwitcherScreen(),
+          builder: (_, state) => CatSwitcherScreen(
+            returnHome: state.uri.queryParameters['returnHome'] == 'true',
+          ),
         ),
         GoRoute(
           path: AppRoutes.catProfilePattern,

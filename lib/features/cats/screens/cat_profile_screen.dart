@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../core/models/cat_life_stage.dart';
 import '../../../core/models/cat_profile.dart';
+import '../../../routes/app_routes.dart';
 import '../providers/cat_provider.dart';
 import 'onboarding/onboarding_screen.dart';
 import '../widgets/cat_photo.dart';
@@ -63,6 +64,11 @@ class _ProfileBody extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(profile.name),
+        leading: IconButton(
+          tooltip: 'Back to Profile',
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go(AppRoutes.profile),
+        ),
         actions: <Widget>[
           IconButton(
             tooltip: 'Switch cat',
@@ -271,7 +277,7 @@ class _MissingProfileScaffold extends StatelessWidget {
                 ),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(22),
-                  onTap: () => context.go('/cats/switch'),
+                  onTap: () => context.go('/cats/switch?returnHome=true'),
                   child: const SizedBox(
                     width: double.infinity,
                     height: 88,

@@ -21,8 +21,10 @@ class OnboardingController extends ChangeNotifier {
   /// Whether the draft is currently being analyzed (accent color
   /// extraction). The photo step listens to this for its spinner.
   bool _busy = false;
+  Uint8List? _photoBytes;
 
   CatDraft get draft => _draft;
+  Uint8List? get photoBytes => _photoBytes;
   int get step => _step;
   bool get isBusy => _busy;
 
@@ -83,6 +85,7 @@ class OnboardingController extends ChangeNotifier {
   }) async {
     _setBusy(true);
     try {
+      _photoBytes = bytes;
       final String? hex = await AccentColorExtractor.extractHex(bytes);
       _draft = _draft.copyWith(
         photoPath: localPath,

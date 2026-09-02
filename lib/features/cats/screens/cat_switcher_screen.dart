@@ -15,7 +15,9 @@ import '../widgets/cat_photo.dart';
 ///   * An "Add another cat" row that navigates to onboarding.
 ///   * A subtle "Currently active" hint on the selected cat.
 class CatSwitcherScreen extends StatelessWidget {
-  const CatSwitcherScreen({super.key});
+  const CatSwitcherScreen({super.key, this.returnHome = false});
+
+  final bool returnHome;
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +77,9 @@ class CatSwitcherScreen extends StatelessWidget {
                 onTap: () async {
                   await cats.setActiveCat(current.id);
                   if (context.mounted) {
-                    if (context.canPop()) {
+                    if (returnHome) {
+                      context.go('/cats/${current.id}');
+                    } else if (context.canPop()) {
                       context.pop();
                     } else {
                       context.go('/cats/${current.id}');
