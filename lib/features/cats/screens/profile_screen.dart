@@ -74,11 +74,20 @@ class _ProfileBody extends StatelessWidget {
                       SizedBox(
                         width: 72,
                         height: 72,
-                        child: CatPhoto(
-                          networkUrl: cat.photoUrl,
-                          variant: CatPhotoVariant.avatar,
-                          accentHex: cat.themeAccentHex,
-                          semanticLabel: 'Photo of ${cat.name}',
+                        child: FutureBuilder<String?>(
+                          future: context.read<CatProvider>().localPhotoPath(
+                            cat.id,
+                          ),
+                          builder: (BuildContext context, snapshot) {
+                            final String? localPath = snapshot.data;
+                            return CatPhoto(
+                              localPath: localPath,
+                              networkUrl: localPath == null ? cat.photoUrl : null,
+                              variant: CatPhotoVariant.avatar,
+                              accentHex: cat.themeAccentHex,
+                              semanticLabel: 'Photo of ${cat.name}',
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 16),

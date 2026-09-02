@@ -11,6 +11,7 @@ import '../../authentication/models/user_profile.dart';
 import '../../authentication/providers/auth_provider.dart';
 import '../models/cat_draft.dart';
 import '../repositories/cat_repository.dart';
+import '../services/cat_local_photo_storage.dart';
 
 /// State machine for the "cats" feature surface.
 ///
@@ -59,6 +60,7 @@ class CatProvider extends ChangeNotifier {
 
   final CatRepository _repository;
   final AuthProvider _auth;
+  final CatLocalPhotoStorage _localPhotos = CatLocalPhotoStorage();
   SharedPreferences? _prefs;
 
   StreamSubscription<List<CatProfile>>? _catsSub;
@@ -180,6 +182,7 @@ class CatProvider extends ChangeNotifier {
         catId: catId,
         photoUrl: photoUrl,
       );
+      await _localPhotos.delete(catId);
       if (_activeCatId == catId) {
         _activeCatId = null;
         await _persistActiveCat(null);
@@ -197,20 +200,17 @@ class CatProvider extends ChangeNotifier {
   }) async {
     final String? uid = _uidForWrite();
     if (uid == null) return null;
-    String? url;
+    String? path;
     await _runGuarded(() async {
-      url = await _repository.uploadCatPhoto(
-        ownerId: uid,
+      path = await _localPhotos.save(
         catId: catId,
         bytes: bytes,
-        contentType: contentType,
       );
-      if (url != null) {
-        await _repository.updateCat(ownerId: uid, catId: catId, photoUrl: url);
-      }
     });
-    return url;
+    return path;
   }
+
+  Future<String?> localPhotoPath(String catId) => _localPhotos.pathFor(catId);
 
   /// Clear any surfaced error.
   void clearError() {

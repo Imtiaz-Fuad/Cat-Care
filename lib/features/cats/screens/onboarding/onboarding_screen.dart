@@ -111,11 +111,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (widget.editingProfile != null) {
       CatDraft draft = _controller.draft;
       if (_controller.photoBytes != null) {
-        final String? photoUrl = await cats.uploadPhoto(
+        final String? localPath = await cats.uploadPhoto(
           catId: widget.editingProfile!.id,
           bytes: _controller.photoBytes!,
         );
-        if (photoUrl == null) {
+        if (localPath == null) {
           if (mounted && cats.lastError != null) {
             ScaffoldMessenger.of(
               context,
@@ -123,7 +123,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           }
           return;
         }
-        draft = draft.copyWith(photoUrl: photoUrl);
+        // The local path is persisted by CatProvider; keep the Firestore
+        // photoUrl field unchanged because profile photos are device-local.
+        draft = draft.copyWith(photoUrl: widget.editingProfile!.photoUrl);
       }
       await cats.updateCat(
         catId: widget.editingProfile!.id,
@@ -142,11 +144,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) return;
     if (result != null) {
       if (_controller.photoBytes != null) {
-        final String? uploadedUrl = await cats.uploadPhoto(
+        final String? localPath = await cats.uploadPhoto(
           catId: (result as CatProfile).id,
           bytes: _controller.photoBytes!,
         );
-        if (uploadedUrl == null) {
+        if (localPath == null) {
           if (mounted && cats.lastError != null) {
             ScaffoldMessenger.of(
               context,

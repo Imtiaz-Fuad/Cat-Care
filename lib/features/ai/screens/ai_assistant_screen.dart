@@ -571,6 +571,7 @@ class _AiHeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextTheme text = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
+    final CatProfile? currentCat = cat;
     final String catName = cat?.name ?? 'your cat';
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
@@ -579,14 +580,29 @@ class _AiHeroHeader extends StatelessWidget {
           SizedBox(
             width: 44,
             height: 44,
-            child: CatPhoto(
-              networkUrl: cat?.photoUrl,
-              variant: CatPhotoVariant.avatar,
-              accentHex: cat?.themeAccentHex,
-              semanticLabel: cat == null
-                  ? 'Cat photo'
-                  : 'Photo of ${cat!.name}',
-            ),
+            child: currentCat == null
+                ? const CatPhoto(
+                    variant: CatPhotoVariant.avatar,
+                    useCatEmojiFallback: true,
+                    semanticLabel: 'Cat photo',
+                  )
+                : FutureBuilder<String?>(
+                    future: context
+                        .read<CatProvider>()
+                        .localPhotoPath(currentCat.id),
+                    builder: (BuildContext context, snapshot) {
+                      return CatPhoto(
+                        localPath: snapshot.data,
+                        networkUrl: snapshot.data == null
+                            ? currentCat.photoUrl
+                            : null,
+                        variant: CatPhotoVariant.avatar,
+                        accentHex: currentCat.themeAccentHex,
+                        semanticLabel: 'Photo of ${currentCat.name}',
+                        useCatEmojiFallback: true,
+                      );
+                    },
+                  ),
           ),
           const SizedBox(width: 12),
           Expanded(

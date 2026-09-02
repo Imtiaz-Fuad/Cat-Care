@@ -10,6 +10,7 @@ import '../../../core/widgets/meal_card.dart';
 import '../../../core/widgets/progress_ring.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../cats/widgets/cat_photo.dart';
+import '../../cats/providers/cat_provider.dart';
 import '../providers/nutrition_provider.dart';
 import '../widgets/feeding_edit_sheet.dart';
 import '../widgets/water_edit_sheet.dart';
@@ -222,12 +223,17 @@ class _NutritionHeader extends StatelessWidget {
                 SizedBox(
                   width: 52,
                   height: 52,
-                  child: CatPhoto(
-                    networkUrl: null,
-                    variant: CatPhotoVariant.avatar,
-                    accentHex: cat.themeAccentHex,
-                    useCatEmojiFallback: true,
-                    semanticLabel: 'Photo of ${cat.name}',
+                  child: FutureBuilder<String?>(
+                    future: context.read<CatProvider>().localPhotoPath(cat.id),
+                    builder: (BuildContext context, snapshot) {
+                      return CatPhoto(
+                        localPath: snapshot.data,
+                        variant: CatPhotoVariant.avatar,
+                        accentHex: cat.themeAccentHex,
+                        useCatEmojiFallback: true,
+                        semanticLabel: 'Photo of ${cat.name}',
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 14),

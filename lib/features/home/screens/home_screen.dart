@@ -94,12 +94,19 @@ class _HomeBody extends StatelessWidget {
                       SizedBox(
                         width: 52,
                         height: 52,
-                        child: CatPhoto(
-                          networkUrl: null,
-                          variant: CatPhotoVariant.avatar,
-                          accentHex: cat.themeAccentHex,
-                          useCatEmojiFallback: true,
-                          semanticLabel: 'Photo of ${cat.name}',
+                        child: FutureBuilder<String?>(
+                          future: context.read<CatProvider>().localPhotoPath(
+                            cat.id,
+                          ),
+                          builder: (BuildContext context, snapshot) {
+                            return CatPhoto(
+                              localPath: snapshot.data,
+                              variant: CatPhotoVariant.avatar,
+                              accentHex: cat.themeAccentHex,
+                              useCatEmojiFallback: true,
+                              semanticLabel: 'Photo of ${cat.name}',
+                            );
+                          },
                         ),
                       ),
                       const SizedBox(width: 14),
