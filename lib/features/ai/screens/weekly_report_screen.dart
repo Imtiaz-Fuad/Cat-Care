@@ -135,7 +135,13 @@ class _Body extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       children: <Widget>[
-        const AiGuardrailBanner(),
+        const Text(
+          'Find out how your Purrfect friend passed the week 🐾',
+          style: TextStyle(
+            fontFamily: 'Nunito',
+            fontWeight: FontWeight.w600,
+          ),
+        ),
         const SizedBox(height: 12),
         Text(
           'Week $weekId${catName != null ? '  ·  for $catName' : ''}',
@@ -148,7 +154,7 @@ class _Body extends StatelessWidget {
               : AiErrorCard(failure: error, onDismiss: aiProvider.clearError),
         if (report != null) ...<Widget>[
           if (report.noData)
-            const _NoDataCard()
+            _NoDataCard(catName: catName)
           else
             _ReportCard(
               text: report.text,
@@ -156,12 +162,27 @@ class _Body extends StatelessWidget {
               fromCache: report.fromCache,
             ),
           const SizedBox(height: 12),
-          OutlinedButton.icon(
-            icon: const Icon(Icons.refresh),
-            label: const Text('Regenerate'),
-            onPressed: (aiProvider.weeklyBusy || !aiProvider.aiAvailable)
-                ? null
-                : onRegenerate,
+          Center(
+            child: SizedBox(
+              height: 42,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.refresh),
+                label: const Text('Regenerate'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFFA9472A),
+                  side: const BorderSide(color: Color(0xFFA9472A)),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  textStyle: const TextStyle(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                onPressed: (aiProvider.weeklyBusy || !aiProvider.aiAvailable)
+                    ? null
+                    : onRegenerate,
+              ),
+            ),
           ),
         ] else if (error == null)
           const _NoActiveReport(),
@@ -186,14 +207,31 @@ class _ReportCard extends StatelessWidget {
     final TextTheme theme = Theme.of(context).textTheme;
     final ColorScheme scheme = Theme.of(context).colorScheme;
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+      color: const Color(0xFFFFF0E7),
+      elevation: 3,
+      shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.28),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: const Color(0xFFD98E70).withValues(alpha: 0.34),
+        ),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 190),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
             SelectableText(
               text,
-              style: theme.bodyMedium?.copyWith(height: 1.4),
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                height: 1.4,
+                color: theme.bodyMedium?.color,
+              ),
             ),
             const SizedBox(height: 12),
             Row(
@@ -210,13 +248,17 @@ class _ReportCard extends StatelessWidget {
                       : (generatedAt != null
                             ? 'Generated just now'
                             : 'Generated'),
-                  style: theme.labelSmall?.copyWith(
+                  style: TextStyle(
+                    fontFamily: 'Nunito',
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
                     color: scheme.onSurfaceVariant,
                   ),
                 ),
               ],
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -224,19 +266,35 @@ class _ReportCard extends StatelessWidget {
 }
 
 class _NoDataCard extends StatelessWidget {
-  const _NoDataCard();
+  const _NoDataCard({required this.catName});
+
+  final String? catName;
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Card(
-      color: scheme.surfaceContainerLow,
-      child: const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text(
-          'Not enough data yet — log a few meals, water refills, or a '
-          'weight reading this week and the report will appear on the next '
-          'refresh.',
+      color: const Color(0xFFFFF0E7),
+      elevation: 2,
+      shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.22),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: const Color(0xFFD98E70).withValues(alpha: 0.3),
+        ),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 190),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Text(
+            'Add enough data about ${catName ?? 'your cat'}\'s week to get the report ^_^.',
+            style: const TextStyle(
+              fontFamily: 'Nunito',
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF5A2A1B),
+            ),
+          ),
         ),
       ),
     );

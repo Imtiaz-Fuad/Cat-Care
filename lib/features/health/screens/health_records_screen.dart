@@ -100,6 +100,16 @@ class _RecordTile extends StatelessWidget {
     final TextTheme text = Theme.of(context).textTheme;
     final DateFormat fmt = DateFormat('MMM d, y');
     return Card(
+      color: const Color(0xFFFFF0E7),
+      elevation: 4,
+      shadowColor: const Color(0xFFE09A79).withValues(alpha: 0.28),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: const Color(0xFFD98E70).withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () => Navigator.of(context).push<void>(
@@ -131,13 +141,20 @@ class _RecordTile extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 fmt.format(record.recordedAt),
-                style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                style: text.bodySmall?.copyWith(
+                  color: scheme.onSurfaceVariant,
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               if (record.diagnosis != null && record.diagnosis!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
                   record.diagnosis!,
-                  style: text.bodyMedium,
+                  style: text.bodyMedium?.copyWith(
+                    fontFamily: 'Nunito',
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -157,6 +174,8 @@ class _RecordTile extends StatelessWidget {
                         record.vetName!,
                         style: text.bodySmall?.copyWith(
                           color: scheme.onSurfaceVariant,
+                          fontFamily: 'Nunito',
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -211,19 +230,20 @@ class _AttachmentChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: scheme.secondaryContainer,
+        color: const Color(0xFFF6DDD3),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(Icons.attach_file, size: 14, color: scheme.onSecondaryContainer),
+          const Icon(Icons.attach_file, size: 14, color: Color(0xFF8C341F)),
           const SizedBox(width: 2),
           Text(
             '$count',
             style: TextStyle(
               fontSize: 12,
-              color: scheme.onSecondaryContainer,
+              color: const Color(0xFF8C341F),
+              fontFamily: 'Nunito',
               fontWeight: FontWeight.w600,
             ),
           ),

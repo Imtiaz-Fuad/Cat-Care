@@ -491,7 +491,7 @@ class _CompletionCard extends StatelessWidget {
             ProgressRing(
               progress: total <= 0 ? 0 : percent / 100,
               centerLabel: '$percent%',
-              color: scheme.secondary,
+              color: const Color(0xFFA9472A),
               size: 88,
               strokeWidth: 7,
             ),

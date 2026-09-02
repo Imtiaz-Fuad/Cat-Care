@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -12,9 +13,9 @@ import '../../../core/widgets/status_chip.dart';
 import '../../cats/providers/cat_provider.dart';
 import '../../cats/widgets/cat_photo.dart';
 import '../../health/providers/medication_provider.dart';
+import '../../../routes/app_routes.dart';
 import '../providers/routine_provider.dart';
 import '../widgets/routine_edit_sheet.dart';
-import '../widgets/routine_summary_header.dart';
 
 /// Routine screen — see `docs/catcare.design` § "Daily Loop / Routine".
 ///
@@ -136,22 +137,11 @@ class _Body extends StatelessWidget {
     }
     final List<RoutineTask> visibleTasks = _withoutDuplicates(tasks);
     final Map<_Bucket, List<RoutineTask>> grouped = _group(visibleTasks);
-    final int visibleCompleted = visibleTasks
-        .where((RoutineTask task) => task.completed)
-        .length;
     return CustomScrollView(
       slivers: <Widget>[
         if (cat != null)
           SliverToBoxAdapter(child: _RoutineHeroHeader(cat: cat!)),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: RoutineSummaryHeader(
-              completedToday: visibleCompleted,
-              total: visibleTasks.length,
-            ),
-          ),
-        ),
+        SliverToBoxAdapter(child: _CareShortcutsCard(cat: cat)),
         const SliverToBoxAdapter(child: _TodaysMedsCard()),
         for (final _Bucket bucket in _Bucket.values)
           if (grouped[bucket]!.isNotEmpty)
@@ -355,6 +345,103 @@ class _RoutineHeroHeader extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CareShortcutsCard extends StatelessWidget {
+  const _CareShortcutsCard({required this.cat});
+
+  final CatProfile? cat;
+
+  @override
+  Widget build(BuildContext context) {
+    final String catName = cat?.name ?? 'your cat';
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Card(
+        color: const Color(0xFFFFF0E7),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                "Don't forget to add $catName's medicine",
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: _ShortcutTile(
+                      icon: Icons.medication_outlined,
+                      label: 'Medications',
+                      onTap: () => context.push(AppRoutes.medications),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _ShortcutTile(
+                      icon: Icons.vaccines_outlined,
+                      label: 'Vaccinations',
+                      onTap: () => context.push(AppRoutes.vaccinations),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShortcutTile extends StatelessWidget {
+  const _ShortcutTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF6DDD3),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const SizedBox(width: 2),
+            Icon(icon, size: 18, color: Color(0xFFA9472A)),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontFamily: 'Nunito',
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF8C341F),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

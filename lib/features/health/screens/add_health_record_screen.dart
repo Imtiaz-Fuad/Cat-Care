@@ -175,12 +175,49 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final DateFormat fmt = DateFormat('MMM d, y');
+    final ThemeData formTheme = Theme.of(context).copyWith(
+      textTheme: Theme.of(context).textTheme.copyWith(
+        bodyLarge: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
+        labelStyle: const TextStyle(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w600,
+        ),
+        floatingLabelStyle: const TextStyle(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF8C341F),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF9A452A), width: 1.4),
+        ),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('New health record'),
         actions: <Widget>[
           TextButton(
             onPressed: _saving ? null : _save,
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFFFFF8F3),
+              backgroundColor: const Color(0xFF8C341F),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+            ),
             child: _saving
                 ? const SizedBox(
                     height: 18,
@@ -193,9 +230,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
       ),
       body: AbsorbPointer(
         absorbing: _saving,
-        child: Form(
-          key: _formKey,
-          child: ListView(
+        child: Theme(
+          data: formTheme,
+          child: Form(
+            key: _formKey,
+            child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
             children: <Widget>[
               TextFormField(
@@ -317,7 +356,11 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                   ),
                   child: Text(
                     'No photos attached.',
-                    style: TextStyle(color: scheme.onSurfaceVariant),
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant,
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 )
               else
@@ -337,6 +380,7 @@ class _AddHealthRecordScreenState extends State<AddHealthRecordScreen> {
                   ],
                 ),
             ],
+            ),
           ),
         ),
       ),

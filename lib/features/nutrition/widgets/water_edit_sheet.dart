@@ -170,6 +170,14 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final TextTheme text = Theme.of(context).textTheme;
+    final TextStyle bodyStyle = (text.bodyMedium ?? const TextStyle())
+        .copyWith(fontFamily: 'Nunito', fontWeight: FontWeight.w600);
+    final OutlineInputBorder warmBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(
+        color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+      ),
+    );
     final EdgeInsets insets = MediaQuery.viewInsetsOf(context);
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 8, 20, 20 + insets.bottom),
@@ -202,9 +210,13 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Amount (ml)',
                 hintText: 'e.g. 60',
+                labelStyle: bodyStyle,
+                hintStyle: bodyStyle,
+                enabledBorder: warmBorder,
+                focusedBorder: warmBorder,
               ),
               onChanged: (_) => setState(() {}),
             ),
@@ -214,7 +226,12 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.calendar_today_outlined, size: 18),
-                    label: Text(_formatDateTime()),
+                    label: Text(_formatDateTime(), style: bodyStyle),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                      ),
+                    ),
                     onPressed: _saving ? null : _pickDate,
                   ),
                 ),
@@ -230,9 +247,13 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
             TextField(
               controller: _notes,
               maxLines: 2,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Notes',
                 hintText: 'Optional details, source, etc.',
+                labelStyle: bodyStyle,
+                hintStyle: bodyStyle,
+                enabledBorder: warmBorder,
+                focusedBorder: warmBorder,
               ),
             ),
             const SizedBox(height: 20),
@@ -243,7 +264,7 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
                     onPressed: _saving
                         ? null
                         : () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel', style: bodyStyle),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -256,7 +277,7 @@ class _WaterEditSheetState extends State<WaterEditSheet> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.check_rounded),
-                    label: Text(_isEdit ? 'Save' : 'Log water'),
+                    label: Text(_isEdit ? 'Save' : 'Log water', style: bodyStyle),
                     onPressed: _canSave ? _save : null,
                   ),
                 ),

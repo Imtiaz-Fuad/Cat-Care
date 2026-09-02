@@ -11,10 +11,12 @@ class AiGuardrailBanner extends StatelessWidget {
     super.key,
     this.message = 'AI assists, does not diagnose. Always confirm with a vet.',
     this.icon = Icons.info_outline,
+    this.showIcon = true,
   });
 
   final String message;
   final IconData icon;
+  final bool showIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +32,10 @@ class AiGuardrailBanner extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Icon(icon, size: 18, color: scheme.onSecondaryContainer),
-          const SizedBox(width: 8),
+          if (showIcon) ...<Widget>[
+            Icon(icon, size: 18, color: scheme.onSecondaryContainer),
+            const SizedBox(width: 8),
+          ],
           Expanded(
             child: Text(
               message,

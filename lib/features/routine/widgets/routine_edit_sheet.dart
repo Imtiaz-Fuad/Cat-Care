@@ -194,6 +194,10 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final TextTheme text = Theme.of(context).textTheme;
+    final TextStyle headingStyle = (text.labelLarge ?? const TextStyle())
+        .copyWith(fontFamily: 'Nunito', fontWeight: FontWeight.w700);
+    final TextStyle bodyStyle = (text.bodyMedium ?? const TextStyle())
+        .copyWith(fontFamily: 'Nunito', fontWeight: FontWeight.w600);
     final EdgeInsets insets = MediaQuery.viewInsetsOf(context);
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 8, 20, 20 + insets.bottom),
@@ -208,6 +212,7 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                   child: Text(
                     _isEdit ? 'Edit routine' : 'New routine',
                     style: text.titleMedium?.copyWith(
+                      fontFamily: 'Nunito',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -224,14 +229,26 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
             TextField(
               controller: _title,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Title',
                 hintText: 'e.g. Morning meal',
+                labelStyle: bodyStyle,
+                hintStyle: bodyStyle,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(
+                    color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                  ),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                  borderSide: BorderSide(color: Color(0xFFA9472A), width: 1.5),
+                ),
               ),
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 16),
-            Text('Category', style: text.labelLarge),
+            Text('Category', style: headingStyle),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -240,7 +257,10 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                 for (final _CategoryChoice c in _categories)
                   ChoiceChip(
                     avatar: Icon(c.icon, size: 18),
-                    label: Text(c.label),
+                    label: Text(c.label, style: bodyStyle),
+                    side: BorderSide(
+                      color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                    ),
                     selected: _category == c.id,
                     onSelected: (_) => setState(() => _category = c.id),
                   ),
@@ -254,9 +274,10 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                     contentPadding: EdgeInsets.zero,
                     value: _hasTime,
                     onChanged: (bool v) => setState(() => _hasTime = v),
-                    title: const Text('Specific time'),
+                    title: Text('Specific time', style: bodyStyle),
                     subtitle: Text(
                       _hasTime ? _formatTimeLabel() : 'Anytime during the day',
+                      style: bodyStyle,
                     ),
                   ),
                 ),
@@ -269,7 +290,7 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
               ],
             ),
             const SizedBox(height: 8),
-            Text('Repeat', style: text.labelLarge),
+            Text('Repeat', style: headingStyle),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -277,7 +298,10 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
               children: <Widget>[
                 for (final _RepeatChoice r in _repeatChoices)
                   ChoiceChip(
-                    label: Text(r.label),
+                    label: Text(r.label, style: bodyStyle),
+                    side: BorderSide(
+                      color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                    ),
                     selected: _repeat == r.id,
                     onSelected: (_) => setState(() => _repeat = r.id),
                   ),
@@ -288,9 +312,10 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
               contentPadding: EdgeInsets.zero,
               value: _reminder,
               onChanged: (bool v) => setState(() => _reminder = v),
-              title: const Text('Reminder'),
-              subtitle: const Text(
+              title: Text('Reminder', style: bodyStyle),
+              subtitle: Text(
                 'We\'ll notify you around the scheduled time.',
+                style: bodyStyle,
               ),
             ),
             const SizedBox(height: 8),
@@ -298,9 +323,21 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
               controller: _notes,
               maxLines: 2,
               textInputAction: TextInputAction.newline,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Notes',
                 hintText: 'Optional details, dosage, etc.',
+                labelStyle: bodyStyle,
+                hintStyle: bodyStyle,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(
+                    color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                  ),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                  borderSide: BorderSide(color: Color(0xFFA9472A), width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -311,7 +348,7 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                     onPressed: _saving
                         ? null
                         : () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel', style: bodyStyle),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -324,7 +361,7 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.check_rounded),
-                    label: Text(_isEdit ? 'Save' : 'Add routine'),
+                    label: Text(_isEdit ? 'Save' : 'Add routine', style: bodyStyle),
                     onPressed: _canSave ? _save : null,
                   ),
                 ),

@@ -202,6 +202,14 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
   Widget build(BuildContext context) {
     final ColorScheme scheme = Theme.of(context).colorScheme;
     final TextTheme text = Theme.of(context).textTheme;
+    final TextStyle bodyStyle = (text.bodyMedium ?? const TextStyle())
+        .copyWith(fontFamily: 'Nunito', fontWeight: FontWeight.w600);
+    final OutlineInputBorder warmBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(14),
+      borderSide: BorderSide(
+        color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+      ),
+    );
     final EdgeInsets insets = MediaQuery.viewInsetsOf(context);
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 8, 20, 20 + insets.bottom),
@@ -232,14 +240,18 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
             TextField(
               controller: _foodName,
               textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Food',
                 hintText: 'e.g. Royal Canin adult',
+                labelStyle: bodyStyle,
+                hintStyle: bodyStyle,
+                enabledBorder: warmBorder,
+                focusedBorder: warmBorder,
               ),
               onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 12),
-            Text('Type', style: text.labelLarge),
+            Text('Type', style: bodyStyle.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -247,7 +259,10 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
               children: <Widget>[
                 for (final _FoodType t in _foodTypes)
                   ChoiceChip(
-                    label: Text(t.label),
+                    label: Text(t.label, style: bodyStyle),
+                    side: BorderSide(
+                      color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                    ),
                     selected: _foodType == t.id,
                     onSelected: (_) => setState(() => _foodType = t.id),
                   ),
@@ -264,9 +279,13 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Amount',
                       hintText: 'e.g. 30',
+                      labelStyle: bodyStyle,
+                      hintStyle: bodyStyle,
+                      enabledBorder: warmBorder,
+                      focusedBorder: warmBorder,
                     ),
                     onChanged: (_) => setState(() {}),
                   ),
@@ -276,12 +295,17 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                   flex: 2,
                   child: DropdownButtonFormField<String>(
                     initialValue: _unit,
-                    decoration: const InputDecoration(labelText: 'Unit'),
+                    decoration: InputDecoration(
+                      labelText: 'Unit',
+                      labelStyle: bodyStyle,
+                      enabledBorder: warmBorder,
+                      focusedBorder: warmBorder,
+                    ),
                     items: <DropdownMenuItem<String>>[
                       for (final _Unit u in _units)
                         DropdownMenuItem<String>(
                           value: u.id,
-                          child: Text(u.label),
+                          child: Text(u.label, style: bodyStyle),
                         ),
                     ],
                     onChanged: (String? v) {
@@ -298,7 +322,12 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                 Expanded(
                   child: OutlinedButton.icon(
                     icon: const Icon(Icons.calendar_today_outlined, size: 18),
-                    label: Text(_formatDateTime()),
+                    label: Text(_formatDateTime(), style: bodyStyle),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+                      ),
+                    ),
                     onPressed: _saving ? null : _pickDate,
                   ),
                 ),
@@ -314,9 +343,13 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
             TextField(
               controller: _notes,
               maxLines: 2,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Notes',
                 hintText: 'Optional details, brand, appetite, etc.',
+                labelStyle: bodyStyle,
+                hintStyle: bodyStyle,
+                enabledBorder: warmBorder,
+                focusedBorder: warmBorder,
               ),
             ),
             const SizedBox(height: 20),
@@ -327,7 +360,7 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                     onPressed: _saving
                         ? null
                         : () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text('Cancel', style: bodyStyle),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -340,7 +373,7 @@ class _FeedingEditSheetState extends State<FeedingEditSheet> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.check_rounded),
-                    label: Text(_isEdit ? 'Save' : 'Log meal'),
+                    label: Text(_isEdit ? 'Save' : 'Log meal', style: bodyStyle),
                     onPressed: _canSave ? _save : null,
                   ),
                 ),

@@ -62,20 +62,54 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
   Widget build(BuildContext context) {
     final TextTheme text = Theme.of(context).textTheme;
     final bool isEdit = widget.existing != null;
+    final ThemeData formTheme = Theme.of(context).copyWith(
+      textTheme: Theme.of(context).textTheme.copyWith(
+        bodyLarge: text.bodyLarge?.copyWith(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      inputDecorationTheme: Theme.of(context).inputDecorationTheme.copyWith(
+        labelStyle: const TextStyle(
+          fontFamily: 'Nunito',
+          fontWeight: FontWeight.w600,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: const Color(0xFFD98E70).withValues(alpha: 0.45),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFF9A452A), width: 1.4),
+        ),
+      ),
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit ? 'Edit medication' : 'New medication'),
         actions: <Widget>[
           TextButton(
             onPressed: _saving ? null : _save,
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFFFFF8F3),
+              backgroundColor: const Color(0xFF8C341F),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+            ),
             child: const Text('Save'),
           ),
         ],
       ),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
+        child: Theme(
+          data: formTheme,
+          child: Form(
+            key: _formKey,
+            child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             children: <Widget>[
               TextFormField(
@@ -106,14 +140,20 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text('Start date', style: text.titleSmall),
+              Text(
+                'Start date',
+                style: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               _DateTile(
                 date: _startDate,
                 onPick: (DateTime d) => setState(() => _startDate = d),
               ),
               const SizedBox(height: 12),
-              Text('End date (optional)', style: text.titleSmall),
+              Text(
+                'End date (optional)',
+                style: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: <Widget>[
@@ -145,7 +185,12 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
               Row(
                 children: <Widget>[
                   Expanded(
-                    child: Text('Reminder times', style: text.titleSmall),
+                    child: Text(
+                      'Reminder times',
+                      style: text.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                   IconButton(
                     tooltip: 'Add reminder',
@@ -189,6 +234,7 @@ class _MedicationEditScreenState extends State<MedicationEditScreen> {
                 const LinearProgressIndicator(),
               ],
             ],
+            ),
           ),
         ),
       ),
@@ -315,7 +361,10 @@ class _DateTile extends StatelessWidget {
       },
       child: InputDecorator(
         decoration: const InputDecoration(
-          border: OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(14)),
+            borderSide: BorderSide(color: Color(0xFFD98E70)),
+          ),
           prefixIcon: Icon(Icons.event_outlined),
         ),
         child: Text(

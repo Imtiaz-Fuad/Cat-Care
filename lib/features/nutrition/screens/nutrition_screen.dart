@@ -94,7 +94,17 @@ class _NutritionBody extends StatelessWidget {
                 child: FilledButton.tonalIcon(
                   onPressed: () => _openFeedingSheet(context),
                   icon: const Icon(Icons.add),
-                  label: const Text('Log meal'),
+                  label: const Text(
+                    'Log meal',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFA9472A),
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -102,14 +112,24 @@ class _NutritionBody extends StatelessWidget {
                 child: FilledButton.tonalIcon(
                   onPressed: () => _openWaterSheet(context),
                   icon: const Icon(Icons.water_drop_outlined),
-                  label: const Text('Log water'),
+                  label: const Text(
+                    'Log water',
+                    style: TextStyle(
+                      fontFamily: 'Nunito',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFA9472A),
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-        const SectionHeader(
-          title: 'Target for this cat',
+        SectionHeader(
+          title: 'Target for ${cat.name}',
           subtitle: 'Suggested daily ranges, not a vet prescription.',
         ),
         Padding(
@@ -260,7 +280,7 @@ class _NutritionHeader extends StatelessWidget {
                           label: 'Food',
                           centerLabel: '${foodGrams.toInt()} / $foodTarget g',
                           progress: foodProgress,
-                          color: scheme.secondary,
+                          color: const Color(0xFFA9472A),
                           icon: Icons.restaurant_outlined,
                         ),
                       ),
@@ -270,28 +290,8 @@ class _NutritionHeader extends StatelessWidget {
                           label: 'Water',
                           centerLabel: '${waterMl.toInt()} / $waterTarget ml',
                           progress: waterProgress,
-                          color: scheme.primary,
+                          color: const Color(0xFFA9472A),
                           icon: Icons.water_drop_outlined,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _openFeedingSheet(context),
-                          icon: const Icon(Icons.restaurant_outlined, size: 18),
-                          label: const Text('Log meal'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _openWaterSheet(context),
-                          icon: const Icon(Icons.water_drop_outlined, size: 18),
-                          label: const Text('Log water'),
                         ),
                       ),
                     ],
