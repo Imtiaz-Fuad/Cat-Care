@@ -248,10 +248,8 @@ class _ChatBubble extends StatelessWidget {
               ? CrossAxisAlignment.end
               : CrossAxisAlignment.start,
           children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.82,
-              ),
+            SizedBox(
+              width: double.infinity,
               child: isUser
                   ? _UserBubble(text: turn.text)
                   : _AssistantBubble(
@@ -490,12 +488,11 @@ class _AiLanguagePill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme scheme = Theme.of(context).colorScheme;
     return Container(
       height: 32,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFE9DD),
+      color: const Color(0xFFA9472A),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -539,7 +536,7 @@ class _PillSegment extends StatelessWidget {
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFFFFF0E7) : Colors.transparent,
+            color: selected ? const Color(0xFF8C341F) : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
             boxShadow: selected
                 ? <BoxShadow>[
@@ -555,7 +552,7 @@ class _PillSegment extends StatelessWidget {
             label,
               style: text.labelMedium?.copyWith(
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-              color: selected ? scheme.onSurface : scheme.onSurfaceVariant,
+              color: selected ? Colors.white : Colors.white70,
             ),
           ),
         ),
@@ -957,19 +954,6 @@ class _AiComposer extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Material(
-          color: scheme.surface,
-          shape: const CircleBorder(side: BorderSide(color: Color(0xFFE3DCD3))),
-          child: IconButton(
-            tooltip: 'Add attachment',
-            icon: Icon(
-              Icons.add,
-              color: enabled ? scheme.onSurface : scheme.outline,
-            ),
-            onPressed: enabled ? () {} : null,
-          ),
-        ),
-        const SizedBox(width: 8),
         Expanded(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
