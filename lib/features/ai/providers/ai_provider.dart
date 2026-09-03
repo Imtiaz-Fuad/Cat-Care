@@ -1,12 +1,25 @@
 import 'dart:async';
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/models/cat_profile.dart';
+import '../../../core/models/behavior_log.dart';
+import '../../../core/models/health_record.dart';
+import '../../../core/models/medication.dart';
+import '../../../core/models/vaccination.dart';
+import '../../../core/models/routine_task.dart';
 import '../../../core/services/app_logger.dart';
 import '../../authentication/providers/auth_provider.dart';
 import '../../cats/providers/cat_provider.dart';
+import '../../health/providers/behavior_provider.dart';
+import '../../health/providers/health_provider.dart';
+import '../../health/providers/medication_provider.dart';
+import '../../health/providers/vaccination_provider.dart';
+import '../../routine/providers/routine_provider.dart';
 import '../repositories/ai_repository.dart';
 import '../utils/cat_summary_builder.dart';
 
@@ -25,15 +38,35 @@ class AiProvider extends ChangeNotifier {
     required CatSummaryBuilder summaryBuilder,
     required AuthProvider authProvider,
     required CatProvider catProvider,
+    MedicationProvider? medicationProvider,
+    VaccinationProvider? vaccinationProvider,
+    BehaviorProvider? behaviorProvider,
+    HealthProvider? healthProvider,
+    RoutineProvider? routineProvider,
+    SharedPreferences? preferences,
   }) : _repository = repository, // ignore: prefer_initializing_formals
        _summaryBuilder = summaryBuilder, // ignore: prefer_initializing_formals
        _authProvider = authProvider, // ignore: prefer_initializing_formals
-       _catProvider = catProvider; // ignore: prefer_initializing_formals
+       _catProvider = catProvider, // ignore: prefer_initializing_formals
+       _medicationProvider = medicationProvider,
+       _vaccinationProvider = vaccinationProvider,
+       _behaviorProvider = behaviorProvider,
+       _healthProvider = healthProvider,
+       _routineProvider = routineProvider,
+       _preferences = preferences;
 
   final AiRepository _repository;
   final CatSummaryBuilder _summaryBuilder;
   final AuthProvider _authProvider;
   final CatProvider _catProvider;
+  final MedicationProvider? _medicationProvider;
+  final VaccinationProvider? _vaccinationProvider;
+  final BehaviorProvider? _behaviorProvider;
+  final HealthProvider? _healthProvider;
+  final RoutineProvider? _routineProvider;
+  final SharedPreferences? _preferences;
+  String? _loadedHistoryKey;
+  bool _historyLoading = false;
 
   // ---------------------------------------------------------------------------
   // Chat state
@@ -71,6 +104,7 @@ class AiProvider extends ChangeNotifier {
     final String trimmed = userMessage.trim();
     if (trimmed.isEmpty) return null;
 
+    await loadChatHistory(catId);
     final ChatTurn userTurn = ChatTurn(role: 'user', text: trimmed);
     _chatHistory.add(userTurn);
     _setChatBusy(true);
@@ -81,14 +115,17 @@ class AiProvider extends ChangeNotifier {
         ownerId: _requireOwnerId(),
         catId: catId,
       );
+      final String additionalContext = _careContext(catId);
       final ChatReply reply = await _repository.chat(
         userMessage: trimmed,
         cat: cat,
         summary: summary,
+        additionalContext: additionalContext,
         locale: locale,
         history: _chatHistory.sublist(0, _chatHistory.length - 1),
       );
       _chatHistory.add(ChatTurn(role: 'model', text: reply.text));
+      await _persistChatHistory(catId);
       AppLogger.i('AiProvider.sendChatMessage ok (${reply.text.length} chars)');
       return reply.text;
     } on AppFailure catch (f) {
@@ -106,7 +143,58 @@ class AiProvider extends ChangeNotifier {
   void clearChat() {
     if (_chatHistory.isEmpty) return;
     _chatHistory.clear();
+    final String? key = _loadedHistoryKey;
+    if (key != null) {
+      // ignore: discarded_futures
+      _preferences?.remove(key);
+    }
     notifyListeners();
+  }
+
+  Future<void> loadChatHistory(String catId) async {
+    final String key = _historyKey(catId);
+    if (_loadedHistoryKey == key || _historyLoading) return;
+    _historyLoading = true;
+    try {
+      final String? raw = _preferences?.getString(key);
+      _chatHistory.clear();
+      if (raw != null && raw.isNotEmpty) {
+        final dynamic decoded = jsonDecode(raw);
+        if (decoded is List) {
+          _chatHistory.addAll(
+            decoded.whereType<Map>().map((item) => ChatTurn(
+                  role: item['role'] == 'model' ? 'model' : 'user',
+                  text: item['text'] is String ? item['text'] as String : '',
+                )).where((turn) => turn.text.isNotEmpty).take(40),
+          );
+        }
+      }
+      _loadedHistoryKey = key;
+      notifyListeners();
+    } catch (_) {
+      _chatHistory.clear();
+      _loadedHistoryKey = key;
+    } finally {
+      _historyLoading = false;
+    }
+  }
+
+  String _historyKey(String catId) =>
+      'ai.chat.${_authProvider.profile?.uid ?? 'unknown'}.$catId';
+
+  Future<void> _persistChatHistory(String catId) async {
+    final SharedPreferences? prefs = _preferences;
+    if (prefs == null) return;
+    final List<ChatTurn> bounded = _chatHistory.length <= 40
+        ? _chatHistory
+        : _chatHistory.sublist(_chatHistory.length - 40);
+    await prefs.setString(
+      _historyKey(catId),
+      jsonEncode(bounded.map((turn) => <String, String>{
+            'role': turn.role,
+            'text': turn.text,
+          }).toList()),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -144,9 +232,11 @@ class AiProvider extends ChangeNotifier {
         ownerId: _requireOwnerId(),
         catId: catId,
       );
+      final String additionalContext = _careContext(catId);
       final WeeklyReportResult result = await _repository.weeklyReport(
         cat: cat,
         summary: summary,
+        additionalContext: additionalContext,
         weekId: weekId,
         force: force,
         locale: locale,
@@ -246,6 +336,7 @@ class AiProvider extends ChangeNotifier {
     _foodLabel = null;
     _lastError = null;
     _chatBusy = false;
+    _loadedHistoryKey = null;
     _weeklyBusy = false;
     _foodLabelBusy = false;
     notifyListeners();
@@ -303,5 +394,21 @@ class AiProvider extends ChangeNotifier {
       );
     }
     return uid;
+  }
+
+  String _careContext(String catId) {
+    String date(DateTime d) => '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    final List<String> lines = <String>[];
+    final meds = (_medicationProvider?.records ?? const <Medication>[]).where((m) => m.catId == catId).take(8);
+    final vaccines = (_vaccinationProvider?.records ?? const <Vaccination>[]).where((v) => v.catId == catId).take(8);
+    final behavior = (_behaviorProvider?.records ?? const <BehaviorLog>[]).where((b) => b.catId == catId).take(8);
+    final health = (_healthProvider?.records ?? const <HealthRecord>[]).where((h) => h.catId == catId).take(6);
+    final routines = (_routineProvider?.routines ?? const <RoutineTask>[]).take(12);
+    lines.add('Medications: ${meds.isEmpty ? 'none recorded' : meds.map((m) => '${m.name} (${m.dose}, ${m.frequency}, ${m.active ? 'active' : 'inactive'})').join('; ')}');
+    lines.add('Vaccinations: ${vaccines.isEmpty ? 'none recorded' : vaccines.map((v) => '${v.vaccineCode} on ${date(v.administeredAt)}${v.nextDue == null ? '' : ', next due ${date(v.nextDue!)}'}').join('; ')}');
+    lines.add('Behavior observations: ${behavior.isEmpty ? 'none recorded' : behavior.map((b) => '${date(b.recordedAt)} appetite=${b.appetite ?? 'n/a'}, activity=${b.activity ?? 'n/a'}, mood=${b.mood ?? 'n/a'}, vomiting=${b.vomitingPresent ?? 'n/a'}, diarrhea=${b.diarrheaPresent ?? 'n/a'}, hiding=${b.hidingPresent ?? 'n/a'}').join('; ')}');
+    lines.add('Routines: ${routines.isEmpty ? 'none recorded' : routines.map((r) => '${r.title} (${r.category}, ${r.completed ? 'completed' : 'not completed'})').join('; ')}');
+    lines.add('Health records: ${health.isEmpty ? 'none recorded' : health.map((h) => '${date(h.recordedAt)} ${h.title}${h.diagnosis == null ? '' : ', diagnosis: ${h.diagnosis}'}${h.medicines.isEmpty ? '' : ', medicines: ${h.medicines.join(', ')}'}').join('; ')}');
+    return 'Additional care records (use only as recorded facts; do not invent trends):\n${lines.join('\n')}';
   }
 }

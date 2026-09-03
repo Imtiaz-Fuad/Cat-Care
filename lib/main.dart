@@ -302,6 +302,12 @@ class _AppRouterHostState extends State<_AppRouterHost> {
       summaryBuilder: summaryBuilder,
       authProvider: widget.authProvider,
       catProvider: catProvider,
+      medicationProvider: medicationProvider,
+      vaccinationProvider: vaccinationProvider,
+      behaviorProvider: behaviorProvider,
+      healthProvider: healthProvider,
+      routineProvider: routineProvider,
+      preferences: prefs,
     );
 
     return _Wiring(

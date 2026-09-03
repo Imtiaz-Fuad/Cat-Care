@@ -168,6 +168,7 @@ class AiRepository {
     required List<ChatTurn> history,
     required String userMessage,
     required CatWeeklySummary summary,
+    String additionalContext = '',
     String locale = 'en',
   }) async {
     final String trimmed = userMessage.trim();
@@ -197,6 +198,7 @@ class AiRepository {
         locale: locale,
         cat: cat,
         summary: summary,
+        additionalContext: additionalContext,
       ),
       'contents': _chatContents(history: history, userMessage: trimmed),
       'generationConfig': <String, dynamic>{
@@ -205,7 +207,7 @@ class AiRepository {
       },
     };
     final Map<String, dynamic> response = await _post(body);
-    final String text = _readReplyText(response);
+    final String text = _weeklyNarrative(_readReplyText(response));
     return ChatReply(text: text, language: locale);
   }
 
@@ -216,6 +218,7 @@ class AiRepository {
     required CatProfile cat,
     required CatWeeklySummary summary,
     required String weekId,
+    String additionalContext = '',
     bool force = false,
     String locale = 'en',
   }) async {
@@ -267,6 +270,7 @@ class AiRepository {
                 summary: summary,
                 weekId: weekId,
                 locale: locale,
+                additionalContext: additionalContext,
               ),
             },
           ],
@@ -396,6 +400,7 @@ class AiRepository {
     required String locale,
     required CatProfile cat,
     required CatWeeklySummary summary,
+    required String additionalContext,
   }) {
     final Map<String, dynamic> base = _templates.envelopeFor(
       feature: PromptFeature.chat,
@@ -405,7 +410,12 @@ class AiRepository {
       base['parts'] as List<dynamic>,
     );
     parts.add(<String, dynamic>{
-      'text': _chatContextBlock(cat: cat, summary: summary, locale: locale),
+      'text': _chatContextBlock(
+        cat: cat,
+        summary: summary,
+        locale: locale,
+        additionalContext: additionalContext,
+      ),
     });
     return <String, dynamic>{'parts': parts};
   }
@@ -418,6 +428,7 @@ class AiRepository {
     required CatProfile cat,
     required CatWeeklySummary summary,
     required String locale,
+    required String additionalContext,
   }) {
     final bool bangla = locale == 'bn';
     final String header = bangla
@@ -434,7 +445,7 @@ class AiRepository {
               '${summary.feedingCount} feedings, '
               '${summary.waterCount} water refills, '
               '${summary.lastWeights.length} weight entries.';
-    return '$header $metrics';
+    return '$header $metrics${additionalContext.trim().isEmpty ? '' : '\n$additionalContext'}';
   }
 
   Map<String, dynamic> _weeklySystemInstruction({required String locale}) {
@@ -449,6 +460,7 @@ class AiRepository {
     required CatWeeklySummary summary,
     required String weekId,
     required String locale,
+    required String additionalContext,
   }) {
     final String header = locale == 'bn'
         ? 'বিড়াল: ${cat.name} (${cat.breed ?? "unknown breed"}, '
@@ -484,7 +496,10 @@ class AiRepository {
         : 'Write a short weekly summary (4-6 sentences) and return it as '
               'a JSON object {"text":"..."}.';
     final String tail = weightsLine.isEmpty ? '' : '\n$weightsLine';
-    return '$header\n$metrics\n$ask$tail';
+    final String extra = additionalContext.trim().isEmpty
+        ? ''
+        : '\n$additionalContext';
+    return '$header\n$metrics\n$ask$tail$extra';
   }
 
   /// Render the last recorded weights as a compact string the model
@@ -569,6 +584,12 @@ class AiRepository {
       // Fall through: caller will see an empty map.
     }
     return const <String, dynamic>{};
+  }
+
+  String _weeklyNarrative(String raw) {
+    final Map<String, dynamic> parsed = _parseJsonLenient(raw);
+    final Object? value = parsed['text'];
+    return value is String && value.trim().isNotEmpty ? value.trim() : raw.trim();
   }
 
   // ---------------------------------------------------------------------------

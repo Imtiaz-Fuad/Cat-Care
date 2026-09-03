@@ -78,7 +78,9 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   IconButton(
                     tooltip: 'Chat history',
                     icon: const Icon(Icons.history_rounded),
-                    onPressed: () {},
+                    onPressed: catId == null
+                        ? null
+                        : () => _openChatHistory(context, aiProvider, catId),
                   ),
                 ],
               ),
@@ -94,6 +96,40 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                     ),
             );
           },
+    );
+  }
+  Future<void> _openChatHistory(
+    BuildContext context,
+    AiProvider provider,
+    String catId,
+  ) async {
+    await provider.loadChatHistory(catId);
+    if (!context.mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height * 0.65,
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            children: <Widget>[
+              const Text('Chat history', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
+              ...provider.chatHistory.map((turn) => ListTile(
+                    dense: true,
+                    leading: Icon(turn.role == 'user' ? Icons.person_outline : Icons.auto_awesome_outlined),
+                    title: Text(turn.text),
+                  )),
+              if (provider.chatHistory.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: Text('No saved chats yet.')),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -673,6 +709,129 @@ class _AiInsightCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showChatHistoryUnused(
+    BuildContext context,
+    AiProvider provider,
+    String catId,
+  ) async {
+    await provider.loadChatHistory(catId);
+    if (!context.mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (BuildContext sheetContext) {
+        final turns = provider.chatHistory;
+        return SafeArea(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * 0.65,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 12, 8),
+                  child: Row(
+                    children: <Widget>[
+                      const Expanded(
+                        child: Text(
+                          'Chat history',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      if (turns.isNotEmpty)
+                        TextButton(
+                          onPressed: () {
+                            provider.clearChat();
+                            Navigator.of(sheetContext).pop();
+                          },
+                          child: const Text('Clear'),
+                        ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: turns.isEmpty
+                      ? const Center(child: Text('No saved chats yet.'))
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: turns.length,
+                          itemBuilder: (context, index) {
+                            final turn = turns[index];
+                            return ListTile(
+                              dense: true,
+                              leading: Icon(turn.role == 'user'
+                                  ? Icons.person_outline
+                                  : Icons.auto_awesome_outlined),
+                              title: Text(turn.text),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showChatHistoryUnused2(
+    BuildContext context,
+    AiProvider provider,
+    String catId,
+  ) async {
+    await provider.loadChatHistory(catId);
+    if (!context.mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (BuildContext sheetContext) {
+        final turns = provider.chatHistory;
+        return SafeArea(
+          child: SizedBox(
+            height: MediaQuery.sizeOf(sheetContext).height * 0.65,
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 4, 12, 8),
+                  child: Row(
+                    children: <Widget>[
+                      const Expanded(
+                        child: Text('Chat history', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      ),
+                      if (turns.isNotEmpty)
+                        TextButton(
+                          onPressed: () {
+                            provider.clearChat();
+                            Navigator.of(sheetContext).pop();
+                          },
+                          child: const Text('Clear'),
+                        ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: turns.isEmpty
+                      ? const Center(child: Text('No saved chats yet.'))
+                      : ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: turns.length,
+                          itemBuilder: (context, index) {
+                            final turn = turns[index];
+                            return ListTile(
+                              dense: true,
+                              leading: Icon(turn.role == 'user' ? Icons.person_outline : Icons.auto_awesome_outlined),
+                              title: Text(turn.text),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
