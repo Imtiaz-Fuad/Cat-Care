@@ -131,16 +131,9 @@ class _ChatBody extends StatelessWidget {
           child: ListView.builder(
             controller: scroll,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            itemCount: empty ? 2 : history.length + 1,
+            itemCount: empty ? 1 : history.length + 1,
             itemBuilder: (BuildContext context, int index) {
               if (empty) {
-                if (index == 0) {
-                  return _AiInsightCard(
-                    catName: _catName,
-                    locale: locale,
-                    onLogWater: () => context.push(AppRoutes.addFeeding),
-                  );
-                }
                 return const SizedBox.shrink();
               }
               if (index == history.length) {
