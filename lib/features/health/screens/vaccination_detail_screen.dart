@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/models/vaccination.dart';
+import '../../../core/models/content/vaccine_info.dart';
+import '../../../core/services/content/content_repository.dart';
 import '../providers/vaccination_provider.dart';
 
 /// Read-only view of a single [Vaccination]. Delete is available via
@@ -46,9 +48,41 @@ class VaccinationDetailScreen extends StatelessWidget {
           body: ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: <Widget>[
-              Text(
-                record.vaccineCode,
-                style: Theme.of(context).textTheme.headlineSmall,
+              FutureBuilder<VaccineInfo?>(
+                future: context.read<ContentRepository>().getVaccineInfo(
+                      record.vaccineCode == 'PLACEHOLDER-FVRCP'
+                          ? 'FVRCP'
+                          : record.vaccineCode,
+                    ),
+                builder: (context, snapshot) {
+                  final info = snapshot.data;
+                  final code = record.vaccineCode == 'PLACEHOLDER-FVRCP'
+                      ? 'FVRCP'
+                      : record.vaccineCode;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        info?.name ?? code,
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      if (info != null && info.description.isNotEmpty) ...<Widget>[
+                        const SizedBox(height: 4),
+                        Text(
+                          info.description,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontSize:
+                                    (Theme.of(context).textTheme.bodyMedium?.fontSize ??
+                                            14) *
+                                        1.15,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFA44A2A),
+                              ),
+                        ),
+                      ],
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 12),
               _MetaRow(

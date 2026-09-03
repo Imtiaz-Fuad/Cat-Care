@@ -1,11 +1,33 @@
 [
   {
-    "code": "PLACEHOLDER-FVRCP",
-    "name": "[CONTENT PLACEHOLDER — verified vaccine name will be provided]",
-    "description": "[CONTENT PLACEHOLDER — verified data will be provided]",
+    "code": "FVRCP",
+    "name": "FVRCP",
+    "description": "Targeted Diseases - Rhinotracheitis, Calicivirus, Panleukopenia\nFirst Dose Age - 6–8 Weeks.\nBooster Frequency - Every 3 years (after 1-year booster)",
     "boosterIntervalDays": 365,
     "minAgeWeeks": 8,
     "core": true,
+    "speciesNotes": null,
+    "source": null,
+    "missingData": true
+  },
+  {
+    "code": "RABIES",
+    "name": "Rabies",
+    "description": "Targeted Diseases - Rabies Virus\nFirst Dose Age - 12–16 Weeks.\nBooster Frequency -  Every 1 or 3 years(depending on the vaccine used)",
+    "boosterIntervalDays": 365,
+    "minAgeWeeks": 12,
+    "core": true,
+    "speciesNotes": null,
+    "source": null,
+    "missingData": true
+  },
+  {
+    "code": "FELV",
+    "name": "FeLV",
+    "description": "Targeted Diseases - Feline Leukemia Virus\nFirst Dose Age - 8 Weeks.\nBooster Frequency - Every 1 year",
+    "boosterIntervalDays": 365,
+    "minAgeWeeks": 8,
+    "core": false,
     "speciesNotes": null,
     "source": null,
     "missingData": true

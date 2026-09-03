@@ -42,8 +42,16 @@ class _AddVaccinationScreenState extends State<AddVaccinationScreen> {
       appBar: AppBar(
         title: const Text('Log vaccine'),
         actions: <Widget>[
-          TextButton(
+          FilledButton(
             onPressed: _saving ? null : _save,
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFA44A2A),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(22),
+              ),
+            ),
             child: const Text('Save'),
           ),
         ],
@@ -185,6 +193,7 @@ class _VaccineCodeField extends StatelessWidget {
             final items = snap.data!;
             return DropdownButtonFormField<String>(
               initialValue: initial,
+              isExpanded: true,
               decoration: const InputDecoration(
                 labelText: 'Vaccine',
                 border: OutlineInputBorder(),

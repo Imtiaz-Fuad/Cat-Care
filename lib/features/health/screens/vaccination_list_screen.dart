@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/models/vaccination.dart';
+import '../../../core/models/content/vaccine_info.dart';
+import '../../../core/services/content/content_repository.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../providers/vaccination_provider.dart';
@@ -157,11 +159,35 @@ class _VaccinationTile extends StatelessWidget {
               Row(
                 children: <Widget>[
                   Expanded(
-                    child: Text(
-                      record.vaccineCode,
-                      style: text.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                    child: FutureBuilder<VaccineInfo?>(
+                      future: context.read<ContentRepository>().getVaccineInfo(
+                        _displayCode(record.vaccineCode),
                       ),
+                      builder: (context, snapshot) {
+                        final info = snapshot.data;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              info?.name ?? _displayCode(record.vaccineCode),
+                              style: text.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (info != null && info.description.isNotEmpty)
+                              Text(
+                                info.description,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: text.bodySmall?.copyWith(
+                                  fontSize: (text.bodySmall?.fontSize ?? 12) * 1.15,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFFA44A2A),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                   StatusChip(
@@ -246,3 +272,6 @@ class AppFailureBanner extends StatelessWidget {
     );
   }
 }
+
+String _displayCode(String code) =>
+    code == 'PLACEHOLDER-FVRCP' ? 'FVRCP' : code;

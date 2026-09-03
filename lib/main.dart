@@ -305,6 +305,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
     );
 
     return _Wiring(
+      contentRepository: contentRepository,
       catProvider: catProvider,
       routineProvider: routineProvider,
       nutritionProvider: nutritionProvider,
@@ -364,6 +365,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
         final _Wiring w = snapshot.data!;
         return MultiProvider(
           providers: <SingleChildWidget>[
+            Provider<ContentRepository>.value(value: w.contentRepository),
             ChangeNotifierProvider<CatProvider>.value(value: w.catProvider),
             ChangeNotifierProvider<RoutineProvider>.value(
               value: w.routineProvider,
@@ -416,6 +418,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
 
 class _Wiring {
   const _Wiring({
+    required this.contentRepository,
     required this.catProvider,
     required this.routineProvider,
     required this.nutritionProvider,
@@ -430,6 +433,7 @@ class _Wiring {
     required this.aiProvider,
   });
   final CatProvider catProvider;
+  final ContentRepository contentRepository;
   final RoutineProvider routineProvider;
   final NutritionProvider nutritionProvider;
   final HealthProvider healthProvider;

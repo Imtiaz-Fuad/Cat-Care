@@ -47,7 +47,7 @@ class SeedContentBackend implements ContentBackend {
   }) async {
     final docs = await fetchAll(category);
     for (final doc in docs) {
-      if (doc['id'] == id) return doc;
+      if (doc['id'] == id || doc['code'] == id) return doc;
     }
     return null;
   }
