@@ -17,7 +17,11 @@ import 'core/services/notification_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/authentication/providers/auth_provider.dart';
+import 'features/authentication/providers/subscription_provider.dart';
 import 'features/authentication/repositories/auth_repository.dart';
+import 'features/authentication/repositories/subscription_repository.dart';
+import 'features/authentication/services/bdapps_service.dart';
+import 'features/authentication/widgets/subscription_gate.dart';
 import 'features/ai/providers/ai_provider.dart';
 import 'features/ai/repositories/ai_repository.dart';
 import 'features/ai/utils/prompt_templates.dart';
@@ -78,6 +82,10 @@ class _CatCareAppState extends State<CatCareApp> {
   late final FirestoreService _firestoreService;
   late final StorageService _storageService;
   late final CatRepository _catRepository;
+  late final BdappsService _bdappsService;
+  late final SubscriptionRepository _subscriptionRepository;
+  late final Future<SubscriptionProvider> _subscriptionFuture;
+  SubscriptionProvider? _subscriptionProvider;
 
   @override
   void initState() {
@@ -91,11 +99,26 @@ class _CatCareAppState extends State<CatCareApp> {
       firestoreService: _firestoreService,
       storageService: _storageService,
     );
+    _bdappsService = BdappsService();
+    _subscriptionRepository = SubscriptionRepository(_bdappsService);
+    _subscriptionFuture = _createSubscriptionProvider();
+  }
+
+  Future<SubscriptionProvider> _createSubscriptionProvider() async {
+    final SharedPreferences preferences = await SharedPreferences.getInstance();
+    final SubscriptionProvider provider = SubscriptionProvider(
+      _subscriptionRepository,
+      preferences,
+    );
+    _subscriptionProvider = provider;
+    await provider.initialize();
+    return provider;
   }
 
   @override
   void dispose() {
     _authProvider.dispose();
+    _subscriptionProvider?.dispose();
     // CatProvider is constructed asynchronously via CatProvider.create
     // (it awaits SharedPreferences) and is wired in [_AppRouterHost]
     // below, so we don't dispose it here.
@@ -104,21 +127,44 @@ class _CatCareAppState extends State<CatCareApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: <SingleChildWidget>[
-        // Repositories first so providers can depend on them.
-        Provider<AuthRepository>.value(value: _authRepository),
-        Provider<CatRepository>.value(value: _catRepository),
-        ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
-        // CatProvider needs SharedPreferences, so it's created once
-        // per app lifetime and supplied via a microtask in [_AppRouterHost].
-      ],
-      child: _AppRouterHost(
-        authProvider: _authProvider,
-        authRepository: _authRepository,
-        catRepository: _catRepository,
-        storageService: _storageService,
-      ),
+    return FutureBuilder<SubscriptionProvider>(
+      future: _subscriptionFuture,
+      builder: (BuildContext context, AsyncSnapshot<SubscriptionProvider> snap) {
+        if (!snap.hasData) {
+          return MaterialApp(
+            title: AppConstants.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light(),
+            home: const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+        return MultiProvider(
+          providers: <SingleChildWidget>[
+            // Repositories first so providers can depend on them.
+            Provider<AuthRepository>.value(value: _authRepository),
+            Provider<CatRepository>.value(value: _catRepository),
+            Provider<SubscriptionRepository>.value(
+              value: _subscriptionRepository,
+            ),
+            ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
+            ChangeNotifierProvider<SubscriptionProvider>.value(
+              value: snap.data!,
+            ),
+            // CatProvider needs SharedPreferences, so it's created once
+            // per app lifetime and supplied via a microtask in [_AppRouterHost].
+          ],
+          child: SubscriptionGate(
+            child: _AppRouterHost(
+              authProvider: _authProvider,
+              authRepository: _authRepository,
+              catRepository: _catRepository,
+              storageService: _storageService,
+            ),
+          ),
+        );
+      },
     );
   }
 }

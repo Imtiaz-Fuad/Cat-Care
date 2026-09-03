@@ -7,6 +7,7 @@ import '../../../core/widgets/empty_state.dart';
 import '../../../routes/app_routes.dart';
 import '../../ai/providers/ai_provider.dart';
 import '../../authentication/providers/auth_provider.dart';
+import '../../authentication/providers/subscription_provider.dart';
 import '../providers/cat_provider.dart';
 import '../widgets/cat_photo.dart';
 
@@ -189,6 +190,25 @@ class _ProfileBody extends StatelessWidget {
             onPressed: () => _confirmSignOut(context),
           ),
         ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.mobile_off_rounded),
+            label: const Text(
+              'Unsubscribe',
+              style: TextStyle(
+                fontFamily: 'Nunito',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF8C341F),
+              side: const BorderSide(color: Color(0xFFD79A84)),
+            ),
+            onPressed: () => _confirmUnsubscribe(context),
+          ),
+        ),
       ],
     );
   }
@@ -220,6 +240,44 @@ class _ProfileBody extends StatelessWidget {
       // inherit this session's chat history or generated reports.
       context.read<AiProvider>().reset();
       await auth.signOut();
+    }
+  }
+
+  Future<void> _confirmUnsubscribe(BuildContext context) async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Unsubscribe?'),
+        content: const Text(
+          'Your CatCare BD subscription will end and you will no longer be able to enter the app.',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFA5482A),
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Unsubscribe'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+    final SubscriptionProvider subscription = context
+        .read<SubscriptionProvider>();
+    final bool succeeded = await subscription.unsubscribe();
+    if (!succeeded && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            subscription.error ?? 'Could not unsubscribe. Please try again.',
+          ),
+        ),
+      );
     }
   }
 }

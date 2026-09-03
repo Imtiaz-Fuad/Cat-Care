@@ -27,6 +27,7 @@ class AppConstants {
   static const String firstLaunchKey = 'pref.first_launch';
   static const String guestDeviceIdKey = 'pref.guest_device_id';
   static const String activeCatIdKey = 'pref.active_cat_id';
+  static const String bdappsMobileKey = 'subscription.bdapps_mobile';
 
   // Firestore composite path helpers. Keep all reads/writes here so the
   // single-collection-per-cat rule is consistent across features.
