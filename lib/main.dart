@@ -229,6 +229,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
         NotificationScheduleRepository(firestoreService: firestore);
     final NotificationService notificationService = NotificationService();
     await notificationService.initialize();
+    await notificationService.requestPermissions();
     final NotificationSchedulerService scheduler = NotificationSchedulerService(
       repository: scheduleRepo,
       notificationService: notificationService,
@@ -263,6 +264,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
           notificationService: notificationService,
           provider: medicationProvider,
           catIdProvider: () => catProvider.activeCatId ?? '',
+          ownerIdProvider: () => widget.authProvider.profile?.uid ?? '',
         );
     final VaccinationReminderScheduler vaccinationReminders =
         VaccinationReminderScheduler(
@@ -272,6 +274,7 @@ class _AppRouterHostState extends State<_AppRouterHost> {
           manager: vaccinationManager,
           content: contentRepository,
           catIdProvider: () => catProvider.activeCatId ?? '',
+          ownerIdProvider: () => widget.authProvider.profile?.uid ?? '',
         );
 
     // Phase 7: AI Assistant + reports. The Flutter client talks to

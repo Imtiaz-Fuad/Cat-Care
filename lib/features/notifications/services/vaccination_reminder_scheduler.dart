@@ -29,6 +29,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
     required this._manager,
     required this._content,
     required this._catIdProvider,
+    required this._ownerIdProvider,
     this._warningWindowDays = 7,
     DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now {
@@ -42,6 +43,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
   final VaccinationManager _manager;
   final ContentRepository _content;
   final String Function() _catIdProvider;
+  final String Function() _ownerIdProvider;
   final int _warningWindowDays;
   final DateTime Function() _clock;
 
@@ -61,6 +63,8 @@ class VaccinationReminderScheduler extends ChangeNotifier {
   Future<void> _sync() async {
     if (_busy) return;
     final catId = _catIdProvider();
+    final ownerId = _ownerIdProvider();
+    if (catId.isEmpty || ownerId.isEmpty) return;
     _busy = true;
     try {
       await _notificationService.initialize();
@@ -73,7 +77,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
         if (p != null) planned.add(p);
       }
       for (final _Planned p in planned) {
-        await _repository.upsert(ownerId: catId, schedule: p.schedule);
+        await _repository.upsert(ownerId: ownerId, schedule: p.schedule);
         await _notificationService.schedule(
           id: p.notificationId,
           title: p.schedule.title,
@@ -83,7 +87,7 @@ class VaccinationReminderScheduler extends ChangeNotifier {
         );
       }
       // ignore: unawaited_futures
-      _pruneStale(catId: catId, keep: planned);
+      _pruneStale(ownerId: ownerId, keep: planned);
     } catch (error, stack) {
       AppLogger.w('VaccinationReminderScheduler.sync failed', error, stack);
     } finally {
@@ -139,17 +143,17 @@ class VaccinationReminderScheduler extends ChangeNotifier {
   }
 
   Future<void> _pruneStale({
-    required String catId,
+    required String ownerId,
     required List<_Planned> keep,
   }) async {
     final Set<String> keepKeys = keep.map((p) => p.key).toSet();
     try {
-      final stream = _repository.watchSchedules(ownerId: catId);
+      final stream = _repository.watchSchedules(ownerId: ownerId);
       final List<NotificationSchedule> existing = await stream.first;
       for (final NotificationSchedule s in existing) {
         if (s.sourceType != 'vaccination') continue;
         if (keepKeys.contains(s.id)) continue;
-        await _repository.delete(ownerId: catId, scheduleId: s.id);
+        await _repository.delete(ownerId: ownerId, scheduleId: s.id);
         await _notificationService.cancel(
           NotificationSchedulerService.idForKey(s.id),
         );

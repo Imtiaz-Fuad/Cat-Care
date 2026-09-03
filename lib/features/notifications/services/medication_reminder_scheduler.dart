@@ -26,6 +26,7 @@ class MedicationReminderScheduler extends ChangeNotifier {
     required this._notificationService,
     required this._provider,
     required this._catIdProvider,
+    required this._ownerIdProvider,
     DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now {
     _provider.addListener(_handleChanged);
@@ -36,6 +37,7 @@ class MedicationReminderScheduler extends ChangeNotifier {
   final NotificationService _notificationService;
   final MedicationProvider _provider;
   final String Function() _catIdProvider;
+  final String Function() _ownerIdProvider;
   final DateTime Function() _clock;
 
   final List<VoidCallback> _listenerHandles = <VoidCallback>[];
@@ -58,6 +60,8 @@ class MedicationReminderScheduler extends ChangeNotifier {
   Future<void> _sync() async {
     if (_busy) return;
     final catId = _catIdProvider();
+    final ownerId = _ownerIdProvider();
+    if (catId.isEmpty || ownerId.isEmpty) return;
     _busy = true;
     try {
       await _notificationService.initialize();
@@ -69,7 +73,7 @@ class MedicationReminderScheduler extends ChangeNotifier {
         planned.addAll(_planFromMedication(med, catId));
       }
       for (final _Planned p in planned) {
-        await _repository.upsert(ownerId: catId, schedule: p.schedule);
+        await _repository.upsert(ownerId: ownerId, schedule: p.schedule);
         await _notificationService.schedule(
           id: p.notificationId,
           title: p.schedule.title,
@@ -79,7 +83,7 @@ class MedicationReminderScheduler extends ChangeNotifier {
         );
       }
       // ignore: unawaited_futures
-      _pruneStale(catId: catId, keep: planned);
+      _pruneStale(ownerId: ownerId, keep: planned);
     } catch (error, stack) {
       AppLogger.w('MedicationReminderScheduler.sync failed', error, stack);
     } finally {
@@ -131,17 +135,17 @@ class MedicationReminderScheduler extends ChangeNotifier {
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   Future<void> _pruneStale({
-    required String catId,
+    required String ownerId,
     required List<_Planned> keep,
   }) async {
     final Set<String> keepKeys = keep.map((p) => p.key).toSet();
     try {
-      final stream = _repository.watchSchedules(ownerId: catId);
+      final stream = _repository.watchSchedules(ownerId: ownerId);
       final List<NotificationSchedule> existing = await stream.first;
       for (final NotificationSchedule s in existing) {
         if (s.sourceType != 'medication') continue;
         if (keepKeys.contains(s.id)) continue;
-        await _repository.delete(ownerId: catId, scheduleId: s.id);
+        await _repository.delete(ownerId: ownerId, scheduleId: s.id);
         await _notificationService.cancel(
           NotificationSchedulerService.idForKey(s.id),
         );
