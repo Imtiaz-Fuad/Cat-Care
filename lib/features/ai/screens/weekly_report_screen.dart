@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -157,7 +159,7 @@ class _Body extends StatelessWidget {
             _NoDataCard(catName: catName)
           else
             _ReportCard(
-              text: report.text,
+              text: _readableReportText(report.text),
               generatedAt: report.generatedAt,
               fromCache: report.fromCache,
             ),
@@ -189,6 +191,25 @@ class _Body extends StatelessWidget {
       ],
     );
   }
+}
+
+String _readableReportText(String raw) {
+  var value = raw.trim();
+  if (value.startsWith('```')) {
+    final int newline = value.indexOf('\n');
+    if (newline >= 0) value = value.substring(newline + 1);
+    if (value.endsWith('```')) value = value.substring(0, value.length - 3).trim();
+  }
+  try {
+    final dynamic decoded = jsonDecode(value);
+    if (decoded is Map && decoded['text'] is String) {
+      final String text = (decoded['text'] as String).trim();
+      if (text.isNotEmpty) return text;
+    }
+  } catch (_) {
+    // Older reports may already be plain text.
+  }
+  return raw;
 }
 
 class _ReportCard extends StatelessWidget {
