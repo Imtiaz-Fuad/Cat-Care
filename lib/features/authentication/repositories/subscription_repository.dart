@@ -44,7 +44,7 @@ class SubscriptionRepository {
       otp,
       referenceNo,
     );
-    if (!_isRegistered(response)) {
+    if (!_requestSucceeded(response) && !_isRegistered(response)) {
       throw ValidationFailure(
         _errorMessage(response, 'The OTP is invalid or has expired.'),
         code: _string(response['statusCode']) ?? 'otp-verify-failed',
@@ -68,7 +68,10 @@ class SubscriptionRepository {
 
   Future<SubscriptionResult> unsubscribe(String mobile) async {
     final Map<String, dynamic> response = await _service.unsubscribe(mobile);
-    final bool unregistered = _status(response) == 'UNREGISTERED';
+    final bool unregistered =
+        response['success'] == true ||
+        _requestSucceeded(response) ||
+        _status(response) == 'UNREGISTERED';
     if (!unregistered) {
       throw UnknownFailure(
         _errorMessage(response, 'Could not unsubscribe. Please try again.'),
@@ -82,12 +85,15 @@ class SubscriptionRepository {
   }
 
   static bool _requestSucceeded(Map<String, dynamic> response) {
+    final String statusCode =
+        _string(response['statusCode'])?.toUpperCase() ?? '';
     return response['success'] == true ||
-        _string(response['statusCode'])?.toUpperCase() == 'S1000';
+        statusCode == 'S1000' ||
+        statusCode == 'SUCCESS';
   }
 
   static bool _isRegistered(Map<String, dynamic> response) =>
-      _status(response) == 'REGISTERED';
+      response['isSubscribed'] == true || _status(response) == 'REGISTERED';
 
   static String? _status(Map<String, dynamic> response) {
     final String? value = _string(response['subscriptionStatus']);

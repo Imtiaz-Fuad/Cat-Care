@@ -7,9 +7,10 @@ import 'package:cat_care/features/authentication/repositories/subscription_repos
 import 'package:cat_care/features/authentication/screens/subscription_screen.dart';
 import 'package:cat_care/features/authentication/services/bdapps_service.dart';
 import 'package:cat_care/features/authentication/widgets/subscription_gate.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,52 +19,90 @@ void main() {
 
   group('BdappsService', () {
     test('posts form fields to the OTP proxy endpoint', () async {
-      late RequestOptions captured;
-      final Dio dio = Dio();
-      dio.interceptors.add(
-        InterceptorsWrapper(
-          onRequest:
-              (RequestOptions options, RequestInterceptorHandler handler) {
-                captured = options;
-                handler.resolve(
-                  Response<String>(
-                    requestOptions: options,
-                    data: jsonEncode(<String, Object>{
-                      'success': true,
-                      'statusCode': 'S1000',
-                      'referenceNo': 'ref-1',
-                    }),
-                  ),
-                );
-              },
-        ),
+      late http.Request captured;
+      final MockClient client = MockClient((http.Request request) async {
+        captured = request;
+        return http.Response(
+          jsonEncode(<String, Object>{
+            'success': true,
+            'statusCode': 'S1000',
+            'referenceNo': 'ref-1',
+          }),
+          200,
+        );
+      });
+
+      await BdappsService(client).sendOtp('8801712345678');
+
+      expect(captured.url.toString(), '${BdappsService.baseUrl}/send_otp.php');
+      expect(
+        captured.headers['content-type'],
+        startsWith('application/x-www-form-urlencoded'),
       );
+      expect(captured.bodyFields, <String, String>{
+        'user_mobile': '8801712345678',
+      });
+    });
 
-      await BdappsService(dio: dio).sendOtp('8801712345678');
+    test('normalizes a local Bangladesh mobile before sending OTP', () async {
+      late http.Request captured;
+      final MockClient client = MockClient((http.Request request) async {
+        captured = request;
+        return http.Response(
+          jsonEncode(<String, Object>{
+            'success': true,
+            'statusCode': 'S1000',
+            'referenceNo': 'ref-1',
+          }),
+          200,
+        );
+      });
 
-      expect(captured.uri.toString(), '${BdappsService.baseUrl}/send_otp.php');
-      expect(captured.contentType, Headers.formUrlEncodedContentType);
-      expect(captured.data, <String, String>{'user_mobile': '8801712345678'});
+      await BdappsService(client).sendOtp('01712345678');
+
+      expect(captured.bodyFields['user_mobile'], '8801712345678');
     });
 
     test('rejects malformed proxy responses', () async {
-      final Dio dio = Dio();
-      dio.interceptors.add(
-        InterceptorsWrapper(
-          onRequest:
-              (RequestOptions options, RequestInterceptorHandler handler) {
-                handler.resolve(
-                  Response<String>(requestOptions: options, data: 'not-json'),
-                );
-              },
-        ),
+      final MockClient client = MockClient(
+        (_) async => http.Response('not-json', 200),
       );
 
       expect(
-        () => BdappsService(dio: dio).checkSubscription('8801712345678'),
+        () => BdappsService(client).checkSubscription('8801712345678'),
         throwsA(isA<UnknownFailure>()),
       );
     });
+
+    test(
+      'uses the proxy field names for verify, check, and unsubscribe',
+      () async {
+        final List<http.Request> requests = <http.Request>[];
+        final MockClient client = MockClient((http.Request request) async {
+          requests.add(request);
+          return http.Response('{}', 200);
+        });
+        final BdappsService service = BdappsService(client);
+
+        await service.verifyOtp('123456', 'reference-1');
+        await service.checkSubscription('8801712345678');
+        await service.unsubscribe('8801712345678');
+
+        expect(requests[0].url.path, endsWith('/verify_otp.php'));
+        expect(requests[0].bodyFields, <String, String>{
+          'Otp': '123456',
+          'referenceNo': 'reference-1',
+        });
+        expect(requests[1].url.path, endsWith('/check_subscription.php'));
+        expect(requests[1].bodyFields, <String, String>{
+          'user_mobile': '8801712345678',
+        });
+        expect(requests[2].url.path, endsWith('/unsubscribe.php'));
+        expect(requests[2].bodyFields, <String, String>{
+          'user_mobile': '8801712345678',
+        });
+      },
+    );
   });
 
   group('SubscriptionRepository', () {
@@ -94,6 +133,46 @@ void main() {
       );
 
       expect(result.isRegistered, isTrue);
+    });
+
+    test('accepts the proxy isSubscribed flag', () async {
+      final _FakeBdappsService service = _FakeBdappsService()
+        ..checkResponse = <String, dynamic>{
+          'isSubscribed': true,
+          'statusCode': 'S1000',
+        };
+      final SubscriptionRepository repository = SubscriptionRepository(service);
+
+      final SubscriptionResult result = await repository.checkSubscription(
+        '8801712345678',
+      );
+
+      expect(result.isRegistered, isTrue);
+    });
+
+    test('accepts OTP verification success from statusCode alone', () async {
+      final _FakeBdappsService service = _FakeBdappsService()
+        ..verifyResponse = <String, dynamic>{'statusCode': 'S1000'};
+      final SubscriptionRepository repository = SubscriptionRepository(service);
+
+      final SubscriptionResult result = await repository.verifyOtp(
+        otp: '123456',
+        referenceNo: 'reference-1',
+      );
+
+      expect(result.isRegistered, isTrue);
+    });
+
+    test('accepts unsubscribe success without subscriptionStatus', () async {
+      final _FakeBdappsService service = _FakeBdappsService()
+        ..unsubscribeResponse = <String, dynamic>{'success': true};
+      final SubscriptionRepository repository = SubscriptionRepository(service);
+
+      final SubscriptionResult result = await repository.unsubscribe(
+        '8801712345678',
+      );
+
+      expect(result.isRegistered, isFalse);
     });
   });
 
@@ -136,23 +215,96 @@ void main() {
       expect(provider.error, 'Offline');
     });
 
-    test('OTP verification persists the number and unlocks access', () async {
+    test(
+      'OTP verification checks status before persisting and unlocking',
+      () async {
+        final _FakeBdappsService service = _FakeBdappsService()
+          ..sendResponse = <String, dynamic>{
+            'success': true,
+            'referenceNo': 'ref-2',
+          }
+          ..verifyResponse = <String, dynamic>{'statusCode': 'S1000'}
+          ..checkResponse = <String, dynamic>{
+            'subscriptionStatus': 'REGISTERED',
+          };
+        final SubscriptionProvider provider = await _provider(service);
+
+        await provider.sendOtp('01712345678');
+        await provider.verifyOtp('123456');
+
+        expect(provider.hasAccess, isTrue);
+        expect(service.checkedMobile, '8801712345678');
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        expect(prefs.getString(AppConstants.bdappsMobileKey), '8801712345678');
+      },
+    );
+
+    test('OTP success does not unlock an unregistered number', () async {
       final _FakeBdappsService service = _FakeBdappsService()
         ..sendResponse = <String, dynamic>{
           'success': true,
           'referenceNo': 'ref-2',
         }
-        ..verifyResponse = <String, dynamic>{
-          'subscriptionStatus': 'REGISTERED',
+        ..verifyResponse = <String, dynamic>{'statusCode': 'S1000'}
+        ..checkResponse = <String, dynamic>{
+          'subscriptionStatus': 'UNREGISTERED',
         };
       final SubscriptionProvider provider = await _provider(service);
 
       await provider.sendOtp('01712345678');
       await provider.verifyOtp('123456');
 
+      expect(provider.hasAccess, isFalse);
+      expect(provider.stage, SubscriptionStage.awaitingConfirmation);
+      expect(provider.error, isNull);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString(AppConstants.bdappsMobileKey), isNull);
+    });
+
+    test('awaiting confirmation can return to subscription check', () async {
+      final _FakeBdappsService service = _FakeBdappsService()
+        ..sendResponse = <String, dynamic>{
+          'success': true,
+          'referenceNo': 'ref-2',
+        }
+        ..verifyResponse = <String, dynamic>{'statusCode': 'S1000'}
+        ..checkResponse = <String, dynamic>{
+          'subscriptionStatus': 'UNREGISTERED',
+        };
+      final SubscriptionProvider provider = await _provider(service);
+
+      await provider.sendOtp('01712345678');
+      await provider.verifyOtp('123456');
+      provider.returnToSubscriptionCheck();
+
+      expect(provider.stage, SubscriptionStage.mobile);
+      expect(provider.mobile, '8801712345678');
+      expect(provider.hasAccess, isFalse);
+    });
+
+    test('manual check unlocks an externally subscribed number', () async {
+      final _FakeBdappsService service = _FakeBdappsService()
+        ..checkResponse = <String, dynamic>{'subscriptionStatus': 'REGISTERED'};
+      final SubscriptionProvider provider = await _provider(service);
+
+      await provider.checkMobileSubscription('01712345678');
+
       expect(provider.hasAccess, isTrue);
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       expect(prefs.getString(AppConstants.bdappsMobileKey), '8801712345678');
+    });
+
+    test('manual check keeps an unregistered number gated', () async {
+      final _FakeBdappsService service = _FakeBdappsService()
+        ..checkResponse = <String, dynamic>{
+          'subscriptionStatus': 'UNREGISTERED',
+        };
+      final SubscriptionProvider provider = await _provider(service);
+
+      await provider.checkMobileSubscription('01712345678');
+
+      expect(provider.hasAccess, isFalse);
+      expect(provider.error, contains('No active subscription'));
     });
 
     test('successful unsubscribe clears access and stored number', () async {
@@ -193,7 +345,17 @@ void main() {
       );
 
       expect(find.byType(SubscriptionScreen), findsOneWidget);
+      expect(find.text('Not subscribed yet? Tap here'), findsOneWidget);
       expect(find.text('protected-content'), findsNothing);
+
+      await tester.tap(find.text('Not subscribed yet? Tap here'));
+      await tester.pump();
+
+      expect(find.text('Send OTP to subscribe'), findsOneWidget);
+      expect(
+        find.textContaining('Enter a valid Bangladesh mobile number'),
+        findsNothing,
+      );
     },
   );
 }

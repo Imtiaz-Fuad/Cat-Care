@@ -5,7 +5,14 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/errors/app_failure.dart';
 import '../repositories/subscription_repository.dart';
 
-enum SubscriptionStage { checking, mobile, otp, blocked, subscribed }
+enum SubscriptionStage {
+  checking,
+  mobile,
+  otp,
+  awaitingConfirmation,
+  blocked,
+  subscribed,
+}
 
 class SubscriptionProvider extends ChangeNotifier {
   SubscriptionProvider(this._repository, this._preferences);
@@ -66,6 +73,37 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> checkMobileSubscription(String input) async {
+    late final String normalized;
+    try {
+      normalized = normalizeBangladeshMobile(input);
+    } on ValidationFailure catch (failure) {
+      _error = failure.message;
+      notifyListeners();
+      return;
+    }
+    _busy = true;
+    _error = null;
+    notifyListeners();
+    try {
+      final SubscriptionResult result = await _repository.checkSubscription(
+        normalized,
+      );
+      if (result.isRegistered) {
+        _mobile = normalized;
+        await _preferences.setString(AppConstants.bdappsMobileKey, normalized);
+        _stage = SubscriptionStage.subscribed;
+      } else {
+        _error = 'No active subscription was found for this number.';
+      }
+    } on AppFailure catch (failure) {
+      _error = failure.message;
+    } finally {
+      _busy = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> sendOtp(String input) async {
     late final String normalized;
     try {
@@ -111,8 +149,15 @@ class SubscriptionProvider extends ChangeNotifier {
     notifyListeners();
     try {
       await _repository.verifyOtp(otp: code, referenceNo: reference);
-      await _preferences.setString(AppConstants.bdappsMobileKey, number);
-      _stage = SubscriptionStage.subscribed;
+      final SubscriptionResult result = await _repository.checkSubscription(
+        number,
+      );
+      if (result.isRegistered) {
+        await _preferences.setString(AppConstants.bdappsMobileKey, number);
+        _stage = SubscriptionStage.subscribed;
+      } else {
+        _stage = SubscriptionStage.awaitingConfirmation;
+      }
     } on AppFailure catch (failure) {
       _error = failure.message;
     } finally {
@@ -151,6 +196,19 @@ class SubscriptionProvider extends ChangeNotifier {
   void useAnotherNumber() {
     _referenceNo = null;
     _stage = SubscriptionStage.mobile;
+    _error = null;
+    notifyListeners();
+  }
+
+  void returnToSubscriptionCheck() {
+    _referenceNo = null;
+    _stage = SubscriptionStage.mobile;
+    _error = null;
+    notifyListeners();
+  }
+
+  void clearError() {
+    if (_error == null) return;
     _error = null;
     notifyListeners();
   }

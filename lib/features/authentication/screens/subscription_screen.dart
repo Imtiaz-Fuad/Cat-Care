@@ -15,6 +15,7 @@ class SubscriptionScreen extends StatefulWidget {
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
   final TextEditingController _mobile = TextEditingController();
   final TextEditingController _otp = TextEditingController();
+  bool _subscribeWithOtp = false;
 
   @override
   void didChangeDependencies() {
@@ -161,13 +162,47 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         ],
       );
     }
+    if (state.stage == SubscriptionStage.awaitingConfirmation) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const Icon(
+            Icons.mark_email_read_rounded,
+            size: 40,
+            color: Color(0xFFA5482A),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'OTP has been verified, wait for confirmation message.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Color(0xFF3A2924),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 18),
+          _WarmButton(
+            label: 'Back to check subscription',
+            busy: state.isBusy,
+            onPressed: () {
+              setState(() => _subscribeWithOtp = false);
+              state.returnToSubscriptionCheck();
+            },
+          ),
+        ],
+      );
+    }
 
     final bool otpStage = state.stage == SubscriptionStage.otp;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          otpStage ? 'Verify your number' : 'Activate your subscription',
+          otpStage
+              ? 'Verify your number'
+              : _subscribeWithOtp
+              ? 'Subscribe with OTP'
+              : 'Check your subscription',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
@@ -199,7 +234,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               LengthLimitingTextInputFormatter(13),
             ],
             onSubmitted: (_) {
-              if (!state.isBusy) _sendOtp(state);
+              if (!state.isBusy) {
+                _subscribeWithOtp ? _sendOtp(state) : _checkSubscription(state);
+              }
             },
             decoration: _inputDecoration(
               label: 'Mobile number',
@@ -229,10 +266,48 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           ),
         const SizedBox(height: 18),
         _WarmButton(
-          label: otpStage ? 'Verify and continue' : 'Send OTP',
+          label: otpStage
+              ? 'Verify and continue'
+              : _subscribeWithOtp
+              ? 'Send OTP to subscribe'
+              : 'Check subscription',
           busy: state.isBusy,
-          onPressed: () => otpStage ? _verifyOtp(state) : _sendOtp(state),
+          onPressed: () => otpStage
+              ? _verifyOtp(state)
+              : _subscribeWithOtp
+              ? _sendOtp(state)
+              : _checkSubscription(state),
         ),
+        if (!otpStage && !_subscribeWithOtp) ...<Widget>[
+          const SizedBox(height: 6),
+          TextButton(
+            onPressed: state.isBusy
+                ? null
+                : () {
+                    state.clearError();
+                    setState(() => _subscribeWithOtp = true);
+                  },
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF8C341F),
+            ),
+            child: const Text(
+              'Not subscribed yet? Tap here',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+        if (!otpStage && _subscribeWithOtp) ...<Widget>[
+          const SizedBox(height: 6),
+          TextButton(
+            onPressed: state.isBusy
+                ? null
+                : () {
+                    state.clearError();
+                    setState(() => _subscribeWithOtp = false);
+                  },
+            child: const Text('Already subscribed? Check subscription'),
+          ),
+        ],
         if (otpStage) ...<Widget>[
           const SizedBox(height: 4),
           TextButton(
@@ -278,6 +353,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   void _sendOtp(SubscriptionProvider state) {
     FocusScope.of(context).unfocus();
     state.sendOtp(_mobile.text);
+  }
+
+  void _checkSubscription(SubscriptionProvider state) {
+    FocusScope.of(context).unfocus();
+    state.checkMobileSubscription(_mobile.text);
   }
 
   void _verifyOtp(SubscriptionProvider state) {
