@@ -8,6 +8,7 @@ import '../../models/cat_draft.dart';
 import '../../providers/cat_provider.dart';
 import '../../services/cat_photo_picker.dart';
 import '../../widgets/onboarding_step_indicator.dart';
+import '../../../health/providers/weight_provider.dart';
 import 'onboarding_controller.dart';
 import 'onboarding_steps.dart';
 
@@ -30,7 +31,6 @@ class OnboardingScreen extends StatefulWidget {
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
-
 class _OnboardingScreenState extends State<OnboardingScreen> {
   late final PageController _pages = PageController();
   late final OnboardingController _controller = OnboardingController(
@@ -140,12 +140,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       }
       return;
     }
-    final Object? result = await cats.createCat(_controller.draft);
+    final CatProfile? result = await cats.createCat(_controller.draft);
     if (!mounted) return;
     if (result != null) {
+      await context.read<WeightProvider>().addInitial(
+        catId: result.id,
+        weightKg: result.weightKg!,
+      );
+      if (!mounted) return;
       if (_controller.photoBytes != null) {
         final String? localPath = await cats.uploadPhoto(
-          catId: (result as CatProfile).id,
+          catId: result.id,
           bytes: _controller.photoBytes!,
         );
         if (localPath == null) {

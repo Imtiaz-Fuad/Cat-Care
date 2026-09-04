@@ -80,9 +80,12 @@ class CatDraft {
   final String? notes;
   final List<String> priorities;
 
-  /// Whether the draft has the minimum data the repository needs to
-  /// create a profile (name required per onboarding step 2).
-  bool get isValid => name.trim().isNotEmpty;
+  /// Whether the draft has the minimum data required to create a profile.
+  bool get isValid =>
+      name.trim().isNotEmpty &&
+      weightKg != null &&
+      weightKg! > 0 &&
+      weightKg! <= 15;
 
   CatDraft copyWith({
     String? name,

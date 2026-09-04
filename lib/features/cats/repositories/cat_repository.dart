@@ -101,10 +101,16 @@ class CatRepository {
     required String ownerId,
     required CatDraft draft,
   }) async {
-    if (!draft.isValid) {
+    if (draft.name.trim().isEmpty) {
       throw const ValidationFailure(
         'Cat name is required.',
         code: 'missing-name',
+      );
+    }
+    if (!draft.isValid) {
+      throw const ValidationFailure(
+        'Enter an estimated weight between 0 and 15 kg.',
+        code: 'invalid-weight',
       );
     }
     final String id = newCatId();

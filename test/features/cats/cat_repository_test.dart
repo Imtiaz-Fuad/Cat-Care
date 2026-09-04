@@ -53,7 +53,7 @@ void main() {
 
         final CatProfile created = await repo.createCat(
           ownerId: 'alice',
-          draft: CatDraft(name: 'Mimi'),
+          draft: CatDraft(name: 'Mimi', weightKg: 4.2),
         );
 
         expect(created.id, 'cat-42');
@@ -85,6 +85,26 @@ void main() {
       );
     });
 
+    test('rejects a draft without an estimated weight', () async {
+      await expectLater(
+        repo.createCat(
+          ownerId: 'alice',
+          draft: CatDraft(name: 'Mimi'),
+        ),
+        throwsA(
+          isA<ValidationFailure>().having(
+            (ValidationFailure failure) => failure.code,
+            'code',
+            'invalid-weight',
+          ),
+        ),
+      );
+      verifyNever(
+        () =>
+            firestore.writeDocument(any<String>(), any<Map<String, dynamic>>()),
+      );
+    });
+
     test('wraps a repository failure as UnknownFailure', () async {
       when(
         () =>
@@ -94,7 +114,7 @@ void main() {
       await expectLater(
         repo.createCat(
           ownerId: 'alice',
-          draft: CatDraft(name: 'Mimi'),
+          draft: CatDraft(name: 'Mimi', weightKg: 4.2),
         ),
         throwsA(isA<UnknownFailure>()),
       );

@@ -240,7 +240,7 @@ class _NameDecorationRow extends StatelessWidget {
   }
 }
 
-/// Step 3 of 5 — details. All optional fields live here.
+/// Step 3 of 5 — details. Weight is required; the other fields are optional.
 class OnboardingDetailsStep extends StatefulWidget {
   const OnboardingDetailsStep({super.key, required this.controller});
 
@@ -257,11 +257,15 @@ class _OnboardingDetailsStepState extends State<OnboardingDetailsStep> {
   late final TextEditingController _color = TextEditingController(
     text: widget.controller.draft.color ?? '',
   );
+  late final TextEditingController _weight = TextEditingController(
+    text: widget.controller.draft.weightKg?.toString() ?? '',
+  );
 
   @override
   void dispose() {
     _breed.dispose();
     _color.dispose();
+    _weight.dispose();
     super.dispose();
   }
 
@@ -285,14 +289,54 @@ class _OnboardingDetailsStepState extends State<OnboardingDetailsStep> {
           ),
           const SizedBox(height: 10),
           Text(
-            'Skip anything you\'re not sure about — you can fill it '
-            'in later.',
+            'Add an estimated weight now. You can update the other details '
+            'later.',
             style: text.bodyMedium?.copyWith(
               color: scheme.onSurfaceVariant,
               height: 1.4,
             ),
           ),
           const SizedBox(height: 24),
+          TextField(
+            controller: _weight,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: <TextInputFormatter>[
+              TextInputFormatter.withFunction((
+                TextEditingValue oldValue,
+                TextEditingValue newValue,
+              ) {
+                return RegExp(r'^\d{0,2}(\.\d{0,2})?$').hasMatch(newValue.text)
+                    ? newValue
+                    : oldValue;
+              }),
+            ],
+            style: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+            decoration: InputDecoration(
+              labelText: 'Estimated weight (required)',
+              hintText: 'e.g. 4.2',
+              suffixText: 'kg',
+              helperText: 'An estimate is fine. Enter a value up to 15 kg.',
+              errorText:
+                  _weight.text.isNotEmpty &&
+                      (draft.weightKg == null ||
+                          draft.weightKg! <= 0 ||
+                          draft.weightKg! > 15)
+                  ? 'Enter a weight between 0 and 15 kg'
+                  : null,
+              prefixIcon: Icon(
+                Icons.monitor_weight_outlined,
+                size: 20,
+                color: scheme.onSurfaceVariant,
+              ),
+            ),
+            onChanged: (String value) {
+              final double? parsed = double.tryParse(value.trim());
+              widget.controller.updateDraft(
+                (CatDraft d) => d.copyWith(weightKg: parsed),
+              );
+            },
+          ),
+          const SizedBox(height: 14),
           _BirthdayField(controller: widget.controller, draft: draft),
           const SizedBox(height: 14),
           _SexPicker(controller: widget.controller, draft: draft),

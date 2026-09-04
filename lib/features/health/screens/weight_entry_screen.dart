@@ -95,8 +95,8 @@ class _WeightEntryScreenState extends State<WeightEntryScreen> {
                 validator: (String? v) {
                   if (v == null || v.trim().isEmpty) return 'Required';
                   final double? d = double.tryParse(v.trim());
-                  if (d == null || d <= 0 || d > 50) {
-                    return 'Enter a weight between 0 and 50 kg';
+                  if (d == null || d <= 0 || d > 15) {
+                    return 'Enter a weight between 0 and 15 kg';
                   }
                   return null;
                 },

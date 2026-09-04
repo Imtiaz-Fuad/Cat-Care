@@ -65,6 +65,41 @@ class WeightProvider extends ChangeNotifier {
     return failure == null ? created : null;
   }
 
+  /// Creates the first history point from onboarding. The stable document ID
+  /// makes this idempotent if the save callback is ever repeated.
+  Future<WeightEntry?> addInitial({
+    required String catId,
+    required double weightKg,
+    DateTime? recordedAt,
+  }) async {
+    final String? uid = _auth.profile?.uid;
+    if (uid == null) return null;
+    final DateTime timestamp = recordedAt ?? DateTime.now();
+    final WeightEntry draft = WeightEntry(
+      id: 'onboarding',
+      catId: catId,
+      weightKg: weightKg,
+      recordedAt: timestamp,
+      createdAt: timestamp,
+    );
+    WeightEntry? created;
+    AppFailure? failure;
+    try {
+      clearError();
+      final String newId = await _repository.add(uid, catId, draft);
+      created = draft.copyWith(id: newId);
+    } on AppFailure catch (error) {
+      failure = error;
+      AppLogger.w('WeightProvider.addInitial failed: $failure');
+    } catch (error, stack) {
+      failure = UnknownFailure(error.toString(), code: 'weight-unknown');
+      AppLogger.e('WeightProvider.addInitial unexpected', error, stack);
+    }
+    if (failure != null) _lastError = failure;
+    if (!_disposed) notifyListeners();
+    return failure == null ? created : null;
+  }
+
   Future<void> delete(String recordId) async {
     final uid = _auth.profile?.uid;
     final cid = _catId;

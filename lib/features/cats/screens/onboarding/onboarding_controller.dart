@@ -30,13 +30,16 @@ class OnboardingController extends ChangeNotifier {
 
   /// Whether the user can move forward from the current step. The
   /// photo step (0) is always skippable; the name step (1) requires
-  /// a non-empty name; everything else is optional.
+  /// a non-empty name; and the details step (2) requires a valid weight.
   bool get canAdvance {
     switch (_step) {
       case 0:
         return true; // photo optional
       case 1:
         return _draft.name.trim().isNotEmpty;
+      case 2:
+        final double? weight = _draft.weightKg;
+        return weight != null && weight > 0 && weight <= 15;
       default:
         return true;
     }

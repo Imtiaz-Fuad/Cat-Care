@@ -11,12 +11,18 @@ void main() {
       expect(CatDraft(name: '   ').isValid, isFalse);
     });
 
-    test('non-empty name is valid', () {
-      expect(CatDraft(name: 'Mimi').isValid, isTrue);
+    test('name without weight is invalid', () {
+      expect(CatDraft(name: 'Mimi').isValid, isFalse);
     });
 
-    test('name with surrounding whitespace is valid after trim', () {
-      expect(CatDraft(name: '  Mimi  ').isValid, isTrue);
+    test('name and estimated weight are valid', () {
+      expect(CatDraft(name: 'Mimi', weightKg: 4.2).isValid, isTrue);
+    });
+
+    test('weight must be greater than zero and no more than 15 kg', () {
+      expect(CatDraft(name: 'Mimi', weightKg: 0).isValid, isFalse);
+      expect(CatDraft(name: 'Mimi', weightKg: 15).isValid, isTrue);
+      expect(CatDraft(name: 'Mimi', weightKg: 15.1).isValid, isFalse);
     });
   });
 
