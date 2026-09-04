@@ -60,7 +60,6 @@ class _RoutineEditSheetState extends State<RoutineEditSheet> {
     _RepeatChoice('daily', 'Daily'),
     _RepeatChoice('weekdays', 'Weekdays'),
     _RepeatChoice('weekly', 'Weekly'),
-    _RepeatChoice('custom', 'Custom'),
   ];
 
   late final TextEditingController _title;

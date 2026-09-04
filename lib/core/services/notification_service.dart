@@ -95,6 +95,7 @@ class NotificationService {
     required String body,
     required DateTime when,
     String? payload,
+    DateTimeComponents? matchDateTimeComponents,
   }) async {
     if (!_initialized) await initialize();
     if (!when.isAfter(DateTime.now())) {
@@ -124,6 +125,7 @@ class NotificationService {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       payload: payload,
+      matchDateTimeComponents: matchDateTimeComponents,
     );
   }
 

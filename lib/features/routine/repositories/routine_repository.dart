@@ -112,9 +112,8 @@ class RoutineRepository {
 
   /// Patch an existing routine. [completed] is treated as a flag the
   /// caller can flip; [lastCompletedAt] is set to "now" automatically
-  /// when [completed] is `true`. Setting it back to `false` keeps the
-  /// previous completion timestamp intact (intentional, so the UI can
-  /// render "last done at …").
+  /// when [completed] is `true`. Setting it back to `false` clears the
+  /// completion timestamp so all daily surfaces agree it is undone.
   ///
   /// To clear a nullable field (set it to null), pass the [Clear]
   /// sentinel via the matching named argument.
@@ -140,6 +139,8 @@ class RoutineRepository {
       patch['completed'] = completed;
       if (completed) {
         patch['lastCompletedAt'] = now.toIso8601String();
+      } else {
+        patch['lastCompletedAt'] = null;
       }
     }
 
@@ -151,8 +152,11 @@ class RoutineRepository {
     AppLogger.i('RoutineRepository.updateTask ${task.catId}/${task.id}');
     return task.copyWith(
       completed: completed ?? task.completed,
-      lastCompletedAt:
-          completed == true ? now : task.lastCompletedAt,
+      lastCompletedAt: completed == true
+          ? now
+          : completed == false
+          ? null
+          : task.lastCompletedAt,
       updatedAt: now,
     );
   }

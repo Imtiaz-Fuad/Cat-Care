@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/notification_schedule.dart';
@@ -22,8 +23,8 @@ import '../repositories/notification_schedule_repository.dart';
 /// local notification + deletes the doc.
 ///
 /// The contract:
-///   * one OS-level notification per `routineTaskId` (the schedule
-///     doc id is `routine:` + taskId so it's stable across edits).
+///   * recurring OS notifications follow the task repeat rule. Weekday
+///     routines use five stable schedule ids; other repeats use one.
 ///   * deleting a routine cancels its notification synchronously.
 ///   * sign-out cancels all notifications and clears Firestore
 ///     schedules via [signOut].
@@ -131,8 +132,7 @@ class NotificationSchedulerService extends ChangeNotifier {
       final List<RoutineTask> tasks = _routineProvider.routines;
       final List<_Planned> planned = <_Planned>[];
       for (final RoutineTask task in tasks) {
-        final _Planned? p = _planFromTask(task);
-        if (p != null) planned.add(p);
+        planned.addAll(_plansFromTask(task));
       }
 
       // 1. Apply every desired schedule.
@@ -144,6 +144,7 @@ class NotificationSchedulerService extends ChangeNotifier {
           body: p.schedule.body,
           when: p.schedule.fireAt,
           payload: p.schedule.payload,
+          matchDateTimeComponents: p.matchDateTimeComponents,
         );
       }
 
@@ -161,14 +162,52 @@ class NotificationSchedulerService extends ChangeNotifier {
     }
   }
 
-  _Planned? _planFromTask(RoutineTask task) {
-    if (!task.reminder) return null;
+  Iterable<_Planned> _plansFromTask(RoutineTask task) sync* {
+    if (!task.reminder) return;
     final DateTime? tod = task.timeOfDay;
-    if (tod == null) return null;
+    if (tod == null) return;
     final String? catId = _catProvider.activeCatId;
-    if (catId == null) return null;
+    if (catId == null) return;
 
     final DateTime now = _clock();
+    if (task.repeat == 'weekdays') {
+      for (final int weekday in <int>[
+        DateTime.monday,
+        DateTime.tuesday,
+        DateTime.wednesday,
+        DateTime.thursday,
+        DateTime.friday,
+      ]) {
+        yield _buildPlan(
+          task: task,
+          catId: catId,
+          key: 'routine:${task.id}:$weekday',
+          fire: _nextWeekdayOccurrence(tod, now, weekday),
+          matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+        );
+      }
+      return;
+    }
+    if (task.repeat == 'weekly') {
+      yield _buildPlan(
+        task: task,
+        catId: catId,
+        key: 'routine:${task.id}',
+        fire: _nextWeekdayOccurrence(tod, now, (task.createdAt ?? tod).weekday),
+        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      );
+      return;
+    }
+    if (task.repeat == 'monthly') {
+      yield _buildPlan(
+        task: task,
+        catId: catId,
+        key: 'routine:${task.id}',
+        fire: _nextMonthlyOccurrence(tod, now),
+        matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime,
+      );
+      return;
+    }
     final DateTime fire = _nextOccurrence(tod, now);
     final String key = 'routine:${task.id}';
     final NotificationSchedule schedule = NotificationSchedule(
@@ -182,10 +221,37 @@ class NotificationSchedulerService extends ChangeNotifier {
       sourceType: 'routine',
       sourceId: task.id,
     );
+    yield _Planned(
+      key: key,
+      schedule: schedule,
+      notificationId: idForKey(key),
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  _Planned _buildPlan({
+    required RoutineTask task,
+    required String catId,
+    required String key,
+    required DateTime fire,
+    required DateTimeComponents matchDateTimeComponents,
+  }) {
+    final NotificationSchedule schedule = NotificationSchedule(
+      id: key,
+      catId: catId,
+      channelKey: AppConstants.notificationsChannelRoutine,
+      title: '${task.title} — ${_catProvider.activeCat?.name ?? 'Cat'}',
+      body: 'Time for ${task.title.toLowerCase()}.',
+      fireAt: fire,
+      payload: 'routine/${task.id}',
+      sourceType: 'routine',
+      sourceId: task.id,
+    );
     return _Planned(
       key: key,
       schedule: schedule,
       notificationId: idForKey(key),
+      matchDateTimeComponents: matchDateTimeComponents,
     );
   }
 
@@ -202,6 +268,43 @@ class NotificationSchedulerService extends ChangeNotifier {
     return today.add(const Duration(days: 1));
   }
 
+  static DateTime _nextWeekdayOccurrence(
+    DateTime timeOfDay,
+    DateTime now,
+    int weekday,
+  ) {
+    for (int offset = 0; offset <= 7; offset++) {
+      final DateTime day = now.add(Duration(days: offset));
+      if (day.weekday != weekday) continue;
+      final DateTime candidate = DateTime(
+        day.year,
+        day.month,
+        day.day,
+        timeOfDay.hour,
+        timeOfDay.minute,
+      );
+      if (candidate.isAfter(now)) return candidate;
+    }
+    throw StateError('Unable to calculate the next weekly occurrence.');
+  }
+
+  static DateTime _nextMonthlyOccurrence(DateTime timeOfDay, DateTime now) {
+    for (int monthOffset = 0; monthOffset <= 24; monthOffset++) {
+      final DateTime month = DateTime(now.year, now.month + monthOffset);
+      final int daysInMonth = DateTime(month.year, month.month + 1, 0).day;
+      if (timeOfDay.day > daysInMonth) continue;
+      final DateTime candidate = DateTime(
+        month.year,
+        month.month,
+        timeOfDay.day,
+        timeOfDay.hour,
+        timeOfDay.minute,
+      );
+      if (candidate.isAfter(now)) return candidate;
+    }
+    throw StateError('Unable to calculate the next monthly occurrence.');
+  }
+
   Future<void> _pruneStale({
     required String uid,
     required List<_Planned> keep,
@@ -216,6 +319,7 @@ class NotificationSchedulerService extends ChangeNotifier {
       final stream = _repository.watchSchedules(ownerId: uid);
       final List<NotificationSchedule> existing = await stream.first;
       for (final NotificationSchedule s in existing) {
+        if (s.sourceType != 'routine') continue;
         if (keepKeys.contains(s.id)) continue;
         await _repository.delete(ownerId: uid, scheduleId: s.id);
         await _notificationService.cancel(idForKey(s.id));
@@ -241,8 +345,10 @@ class _Planned {
     required this.key,
     required this.schedule,
     required this.notificationId,
+    required this.matchDateTimeComponents,
   });
   final String key;
   final NotificationSchedule schedule;
   final int notificationId;
+  final DateTimeComponents matchDateTimeComponents;
 }

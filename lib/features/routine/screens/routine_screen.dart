@@ -37,7 +37,12 @@ class RoutineScreen extends StatelessWidget {
             CatProvider catProvider,
             Widget? _,
           ) {
-            final List<RoutineTask> tasks = provider.routines;
+            final List<RoutineTask> tasks = provider.todaysRoutines
+                .map(
+                  (RoutineTask task) =>
+                      task.copyWith(completed: provider.isCompletedToday(task)),
+                )
+                .toList(growable: false);
             final bool loading = !provider.hasLoaded;
             final CatProfile? cat = catProvider.activeCat;
             return Scaffold(
@@ -63,6 +68,7 @@ class RoutineScreen extends StatelessWidget {
                   : _Body(
                       tasks: tasks,
                       cat: cat,
+                      hasConfiguredRoutines: provider.routines.isNotEmpty,
                     ),
               floatingActionButton: loading
                   ? null
@@ -120,18 +126,23 @@ class _Body extends StatelessWidget {
   const _Body({
     required this.tasks,
     required this.cat,
+    required this.hasConfiguredRoutines,
   });
 
   final List<RoutineTask> tasks;
   final CatProfile? cat;
+  final bool hasConfiguredRoutines;
 
   @override
   Widget build(BuildContext context) {
     if (tasks.isEmpty) {
-      return const EmptyState(
-        title: 'No routines yet',
-        subtitle:
-            'Tap “New task” to add your first routine, or regenerate defaults for a head start.',
+      return EmptyState(
+        title: hasConfiguredRoutines
+            ? 'No routines scheduled today'
+            : 'No routines yet',
+        subtitle: hasConfiguredRoutines
+            ? 'Your next repeating routine will appear on its scheduled day.'
+            : 'Tap “New task” to add your first routine, or regenerate defaults for a head start.',
         icon: Icons.event_note_outlined,
       );
     }

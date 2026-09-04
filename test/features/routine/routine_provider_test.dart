@@ -80,6 +80,8 @@ RoutineTask _task(
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   setUpAll(() {
     registerFallbackValue(_task('fallback'));
   });
@@ -88,8 +90,10 @@ void main() {
   late _MockCatProvider cats;
   late StreamController<List<RoutineTask>> controller;
   late RoutineProvider provider;
+  bool providerDisposed = false;
 
   setUp(() {
+    providerDisposed = false;
     repo = _MockRoutineRepository();
     cats = _MockCatProvider();
     controller = StreamController<List<RoutineTask>>.broadcast();
@@ -114,6 +118,7 @@ void main() {
   });
 
   tearDown(() async {
+    if (!providerDisposed) provider.dispose();
     await controller.close();
   });
 
@@ -182,14 +187,29 @@ void main() {
       expect(provider.completionPercent, 100);
     });
 
+    test('totalRoutineCount includes only routines due today', () async {
+      final DateTime now = DateTime.now();
+      controller.add(<RoutineTask>[
+        _task('daily'),
+        RoutineTask(
+          id: 'weekly-other-day',
+          catId: 'mochi',
+          title: 'Weekly task',
+          category: 'grooming',
+          repeat: 'weekly',
+          createdAt: now.add(const Duration(days: 1)),
+        ),
+      ]);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(provider.totalRoutineCount, 1);
+    });
+
     test(
-      'todaysRoutines lists every routine; daily UI marks done vs pending',
+      'todaysRoutines keeps due daily routines; completion is timestamp based',
       () {
-        // The provider's `todaysRoutines` is intentionally permissive —
-        // it returns every routine the user has set up (the UI marks
-        // completed items via [RoutineTask.lastCompletedAt]). The
-        // `completedTodayCount` getter is what drives the completion
-        // ring on Home.
+        // Daily routines remain due after completion; the UI derives their
+        // checked state from [RoutineTask.lastCompletedAt].
         final DateTime now = DateTime.now();
         final DateTime todayMidnight = DateTime(now.year, now.month, now.day);
 
@@ -388,6 +408,7 @@ void main() {
       provider = RoutineProvider(repository: repo, catProvider: cats);
       verify(() => cats.addListener(any())).called(1);
       provider.dispose();
+      providerDisposed = true;
       verify(() => cats.removeListener(any())).called(1);
     });
   });

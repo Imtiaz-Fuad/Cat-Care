@@ -213,6 +213,7 @@ class _HomeBody extends StatelessWidget {
                     completed: completed,
                     total: total,
                     percent: percent,
+                    hasConfiguredRoutines: routineProvider.routines.isNotEmpty,
                   ),
                 ),
                 Padding(
@@ -575,11 +576,13 @@ class _CompletionCard extends StatelessWidget {
     required this.completed,
     required this.total,
     required this.percent,
+    required this.hasConfiguredRoutines,
   });
 
   final int completed;
   final int total;
   final int percent;
+  final bool hasConfiguredRoutines;
 
   @override
   Widget build(BuildContext context) {
@@ -607,7 +610,11 @@ class _CompletionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    total <= 0 ? 'No routines yet' : 'Routine progress',
+                    total <= 0
+                        ? hasConfiguredRoutines
+                              ? 'No routines today'
+                              : 'No routines yet'
+                        : 'Routine progress',
                     style: text.titleMedium?.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
@@ -615,7 +622,9 @@ class _CompletionCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     total <= 0
-                        ? 'Add a routine to start tracking your day.'
+                        ? hasConfiguredRoutines
+                              ? 'Your next routine will appear on its scheduled day.'
+                              : 'Add a routine to start tracking your day.'
                         : '$completed of $total done today',
                     style: text.bodyMedium?.copyWith(
                       color: scheme.onSurfaceVariant,

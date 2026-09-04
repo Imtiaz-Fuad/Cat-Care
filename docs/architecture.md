@@ -220,16 +220,18 @@ and the new notification scheduler all depend on.
 and exposes the computed daily metrics Home/Profile consume.
 
 - `routines` — all routine tasks for the active cat (unmodifiable).
-- `todaysRoutines` — tasks whose `timeOfDay` is within today's
-  window. The provider does **not** filter out tasks completed
-  earlier today; the UI marks them via `lastCompletedAt`.
+- `todaysRoutines` — tasks due on the current local date according to
+  their `daily`, `weekdays`, `weekly`, or `monthly` repeat rule. The
+  provider does **not** filter out tasks completed earlier today; the UI
+  derives their state from `lastCompletedAt`.
 - `completedTodayCount` — count of tasks whose `lastCompletedAt` is
   on or after midnight (local time). This is the single number Home
   and Profile show.
 - `completionPercent` — `100 * completed / total`, clamped to `0..100`.
   Returns `0` when there are no tasks (avoids a NaN dashboard).
-- `setCompletion(task, done: true)` — toggles `lastCompletedAt`
-  through `RoutineRepository.updateTask`. The provider never touches
+- `setCompletion(task, done: true)` — sets `lastCompletedAt` through
+  `RoutineRepository.updateTask`; marking it undone clears that timestamp.
+  The provider never touches
   the task's `notes` field; clearing notes uses the sentinel argument
   on `RoutineRepository.updateTask` directly (see below).
 - `seedIfEmpty` / `reseedDefaults` — populate the routine list from
@@ -269,8 +271,9 @@ service is app-scoped and survives route changes.
 - `syncNow()`:
   1. Watches every existing schedule for the active owner via
      `NotificationScheduleRepository.watchSchedules`.
-  2. Builds the desired set of `NotificationSchedule` plans from
-     the current routine list (one plan per routine task).
+  2. Builds the desired set of recurring `NotificationSchedule` plans from
+     the current routine list (one per routine, or five weekday plans for a
+     `weekdays` routine).
   3. Cancels and deletes any schedule whose `sourceType:sourceId`
      is not in the desired set (covers routine edits + cat
      switches).

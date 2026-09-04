@@ -33,6 +33,38 @@ class RoutineTask {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  /// Whether this routine is due on [day]. Repeat rules are anchored to the
+  /// date the routine was created (or its original time-of-day date for
+  /// legacy records).
+  bool occursOn(DateTime day) {
+    switch (repeat) {
+      case 'weekdays':
+        return day.weekday >= DateTime.monday && day.weekday <= DateTime.friday;
+      case 'weekly':
+        final DateTime? anchor = createdAt ?? timeOfDay;
+        return anchor == null || day.weekday == anchor.weekday;
+      case 'monthly':
+        final DateTime? anchor = createdAt ?? timeOfDay;
+        return anchor == null || day.day == anchor.day;
+      case 'daily':
+      case 'custom':
+      default:
+        // Existing custom routines have no persisted day selection, so retain
+        // their historical daily behavior rather than silently hiding them.
+        return true;
+    }
+  }
+
+  /// Completion is a daily event, derived from its timestamp rather than the
+  /// persisted compatibility flag.
+  bool isCompletedOn(DateTime day) {
+    final DateTime? completedAt = lastCompletedAt;
+    if (completedAt == null) return false;
+    final DateTime start = DateTime(day.year, day.month, day.day);
+    final DateTime end = start.add(const Duration(days: 1));
+    return !completedAt.isBefore(start) && completedAt.isBefore(end);
+  }
+
   RoutineTask copyWith({
     String? id,
     String? catId,
@@ -43,7 +75,7 @@ class RoutineTask {
     bool? reminder,
     String? notes,
     bool? completed,
-    DateTime? lastCompletedAt,
+    Object? lastCompletedAt = _sentinel,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -57,7 +89,9 @@ class RoutineTask {
       reminder: reminder ?? this.reminder,
       notes: notes ?? this.notes,
       completed: completed ?? this.completed,
-      lastCompletedAt: lastCompletedAt ?? this.lastCompletedAt,
+      lastCompletedAt: identical(lastCompletedAt, _sentinel)
+          ? this.lastCompletedAt
+          : lastCompletedAt as DateTime?,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -95,6 +129,8 @@ class RoutineTask {
     );
   }
 }
+
+const Object _sentinel = Object();
 
 DateTime? _parseDate(Object? value) {
   if (value == null) return null;

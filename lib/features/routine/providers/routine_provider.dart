@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../../core/errors/app_failure.dart';
 import '../../../core/models/cat_life_stage.dart';
@@ -23,7 +23,7 @@ import '../services/routine_generator_service.dart';
 ///     list;
 ///   * drives every mutation through [RoutineRepository] and surfaces
 ///     failures via [lastError].
-class RoutineProvider extends ChangeNotifier {
+class RoutineProvider extends ChangeNotifier with WidgetsBindingObserver {
   RoutineProvider({
     required RoutineRepository repository,
     required CatProvider catProvider,
@@ -33,6 +33,8 @@ class RoutineProvider extends ChangeNotifier {
        // ignore: prefer_initializing_formals
        catProvider = catProvider,
        _generator = generator ?? const RoutineGeneratorService() {
+    WidgetsBinding.instance.addObserver(this);
+    _scheduleDayRollover();
     catProvider.addListener(_handleCatChange);
     _catListeners.add(_handleCatChange);
     // Kick the first bind off the current active cat.
@@ -52,6 +54,7 @@ class RoutineProvider extends ChangeNotifier {
   bool _busy = false;
   bool _disposed = false;
   AppFailure? _lastError;
+  Timer? _dayRolloverTimer;
 
   // ---------------------------------------------------------------------------
   // Public surface
@@ -64,42 +67,28 @@ class RoutineProvider extends ChangeNotifier {
   /// is derived from [RoutineTask.lastCompletedAt] being on or after
   /// today's local midnight.
   List<RoutineTask> get todaysRoutines {
-    final DateTime midnight = _todayMidnight();
-    final DateTime tomorrow = midnight.add(const Duration(days: 1));
-    return _routines
-        .where(
-          (r) =>
-              r.timeOfDay == null ||
-              (r.timeOfDay!.isAfter(
-                    midnight.subtract(const Duration(seconds: 1)),
-                  ) &&
-                  r.timeOfDay!.isBefore(tomorrow)) ||
-              r.lastCompletedAt == null ||
-              r.lastCompletedAt!.isBefore(midnight),
-        )
-        .toList(growable: false);
+    final DateTime now = DateTime.now();
+    return _routines.where((r) => r.occursOn(now)).toList(growable: false);
   }
+
+  /// Whether [task] has been completed within the current local day.
+  bool isCompletedToday(RoutineTask task) => task.isCompletedOn(DateTime.now());
 
   /// Number of routines completed today.
   int get completedTodayCount {
-    final DateTime midnight = _todayMidnight();
+    final DateTime now = DateTime.now();
     return _routines
-        .where(
-          (r) =>
-              r.lastCompletedAt != null &&
-              !r.lastCompletedAt!.isBefore(midnight),
-        )
+        .where((r) => r.occursOn(now) && r.isCompletedOn(now))
         .length;
   }
 
-  /// Total number of routines the user has set up. Drives the Home
-  /// completion ring denominator; "0" prompts users to add their
-  /// first routine.
-  int get totalRoutineCount => _routines.length;
+  /// Total number of routines due today. Drives the Home completion ring
+  /// denominator while respecting each routine's repeat setting.
+  int get totalRoutineCount => todaysRoutines.length;
 
   /// Completion percentage for today (0–100, integer).
   int get completionPercent {
-    final int total = _routines.length;
+    final int total = totalRoutineCount;
     if (total == 0) return 0;
     final int done = completedTodayCount;
     return ((done / total) * 100).round().clamp(0, 100);
@@ -337,14 +326,29 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  static DateTime _todayMidnight() {
+  void _scheduleDayRollover() {
+    _dayRolloverTimer?.cancel();
     final DateTime now = DateTime.now();
-    return DateTime(now.year, now.month, now.day);
+    final DateTime nextDay = DateTime(now.year, now.month, now.day + 1);
+    _dayRolloverTimer = Timer(nextDay.difference(now), () {
+      if (_disposed) return;
+      notifyListeners();
+      _scheduleDayRollover();
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed || _disposed) return;
+    notifyListeners();
+    _scheduleDayRollover();
   }
 
   @override
   void dispose() {
     _disposed = true;
+    _dayRolloverTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _sub?.cancel();
     for (final VoidCallback listener in _catListeners) {
       catProvider.removeListener(listener);

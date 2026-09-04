@@ -847,8 +847,8 @@ Each recorded event (routine completion, feeding, water) opens a
 Notifications are a *byproduct* of routines, not a feature users
 configure. Concretely:
 
-- One local notification per routine task, scheduled for the
-  task's `timeOfDay` on the next future occurrence.
+- Recurring local notifications follow each routine's repeat rule and
+  `timeOfDay`; weekday routines use one schedule for each weekday.
 - Routine edits re-sync the schedule automatically. There is no
   notification settings screen.
 - When the user switches cats, the previous cat's notification
