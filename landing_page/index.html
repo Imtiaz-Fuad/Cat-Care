@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="CatCare BD — a warm, simple companion for cat owners." />
+    <title>CatCare BD — Care for every purr</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top"><span class="brand-mark">🐾</span><span>CatCare BD</span></a>
+      <a class="header-link" href="#subscribe">Get started</a>
+    </header>
+
+    <main id="top">
+      <section class="hero section-wrap">
+        <div class="hero-copy">
+          <p class="eyebrow">A calmer way to care</p>
+          <h1>Everything your cat needs, in one warm little place.</h1>
+          <p class="hero-text">Track routines, meals, water, health records, medicines, vaccinations, weight, and more — all focused on the cat you love.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#subscribe">Start your subscription</a>
+            <a class="text-link" href="#features">Explore the app <span>↓</span></a>
+          </div>
+          <p class="availability"><span>●</span> Available for Android now</p>
+        </div>
+        <div class="hero-art" aria-label="CatCare BD app preview placeholder">
+          <div class="phone-placeholder"><span>App preview</span><strong>🐱</strong><small>Your cat's care, together</small></div>
+        </div>
+      </section>
+
+      <section id="features" class="section-wrap feature-section">
+        <div class="section-heading"><p class="eyebrow">Made for everyday care</p><h2>Small details. Better days.</h2></div>
+        <div class="feature-grid">
+          <article class="feature-card"><span class="feature-icon">✓</span><h3>Daily routines</h3><p>Keep feeding, water, grooming, and care tasks easy to remember.</p></article>
+          <article class="feature-card"><span class="feature-icon">♡</span><h3>Health records</h3><p>Keep medicines, vaccines, vet notes, and weight history together.</p></article>
+          <article class="feature-card"><span class="feature-icon">✦</span><h3>Ask AI</h3><p>Get thoughtful, personalized guidance based on your cat's recorded care.</p></article>
+          <article class="feature-card"><span class="feature-icon">⌂</span><h3>One cat at a time</h3><p>Switch between your cats and keep each profile focused and personal.</p></article>
+        </div>
+      </section>
+
+      <section class="gallery section-wrap">
+        <div class="section-heading"><p class="eyebrow">See CatCare BD</p><h2>A peek inside the app</h2></div>
+        <div class="gallery-grid">
+          <div class="image-slot"><span>App image 1</span></div><div class="image-slot"><span>App image 2</span></div>
+          <div class="image-slot"><span>App image 3</span></div><div class="image-slot"><span>App image 4</span></div>
+          <div class="image-slot"><span>App image 5</span></div>
+        </div>
+      </section>
+
+      <section id="subscribe" class="subscription-section section-wrap">
+        <div class="subscription-card">
+          <div class="section-heading"><p class="eyebrow">Keep your cat's care close</p><h2>Subscribe to CatCare BD</h2><p>2.78 Tk/day · auto-renew</p></div>
+          <p class="fine-print">Enter your Bangladesh mobile number. An OTP will be sent to confirm and activate your subscription.</p>
+          <form id="subscription-form" class="subscription-form">
+            <label for="mobile">Mobile number</label>
+            <div class="input-row"><input id="mobile" name="mobile" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="tel" required /><button class="button button-primary" type="submit">Send OTP</button></div>
+          </form>
+          <form id="otp-form" class="subscription-form hidden">
+            <label for="otp">OTP</label>
+            <div class="input-row"><input id="otp" name="otp" type="text" inputmode="numeric" maxlength="8" placeholder="Enter the OTP" required /><button class="button button-primary" type="submit">Verify & subscribe</button></div>
+            <button id="change-number" class="button-link" type="button">Use a different number</button>
+          </form>
+          <button id="check-subscription" class="button button-secondary" type="button">Already subscribed? Check status</button>
+          <p id="subscription-status" class="form-status" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="unsubscribe-section section-wrap">
+        <details><summary>Already subscribed and want to unsubscribe?</summary><form id="unsubscribe-form" class="unsubscribe-form"><label for="unsubscribe-mobile">Mobile number</label><div class="input-row"><input id="unsubscribe-mobile" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" required /><button class="button button-secondary" type="submit">Unsubscribe</button></div></form><p id="unsubscribe-status" class="form-status" role="status" aria-live="polite"></p></details>
+      </section>
+    </main>
+    <footer><div class="section-wrap"><span>© CatCare BD</span><span>Android app · Made with care for cat parents</span></div></footer>
+    <script src="script.js"></script>
+  </body>
+</html>
