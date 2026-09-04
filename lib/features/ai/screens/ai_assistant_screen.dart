@@ -163,6 +163,7 @@ class _ChatBody extends StatelessWidget {
     return Column(
       children: <Widget>[
         _AiHeroHeader(cat: cat, locale: locale),
+        const _AiLoggingTip(),
         Expanded(
           child: ListView.builder(
             controller: scroll,
@@ -645,6 +646,46 @@ class _AiHeroHeader extends StatelessWidget {
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AiLoggingTip extends StatelessWidget {
+  const _AiLoggingTip();
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme text = Theme.of(context).textTheme;
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF0E7),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFD98E70).withValues(alpha: 0.48),
+        ),
+      ),
+      child: Row(
+        children: <Widget>[
+          const Icon(
+            Icons.auto_awesome_outlined,
+            size: 18,
+            color: Color(0xFF9A452A),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Log datas regularly to get the best response from AI',
+              style: text.bodyMedium?.copyWith(
+                color: const Color(0xFF5A2A1B),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

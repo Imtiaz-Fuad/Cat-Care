@@ -7,6 +7,10 @@ const status = $('#subscription-status');
 let normalizedMobile = '';
 let referenceNo = '';
 
+document.querySelectorAll('.image-slot img').forEach((image) => {
+  image.addEventListener('error', () => image.closest('.image-slot').classList.add('missing'));
+});
+
 function normalizeMobile(value) {
   let mobile = value.trim().replace(/[\s\-()]/g, '').replace(/^tel:/i, '').replace(/^\+/, '');
   if (/^01\d{9}$/.test(mobile)) mobile = `88${mobile}`;
