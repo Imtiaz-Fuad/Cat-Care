@@ -86,6 +86,7 @@ flutter:
     - .env
     - .env.example
     - assets/images/
+    - assets/faq/
     - assets/prompts/
     - lib/content/seed/
   fonts:

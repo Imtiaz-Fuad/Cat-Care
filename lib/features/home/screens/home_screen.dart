@@ -41,6 +41,12 @@ class HomeScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Today'),
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: _FaqShortcut(onTap: () => context.push(AppRoutes.faq)),
+              ),
+            ],
           ),
           body: loading
               ? const Center(child: CircularProgressIndicator())
@@ -49,6 +55,72 @@ class HomeScreen extends StatelessWidget {
               : _HomeBody(cat: cat),
         );
       },
+    );
+  }
+}
+
+class _FaqShortcut extends StatelessWidget {
+  const _FaqShortcut({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'Open frequently asked questions',
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: const Color(0xFFD8663F).withValues(alpha: 0.48),
+              blurRadius: 15,
+              spreadRadius: 1.5,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: const Color(0xFFF0A080).withValues(alpha: 0.42),
+              blurRadius: 8,
+              spreadRadius: 0.5,
+            ),
+          ],
+        ),
+        child: Material(
+          color: const Color(0xFF984025),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: const BorderSide(color: Color(0xFFE69A78), width: 1.1),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(
+                    Icons.help_outline_rounded,
+                    size: 20,
+                    color: Color(0xFFFFF4EF),
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    'General Guideline',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10.5,
+                      height: 1.15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -420,9 +492,9 @@ class _HomeShortcutCard extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
             ],

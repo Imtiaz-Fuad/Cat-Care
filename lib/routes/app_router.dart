@@ -21,6 +21,7 @@ import '../features/health/screens/medication_list_screen.dart';
 import '../features/health/screens/vaccination_list_screen.dart';
 import '../features/health/screens/weight_trend_screen.dart';
 import '../features/home/screens/home_screen.dart';
+import '../features/home/screens/faq_screen.dart';
 import '../features/nutrition/screens/nutrition_screen.dart';
 import '../features/routine/screens/routine_screen.dart';
 import 'app_routes.dart';
@@ -238,6 +239,12 @@ final List<_TopLevelRoute> _topLevelRoutes = <_TopLevelRoute>[
     'Weekly Report',
     'Coming in Phase 7.',
     (BuildContext _, GoRouterState _) => const WeeklyReportScreen(),
+  ),
+  _TopLevelRoute(
+    AppRoutes.faq,
+    'FAQ',
+    'Helpful answers for new cat parents.',
+    (BuildContext _, GoRouterState _) => const FaqScreen(),
   ),
   _TopLevelRoute(
     AppRoutes.foodLabel,

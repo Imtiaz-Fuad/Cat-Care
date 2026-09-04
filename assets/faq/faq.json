@@ -1,0 +1,497 @@
+[
+  {
+    "id": "faq_001",
+    "category": "food",
+    "question_en": "Can I give my cat cow's milk?",
+    "question_bn": "আমার বিড়ালকে কি গরুর দুধ দিতে পারি?",
+    "answer_en": "It is better not to give cow's milk regularly. Many cats cannot digest lactose well, which may cause diarrhea, gas, or stomach upset. Fresh drinking water is the best everyday choice.",
+    "answer_bn": "নিয়মিত গরুর দুধ না দেওয়াই ভালো। অনেক বিড়াল ল্যাকটোজ ভালোভাবে হজম করতে পারে না, ফলে ডায়রিয়া, গ্যাস বা পেটের সমস্যা হতে পারে। প্রতিদিনের জন্য পরিষ্কার পানি সবচেয়ে ভালো।",
+    "emergency": false
+  },
+  {
+    "id": "faq_002",
+    "category": "food",
+    "question_en": "Can cats eat fish every day?",
+    "question_bn": "বিড়াল কি প্রতিদিন মাছ খেতে পারে?",
+    "answer_en": "Fish can be part of a cat's diet, but feeding only fish every day is not a balanced diet. Cats need complete and balanced nutrition. Use properly formulated cat food as the main diet and offer fish only when appropriate.",
+    "answer_bn": "মাছ বিড়ালের খাবারের অংশ হতে পারে, কিন্তু প্রতিদিন শুধু মাছ খাওয়ানো সুষম খাবার নয়। বিড়ালের সম্পূর্ণ ও সুষম পুষ্টি দরকার। মূল খাবার হিসেবে উপযুক্ত ক্যাট ফুড দিন এবং প্রয়োজনে পরিমাণমতো মাছ দিতে পারেন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_003",
+    "category": "food",
+    "question_en": "Can I give my cat raw fish?",
+    "question_bn": "বিড়ালকে কি কাঁচা মাছ খাওয়ানো যায়?",
+    "answer_en": "It is safer to avoid routinely feeding raw fish. Raw foods can carry harmful microorganisms and may create nutritional or other health risks. Cooked, plain fish is a safer option when given appropriately.",
+    "answer_bn": "নিয়মিত কাঁচা মাছ না দেওয়াই নিরাপদ। কাঁচা খাবারে ক্ষতিকর জীবাণু থাকতে পারে এবং অন্যান্য স্বাস্থ্যঝুঁকিও তৈরি হতে পারে। প্রয়োজনে ভালোভাবে রান্না করা, মসলা ছাড়া মাছ তুলনামূলক নিরাপদ।",
+    "emergency": false
+  },
+  {
+    "id": "faq_004",
+    "category": "food",
+    "question_en": "Can cats eat rice?",
+    "question_bn": "বিড়াল কি ভাত খেতে পারে?",
+    "answer_en": "A small amount of plain cooked rice is generally not toxic, but rice should not replace a nutritionally complete cat diet. Cats need nutrients that a rice-heavy diet cannot provide.",
+    "answer_bn": "অল্প পরিমাণে সাদা রান্না করা ভাত সাধারণত বিষাক্ত নয়, তবে ভাত কখনোই সম্পূর্ণ ক্যাট ডায়েটের বিকল্প হওয়া উচিত নয়। বিড়ালের এমন কিছু প্রয়োজনীয় পুষ্টি রয়েছে যা বেশি ভাত খাওয়ালে পূরণ হয় না।",
+    "emergency": false
+  },
+  {
+    "id": "faq_005",
+    "category": "food",
+    "question_en": "Can cats eat chicken?",
+    "question_bn": "বিড়াল কি মুরগির মাংস খেতে পারে?",
+    "answer_en": "Plain, thoroughly cooked, boneless chicken can be given as part of an appropriate diet. Avoid bones, onion, garlic, chili, salt, and spices.",
+    "answer_bn": "ভালোভাবে রান্না করা, হাড় ছাড়া ও মসলা ছাড়া মুরগির মাংস উপযুক্ত পরিমাণে দেওয়া যেতে পারে। হাড়, পেঁয়াজ, রসুন, মরিচ, লবণ ও মসলা এড়িয়ে চলুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_006",
+    "category": "food",
+    "question_en": "Is spicy food safe for cats?",
+    "question_bn": "ঝাল খাবার কি বিড়ালের জন্য নিরাপদ?",
+    "answer_en": "No. Do not feed cats spicy, heavily seasoned, salty, or oily human food. These foods can upset their stomach and may contain ingredients that are dangerous to cats.",
+    "answer_bn": "না। বিড়ালকে ঝাল, অতিরিক্ত মসলা, লবণ বা তেলযুক্ত মানুষের খাবার দেওয়া উচিত নয়। এসব খাবারে পেটের সমস্যা হতে পারে এবং কিছু উপাদান বিড়ালের জন্য ক্ষতিকর হতে পারে।",
+    "emergency": false
+  },
+  {
+    "id": "faq_007",
+    "category": "food",
+    "question_en": "Can my cat eat onion or garlic?",
+    "question_bn": "বিড়াল কি পেঁয়াজ বা রসুন খেতে পারে?",
+    "answer_en": "No. Onion and garlic can be harmful to cats, including when cooked or included in prepared foods. Keep them away from your cat.",
+    "answer_bn": "না। পেঁয়াজ ও রসুন বিড়ালের জন্য ক্ষতিকর হতে পারে—রান্না করা বা অন্য খাবারের উপাদান হিসেবেও। এগুলো বিড়ালের নাগালের বাইরে রাখুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_008",
+    "category": "food",
+    "question_en": "Why does my cat not drink much water?",
+    "question_bn": "আমার বিড়াল খুব কম পানি খায় কেন?",
+    "answer_en": "Cats naturally may not drink large amounts, especially when they eat wet food. Keep fresh water available at all times. A sudden change in drinking habits, especially increased drinking, should be discussed with a vet.",
+    "answer_bn": "বিড়াল স্বাভাবিকভাবেই অনেক সময় খুব বেশি পানি পান করে না, বিশেষ করে ভেজা খাবার খেলে। সবসময় পরিষ্কার পানি রাখুন। পান করার পরিমাণ হঠাৎ বদলে গেলে, বিশেষ করে বেশি পানি খেলে, ভেটেরিনারিয়ানের সঙ্গে কথা বলুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_009",
+    "category": "food",
+    "question_en": "Can I give my cat tap water in Bangladesh?",
+    "question_bn": "বাংলাদেশে বিড়ালকে কি কলের পানি দেওয়া যাবে?",
+    "answer_en": "Only use water that is safe for human consumption in your area. If you are unsure about the quality of your tap water, use a reliable source of safe drinking water instead.",
+    "answer_bn": "আপনার এলাকার কলের পানি যদি মানুষের পান করার জন্য নিরাপদ হয়, তাহলে দিতে পারেন। পানির মান নিয়ে সন্দেহ থাকলে নিরাপদ ও নির্ভরযোগ্য পানির উৎস ব্যবহার করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_010",
+    "category": "behavior",
+    "question_en": "Why is my cat hiding?",
+    "question_bn": "আমার বিড়াল লুকিয়ে থাকে কেন?",
+    "answer_en": "Hiding can be normal when a cat is scared, stressed, or adjusting to a new environment. However, sudden or unusually frequent hiding can also be a sign that something is wrong. Watch for changes in eating, drinking, toilet habits, and activity.",
+    "answer_bn": "ভয়, মানসিক চাপ বা নতুন পরিবেশে মানিয়ে নেওয়ার সময় বিড়াল লুকাতে পারে, যা স্বাভাবিক হতে পারে। তবে হঠাৎ বেশি লুকানো কোনো সমস্যার লক্ষণও হতে পারে। খাওয়া, পানি পান, টয়লেট ও চলাফেরায় পরিবর্তন হচ্ছে কি না দেখুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_011",
+    "category": "behavior",
+    "question_en": "Why is my cat meowing so much?",
+    "question_bn": "আমার বিড়াল এত বেশি ডাকছে কেন?",
+    "answer_en": "Cats may meow because they want food, attention, interaction, or access to something. Excessive or suddenly increased vocalization can also be associated with stress or illness. Look for other changes before assuming the cause.",
+    "answer_bn": "খাবার, মনোযোগ, খেলাধুলা বা কোনো কিছু পাওয়ার জন্য বিড়াল ডাকতে পারে। তবে হঠাৎ অতিরিক্ত ডাকাডাকি মানসিক চাপ বা অসুস্থতার সঙ্গেও সম্পর্কিত হতে পারে। কারণ ধরে নেওয়ার আগে অন্য কোনো পরিবর্তন আছে কি না লক্ষ্য করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_012",
+    "category": "behavior",
+    "question_en": "Why does my cat bite me while playing?",
+    "question_bn": "খেলতে গিয়ে আমার বিড়াল আমাকে কামড়ায় কেন?",
+    "answer_en": "Cats naturally practice hunting behaviors during play. Avoid using your hands as toys. Use appropriate toys such as wand or chase toys and stop play if it becomes too rough.",
+    "answer_bn": "খেলার সময় বিড়াল স্বাভাবিক শিকারি আচরণ অনুশীলন করতে পারে। হাতকে খেলনা হিসেবে ব্যবহার করবেন না। ওয়ান্ড বা ধাওয়া করার মতো উপযুক্ত খেলনা ব্যবহার করুন এবং খেলা বেশি আক্রমণাত্মক হলে থামিয়ে দিন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_013",
+    "category": "behavior",
+    "question_en": "Why does my cat scratch furniture?",
+    "question_bn": "আমার বিড়াল আসবাবপত্র আঁচড়ায় কেন?",
+    "answer_en": "Scratching is normal cat behavior. Provide scratching posts or boards in places your cat frequently visits, especially near sleeping areas.",
+    "answer_bn": "আঁচড়ানো বিড়ালের স্বাভাবিক আচরণ। যেখানে বিড়াল বেশি যায়, বিশেষ করে ঘুমানোর জায়গার কাছে, সেখানে স্ক্র্যাচিং পোস্ট বা বোর্ড রাখুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_014",
+    "category": "behavior",
+    "question_en": "Should I punish my cat for bad behavior?",
+    "question_bn": "খারাপ আচরণের জন্য কি বিড়ালকে শাস্তি দেওয়া উচিত?",
+    "answer_en": "No. Hitting, shouting, or frightening your cat can increase stress and may make behavior worse. Redirect unwanted behavior and reward appropriate behavior instead.",
+    "answer_bn": "না। মারধর, চিৎকার বা ভয় দেখালে বিড়ালের মানসিক চাপ বাড়তে পারে এবং আচরণ আরও খারাপ হতে পারে। অনাকাঙ্ক্ষিত আচরণ অন্যদিকে পরিচালিত করুন এবং ভালো আচরণকে উৎসাহ দিন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_015",
+    "category": "litter",
+    "question_en": "How many litter boxes should I have?",
+    "question_bn": "আমার কয়টি লিটার বক্স রাখা উচিত?",
+    "answer_en": "A useful starting guideline is one litter box per cat, plus one extra. Place them in quiet, easily accessible locations and keep them clean.",
+    "answer_bn": "একটি ভালো শুরুর নিয়ম হলো প্রতি বিড়ালের জন্য একটি লিটার বক্স এবং অতিরিক্ত একটি। এগুলো শান্ত ও সহজে পৌঁছানো যায় এমন জায়গায় রাখুন এবং পরিষ্কার রাখুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_016",
+    "category": "litter",
+    "question_en": "Why is my cat not using the litter box?",
+    "question_bn": "আমার বিড়াল লিটার বক্স ব্যবহার করছে না কেন?",
+    "answer_en": "The box may be dirty, poorly located, difficult to access, or unsuitable for your cat. Stress and medical problems can also cause litter-box changes. If the problem starts suddenly, a vet check is important.",
+    "answer_bn": "লিটার বক্স নোংরা, ভুল জায়গায়, পৌঁছাতে অসুবিধা হচ্ছে বা বিড়ালের পছন্দ হচ্ছে না—এমন কারণে হতে পারে। মানসিক চাপ বা শারীরিক সমস্যাও কারণ হতে পারে। সমস্যা হঠাৎ শুরু হলে ভেটেরিনারিয়ানের পরামর্শ নেওয়া গুরুত্বপূর্ণ।",
+    "emergency": false
+  },
+  {
+    "id": "faq_017",
+    "category": "health",
+    "question_en": "My cat is trying to pee but little or no urine is coming out. What should I do?",
+    "question_bn": "আমার বিড়াল প্রস্রাব করার চেষ্টা করছে কিন্তু খুব কম বা একদম প্রস্রাব হচ্ছে না। কী করব?",
+    "answer_en": "Treat this as an emergency. Difficulty urinating or producing little or no urine can indicate a potentially life-threatening urinary problem, especially in male cats. Contact a veterinarian immediately.",
+    "answer_bn": "এটিকে জরুরি অবস্থা হিসেবে নিন। প্রস্রাব করতে কষ্ট হওয়া বা খুব কম/একদম প্রস্রাব না হওয়া জীবন-ঝুঁকিপূর্ণ মূত্রনালীর সমস্যার লক্ষণ হতে পারে, বিশেষ করে পুরুষ বিড়ালের ক্ষেত্রে। অবিলম্বে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": true
+  },
+  {
+    "id": "faq_018",
+    "category": "litter",
+    "question_en": "How often should I clean the litter box?",
+    "question_bn": "কতবার লিটার বক্স পরিষ্কার করা উচিত?",
+    "answer_en": "Remove urine clumps and feces regularly, ideally at least daily. Keep the box clean and replace litter as needed according to the type you use.",
+    "answer_bn": "নিয়মিত প্রস্রাবের দলা ও মল সরিয়ে ফেলুন, সম্ভব হলে প্রতিদিন অন্তত একবার। লিটার পরিষ্কার রাখুন এবং ব্যবহৃত লিটারের ধরন অনুযায়ী প্রয়োজনমতো পরিবর্তন করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_019",
+    "category": "health",
+    "question_en": "Does my indoor cat need vaccines?",
+    "question_bn": "ঘরের মধ্যে থাকা বিড়ালেরও কি ভ্যাকসিন দরকার?",
+    "answer_en": "Indoor cats can still be exposed to infectious diseases. Vaccination needs depend on age, health, lifestyle, and local disease risks, so a vet should create the appropriate vaccination plan.",
+    "answer_bn": "ঘরের মধ্যে থাকা বিড়ালও সংক্রামক রোগের সংস্পর্শে আসতে পারে। বয়স, স্বাস্থ্য, জীবনযাপন ও স্থানীয় রোগের ঝুঁকির ওপর ভ্যাকসিনের প্রয়োজন নির্ভর করে। তাই ভেটেরিনারিয়ানের সঙ্গে উপযুক্ত টিকা পরিকল্পনা করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_020",
+    "category": "health",
+    "question_en": "Does my cat need deworming?",
+    "question_bn": "আমার বিড়ালকে কি কৃমিনাশক দিতে হবে?",
+    "answer_en": "Cats can develop intestinal parasites, but the right prevention plan depends on age, lifestyle, exposure, and local risk. Do not choose a medicine or dose on your own; ask a vet.",
+    "answer_bn": "বিড়ালের অন্ত্রে পরজীবী হতে পারে, তবে প্রতিরোধের সঠিক পরিকল্পনা বয়স, জীবনযাপন, সংস্পর্শ ও স্থানীয় ঝুঁকির ওপর নির্ভর করে। নিজে থেকে ওষুধ বা ডোজ ঠিক করবেন না; ভেটেরিনারিয়ানের পরামর্শ নিন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_021",
+    "category": "health",
+    "question_en": "Can I give human medicine to my cat?",
+    "question_bn": "বিড়ালকে কি মানুষের ওষুধ দেওয়া যায়?",
+    "answer_en": "Never give human medicine unless a veterinarian specifically tells you to. Some common human medicines can be extremely dangerous or even fatal to cats.",
+    "answer_bn": "ভেটেরিনারিয়ান বিশেষভাবে না বললে কখনোই মানুষের ওষুধ বিড়ালকে দেবেন না। মানুষের কিছু সাধারণ ওষুধ বিড়ালের জন্য অত্যন্ত ক্ষতিকর, এমনকি প্রাণঘাতীও হতে পারে।",
+    "emergency": true
+  },
+  {
+    "id": "faq_022",
+    "category": "health",
+    "question_en": "Can I give paracetamol to my cat?",
+    "question_bn": "বিড়ালকে কি প্যারাসিটামল দিতে পারি?",
+    "answer_en": "No. Do not give paracetamol or acetaminophen to your cat unless specifically directed by a veterinarian. It can be extremely toxic to cats.",
+    "answer_bn": "না। ভেটেরিনারিয়ান বিশেষভাবে নির্দেশ না দিলে বিড়ালকে প্যারাসিটামল দেবেন না। এটি বিড়ালের জন্য অত্যন্ত বিষাক্ত হতে পারে।",
+    "emergency": true
+  },
+  {
+    "id": "faq_023",
+    "category": "food",
+    "question_en": "Can cats eat chocolate?",
+    "question_bn": "বিড়াল কি চকলেট খেতে পারে?",
+    "answer_en": "No. Chocolate can be toxic to cats. Keep chocolate and chocolate-containing foods away from them. If your cat has eaten chocolate, contact a veterinarian for advice.",
+    "answer_bn": "না। চকলেট বিড়ালের জন্য বিষাক্ত হতে পারে। চকলেট ও চকলেটযুক্ত খাবার বিড়ালের নাগালের বাইরে রাখুন। বিড়াল চকলেট খেয়ে ফেললে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": true
+  },
+  {
+    "id": "faq_024",
+    "category": "safety",
+    "question_en": "Are lilies dangerous for cats?",
+    "question_bn": "লিলি ফুল কি বিড়ালের জন্য বিপজ্জনক?",
+    "answer_en": "Yes. True lilies and daylilies can cause severe kidney injury in cats. Even small exposures can be dangerous. If your cat may have eaten or been exposed to a lily, contact a veterinarian immediately.",
+    "answer_bn": "হ্যাঁ। লিলি ও ডে-লিলি বিড়ালের মারাত্মক কিডনি ক্ষতি করতে পারে। অল্প পরিমাণ সংস্পর্শও বিপজ্জনক হতে পারে। বিড়াল লিলি খেয়ে ফেলেছে বা সংস্পর্শে এসেছে বলে সন্দেহ হলে অবিলম্বে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": true
+  },
+  {
+    "id": "faq_025",
+    "category": "safety",
+    "question_en": "Can I keep a cat in a small room?",
+    "question_bn": "ছোট ঘরে কি বিড়াল রাখা যায়?",
+    "answer_en": "A cat can stay in a smaller room temporarily if it is safe and has enough resources. For long-term living, provide opportunities to move, play, climb, hide, scratch, rest, and explore.",
+    "answer_bn": "নিরাপদ পরিবেশ ও প্রয়োজনীয় সবকিছু থাকলে সাময়িকভাবে ছোট ঘরে বিড়াল রাখা যায়। দীর্ঘমেয়াদে চলাফেরা, খেলা, ওঠা, লুকানো, আঁচড়ানো, বিশ্রাম ও ঘোরাফেরার সুযোগ থাকা উচিত।",
+    "emergency": false
+  },
+  {
+    "id": "faq_026",
+    "category": "safety",
+    "question_en": "Is it safe to let my cat go outside?",
+    "question_bn": "বিড়ালকে কি বাইরে যেতে দেওয়া নিরাপদ?",
+    "answer_en": "Outdoor access can expose cats to traffic, fights, infectious diseases, parasites, poisoning, and getting lost. If you want outdoor enrichment, consider controlled options such as a secure enclosure or supervised harness use.",
+    "answer_bn": "বাইরে গেলে গাড়ি, মারামারি, সংক্রামক রোগ, পরজীবী, বিষাক্ত পদার্থ এবং হারিয়ে যাওয়ার ঝুঁকি থাকে। বাইরে যাওয়ার সুযোগ দিতে চাইলে নিরাপদ enclosure বা নজরদারিতে harness ব্যবহারের মতো নিয়ন্ত্রিত ব্যবস্থা বিবেচনা করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_027",
+    "category": "safety",
+    "question_en": "Can my cat stay on the balcony?",
+    "question_bn": "আমার বিড়ালকে কি বারান্দায় রাখা যাবে?",
+    "answer_en": "Only if the balcony is properly secured. Cats can fall or escape even when they seem careful. Use reliable cat-proof barriers and never rely on the cat's ability to judge height.",
+    "answer_bn": "বারান্দা ভালোভাবে সুরক্ষিত থাকলেই রাখা উচিত। বিড়াল অসাবধানতায় পড়ে যেতে বা পালিয়ে যেতে পারে। নির্ভরযোগ্য cat-proof ব্যবস্থা ব্যবহার করুন; বিড়াল নিজে উচ্চতা বুঝে নিরাপদ থাকবে—এমনটা ধরে নেবেন না।",
+    "emergency": false
+  },
+  {
+    "id": "faq_028",
+    "category": "safety",
+    "question_en": "How can I keep my cat cool during hot weather?",
+    "question_bn": "গরমের সময় বিড়ালকে কীভাবে ঠান্ডা রাখব?",
+    "answer_en": "Provide clean water, shade, good ventilation, and cool resting areas. Never leave your cat in a hot, poorly ventilated room or vehicle. If your cat shows severe weakness, difficulty breathing, collapse, or other signs of heat illness, seek veterinary help immediately.",
+    "answer_bn": "পরিষ্কার পানি, ছায়া, ভালো বাতাস চলাচল এবং ঠান্ডা বিশ্রামের জায়গা দিন। গরম ও বাতাস চলাচলহীন ঘর বা গাড়িতে বিড়ালকে কখনো রাখবেন না। অতিরিক্ত দুর্বলতা, শ্বাসকষ্ট, অজ্ঞান হয়ে যাওয়া বা heat illness-এর অন্যান্য লক্ষণ দেখা দিলে দ্রুত ভেটেরিনারিয়ানের সাহায্য নিন।",
+    "emergency": true
+  },
+  {
+    "id": "faq_029",
+    "category": "grooming",
+    "question_en": "Should I bathe my cat regularly?",
+    "question_bn": "বিড়ালকে কি নিয়মিত গোসল করাতে হবে?",
+    "answer_en": "Most healthy cats do not need regular baths because they groom themselves. Bathing may be necessary in specific situations, but frequent unnecessary bathing can cause stress and skin problems.",
+    "answer_bn": "বেশিরভাগ সুস্থ বিড়ালকে নিয়মিত গোসল করানোর প্রয়োজন নেই, কারণ তারা নিজেরাই শরীর পরিষ্কার করে। বিশেষ পরিস্থিতিতে গোসল দরকার হতে পারে, তবে অপ্রয়োজনীয়ভাবে ঘন ঘন গোসল করালে মানসিক চাপ ও ত্বকের সমস্যা হতে পারে।",
+    "emergency": false
+  },
+  {
+    "id": "faq_030",
+    "category": "grooming",
+    "question_en": "How often should I cut my cat's nails?",
+    "question_bn": "কতদিন পরপর বিড়ালের নখ কাটব?",
+    "answer_en": "There is no single schedule for every cat. Check the nails regularly and trim them when they become too long. Use a proper pet nail clipper and avoid cutting the quick.",
+    "answer_bn": "সব বিড়ালের জন্য একই সময়সূচি নেই। নিয়মিত নখ দেখুন এবং বেশি বড় হয়ে গেলে কাটুন। উপযুক্ত pet nail clipper ব্যবহার করুন এবং নখের quick অংশে কাটবেন না।",
+    "emergency": false
+  },
+  {
+    "id": "faq_031",
+    "category": "behavior",
+    "question_en": "Does my cat need a scratching post?",
+    "question_bn": "বিড়ালের কি স্ক্র্যাচিং পোস্ট দরকার?",
+    "answer_en": "Yes. Scratching is a normal behavior and provides physical and environmental enrichment. Offer sturdy scratching surfaces in locations your cat naturally uses.",
+    "answer_bn": "হ্যাঁ। আঁচড়ানো বিড়ালের স্বাভাবিক আচরণ এবং এটি শারীরিক ও মানসিকভাবে উপকারী। বিড়াল যেসব জায়গায় স্বাভাবিকভাবে যায় সেখানে শক্ত ও উপযুক্ত scratching surface রাখুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_032",
+    "category": "behavior",
+    "question_en": "How much should my cat sleep?",
+    "question_bn": "বিড়ালের কতক্ষণ ঘুমানো স্বাভাবিক?",
+    "answer_en": "Cats sleep a lot, and kittens and older cats may sleep even more. What matters is your cat's normal pattern. A sudden increase in sleepiness together with reduced eating, activity, or other changes should be checked.",
+    "answer_bn": "বিড়াল অনেক সময় ঘুমায়, আর kitten ও বয়স্ক বিড়াল আরও বেশি ঘুমাতে পারে। আপনার বিড়ালের স্বাভাবিক ঘুমের অভ্যাসটাই গুরুত্বপূর্ণ। হঠাৎ বেশি ঘুমানোর সঙ্গে খাওয়া বা চলাফেরা কমে গেলে বিষয়টি পরীক্ষা করানো উচিত।",
+    "emergency": false
+  },
+  {
+    "id": "faq_033",
+    "category": "health",
+    "question_en": "My cat suddenly stopped eating. Should I worry?",
+    "question_bn": "আমার বিড়াল হঠাৎ খাওয়া বন্ধ করেছে। চিন্তা করা উচিত?",
+    "answer_en": "Yes. A significant change in appetite should not be ignored. Cats can become seriously ill when they stop eating, so if your cat is refusing food or the change persists, contact a veterinarian promptly.",
+    "answer_bn": "হ্যাঁ। খাবারের অভ্যাসে বড় পরিবর্তন অবহেলা করা উচিত নয়। বিড়াল খাওয়া বন্ধ করলে গুরুতর অসুস্থ হয়ে পড়তে পারে। বিড়াল খাবার প্রত্যাখ্যান করলে বা সমস্যা চলতে থাকলে দ্রুত ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_034",
+    "category": "health",
+    "question_en": "My cat vomited once. Is it always serious?",
+    "question_bn": "আমার বিড়াল একবার বমি করেছে। এটা কি সবসময় গুরুতর?",
+    "answer_en": "A single episode does not always mean an emergency, but context matters. Watch your cat's behavior, appetite, hydration, and other symptoms. Repeated vomiting, blood, severe weakness, breathing problems, or other concerning signs require veterinary attention.",
+    "answer_bn": "একবার বমি করলেই সবসময় জরুরি অবস্থা বোঝায় না, তবে অন্যান্য বিষয়ও দেখতে হবে। বিড়ালের আচরণ, খাবার, পানি পান এবং অন্য কোনো উপসর্গ আছে কি না লক্ষ্য করুন। বারবার বমি, রক্ত, অতিরিক্ত দুর্বলতা, শ্বাসকষ্ট বা অন্য উদ্বেগজনক লক্ষণ থাকলে ভেটেরিনারিয়ানের সাহায্য নিন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_035",
+    "category": "health",
+    "question_en": "How do I know if my cat is overweight?",
+    "question_bn": "আমার বিড়ালের ওজন বেশি কিনা কীভাবে বুঝব?",
+    "answer_en": "Do not judge only by body weight. Look at body shape and feel the ribs and waist. Your veterinarian can assess body condition more accurately and help create a safe weight-management plan.",
+    "answer_bn": "শুধু ওজন দেখে সিদ্ধান্ত নেবেন না। শরীরের আকৃতি, পাঁজর এবং কোমরের গঠন দেখুন ও অনুভব করুন। ভেটেরিনারিয়ান body condition আরও নির্ভুলভাবে মূল্যায়ন করে নিরাপদ ওজন নিয়ন্ত্রণের পরিকল্পনা দিতে পারেন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_036",
+    "category": "food",
+    "question_en": "Can I feed my cat only rice and fish?",
+    "question_bn": "আমি কি আমার বিড়ালকে শুধু ভাত আর মাছ খাওয়াতে পারি?",
+    "answer_en": "No. Rice and fish alone do not provide all the nutrients a cat needs. Cats require a complete and balanced diet. If you feed fish or rice, they should not replace a nutritionally complete cat food unless a veterinarian has formulated an appropriate homemade diet.",
+    "answer_bn": "না। শুধু ভাত ও মাছ বিড়ালের প্রয়োজনীয় সব পুষ্টি দিতে পারে না। বিড়ালের সম্পূর্ণ ও সুষম খাবার প্রয়োজন। মাছ বা ভাত দিলে তা সম্পূর্ণ ক্যাট ফুডের বিকল্প হওয়া উচিত নয়, যদি না ভেটেরিনারিয়ান উপযুক্ত homemade diet তৈরি করে দেন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_037",
+    "category": "food",
+    "question_en": "Is boiled fish enough as a complete diet?",
+    "question_bn": "শুধু সেদ্ধ মাছ কি বিড়ালের সম্পূর্ণ খাবার হিসেবে যথেষ্ট?",
+    "answer_en": "No. Plain boiled fish by itself is not a nutritionally complete diet for cats. It can be an occasional part of the diet, but cats need a properly balanced source of essential nutrients.",
+    "answer_bn": "না। শুধু সেদ্ধ মাছ বিড়ালের জন্য সম্পূর্ণ ও সুষম খাবার নয়। এটি মাঝে মাঝে খাবারের অংশ হতে পারে, কিন্তু বিড়ালের প্রয়োজনীয় পুষ্টির জন্য সুষম খাবার দরকার।",
+    "emergency": false
+  },
+  {
+    "id": "faq_038",
+    "category": "safety",
+    "question_en": "What should I do if my cat eats a cockroach?",
+    "question_bn": "আমার বিড়াল তেলাপোকা খেলে কী করব?",
+    "answer_en": "Eating an occasional cockroach does not always cause illness, but insects can carry parasites, bacteria, or pesticide residues. Monitor your cat and contact a vet if vomiting, diarrhea, unusual weakness, or other concerning symptoms appear.",
+    "answer_bn": "মাঝে মাঝে একটি তেলাপোকা খেলে সবসময় অসুস্থ হবে এমন নয়, তবে পোকামাকড়ে পরজীবী, জীবাণু বা কীটনাশকের অবশিষ্টাংশ থাকতে পারে। বিড়ালকে পর্যবেক্ষণ করুন এবং বমি, ডায়রিয়া, অস্বাভাবিক দুর্বলতা বা অন্য কোনো সমস্যা দেখা দিলে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_039",
+    "category": "safety",
+    "question_en": "What if my cat catches a lizard?",
+    "question_bn": "আমার বিড়াল টিকটিকি ধরলে কী করব?",
+    "answer_en": "Prevent your cat from eating wild animals whenever possible. A lizard may carry parasites or harmful organisms. If your cat has eaten one, monitor for illness and contact your vet if symptoms develop.",
+    "answer_bn": "সম্ভব হলে বিড়ালকে বন্য বা ঘরের বাইরে থাকা প্রাণী খাওয়া থেকে বিরত রাখুন। টিকটিকির মাধ্যমে পরজীবী বা ক্ষতিকর জীবাণু ছড়াতে পারে। বিড়াল টিকটিকি খেয়ে ফেললে অসুস্থতার লক্ষণ লক্ষ্য করুন এবং সমস্যা দেখা দিলে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_040",
+    "category": "safety",
+    "question_en": "What if my cat eats a house gecko?",
+    "question_bn": "আমার বিড়াল টিকটিকি খেয়ে ফেললে কী হবে?",
+    "answer_en": "Do not panic, but monitor your cat. The main concern is potential exposure to parasites, microorganisms, or chemicals. If your cat becomes unwell, contact a veterinarian.",
+    "answer_bn": "আতঙ্কিত হবেন না, তবে বিড়ালকে পর্যবেক্ষণ করুন। পরজীবী, জীবাণু বা রাসায়নিকের সংস্পর্শে আসার সম্ভাবনা থাকতে পারে। বিড়াল অসুস্থ হয়ে পড়লে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_041",
+    "category": "food",
+    "question_en": "Is it safe to give my cat food leftovers?",
+    "question_bn": "বেঁচে যাওয়া মানুষের খাবার কি বিড়ালকে দেওয়া নিরাপদ?",
+    "answer_en": "Not usually. Many leftovers contain salt, spices, oil, onion, garlic, bones, or other ingredients that may be unsuitable or dangerous for cats. A nutritionally complete cat diet is safer.",
+    "answer_bn": "সাধারণত নয়। অনেক leftover খাবারে লবণ, মসলা, তেল, পেঁয়াজ, রসুন, হাড় বা বিড়ালের জন্য অনুপযুক্ত উপাদান থাকতে পারে। সম্পূর্ণ ও সুষম ক্যাট ফুড বেশি নিরাপদ।",
+    "emergency": false
+  },
+  {
+    "id": "faq_042",
+    "category": "health",
+    "question_en": "What should I do if my cat is bitten by another cat?",
+    "question_bn": "অন্য বিড়াল আমার বিড়ালকে কামড়ালে কী করব?",
+    "answer_en": "Cat bites can become infected even when the wound looks small. Do not assume a tiny puncture is harmless. Contact a veterinarian as soon as possible, especially if the wound is swollen, painful, bleeding, or your cat seems unwell.",
+    "answer_bn": "বিড়ালের কামড়ের ক্ষত দেখতে ছোট হলেও সংক্রমিত হতে পারে। ছোট ক্ষত বলে এটিকে নিরাপদ ধরে নেবেন না। যত দ্রুত সম্ভব ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন, বিশেষ করে ক্ষত ফুলে গেলে, ব্যথা হলে, রক্তপাত হলে বা বিড়াল অসুস্থ দেখালে।",
+    "emergency": false
+  },
+  {
+    "id": "faq_043",
+    "category": "health",
+    "question_en": "What should I do if my cat gets a cut or wound?",
+    "question_bn": "আমার বিড়ালের শরীরে কেটে গেলে কী করব?",
+    "answer_en": "Keep your cat calm and prevent licking or further injury. For significant, deep, dirty, bleeding, or bite wounds, seek veterinary care. Avoid applying human creams, antiseptics, or medicines unless a veterinarian recommends them.",
+    "answer_bn": "বিড়ালকে শান্ত রাখুন এবং ক্ষত চাটা বা আরও আঘাত পাওয়া থেকে বিরত রাখুন। গভীর, নোংরা, বেশি রক্তপাত হওয়া বা কামড়ের ক্ষত হলে ভেটেরিনারিয়ানের সাহায্য নিন। ভেটেরিনারিয়ান না বললে মানুষের ক্রিম, antiseptic বা ওষুধ ব্যবহার করবেন না।",
+    "emergency": false
+  },
+  {
+    "id": "faq_044",
+    "category": "health",
+    "question_en": "How do I protect my cat from fleas in Bangladesh?",
+    "question_bn": "বাংলাদেশে আমার বিড়ালকে fleas বা মাছি থেকে কীভাবে রক্ষা করব?",
+    "answer_en": "Keep your cat's environment clean and discuss an appropriate, cat-safe parasite preventive with a veterinarian. Never use a dog flea product on a cat unless a veterinarian confirms it is safe. Some dog products can be highly toxic to cats.",
+    "answer_bn": "বিড়ালের আশপাশ পরিষ্কার রাখুন এবং ভেটেরিনারিয়ানের সঙ্গে কথা বলে বিড়ালের জন্য নিরাপদ parasite prevention ব্যবহার করুন। ভেটেরিনারিয়ান নিরাপদ বলেছেন এমন নিশ্চয়তা ছাড়া বিড়ালের গায়ে কুকুরের flea product ব্যবহার করবেন না। কিছু dog flea product বিড়ালের জন্য অত্যন্ত বিষাক্ত হতে পারে।",
+    "emergency": false
+  },
+  {
+    "id": "faq_045",
+    "category": "health",
+    "question_en": "Does an outdoor cat need different preventive care?",
+    "question_bn": "বাইরে যাওয়া বিড়ালের কি আলাদা preventive care দরকার?",
+    "answer_en": "Outdoor cats generally have greater exposure to parasites, infectious diseases, injuries, and other risks. Their vaccination and parasite-prevention needs should be assessed according to their lifestyle and local risks.",
+    "answer_bn": "বাইরে যাওয়া বিড়ালের পরজীবী, সংক্রামক রোগ, আঘাত এবং অন্যান্য ঝুঁকির সংস্পর্শ বেশি হতে পারে। তাদের জীবনযাপন ও স্থানীয় ঝুঁকি অনুযায়ী ভ্যাকসিন ও parasite prevention-এর প্রয়োজন ভেটেরিনারিয়ানের সঙ্গে নির্ধারণ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_046",
+    "category": "safety",
+    "question_en": "What should I do during a power cut in extreme heat?",
+    "question_bn": "প্রচণ্ড গরমে বিদ্যুৎ চলে গেলে বিড়ালের জন্য কী করব?",
+    "answer_en": "Move your cat to the coolest safe area available, provide fresh water and ventilation, and avoid hot enclosed spaces. Never leave your cat inside a parked vehicle. If your cat develops severe weakness, breathing difficulty, collapse, or other signs of heat illness, seek emergency veterinary care.",
+    "answer_bn": "বিড়ালকে যতটা সম্ভব ঠান্ডা ও নিরাপদ জায়গায় রাখুন, পরিষ্কার পানি ও বাতাস চলাচলের ব্যবস্থা করুন এবং গরম, বন্ধ জায়গা এড়িয়ে চলুন। পার্ক করা গাড়ির ভেতরে কখনো বিড়ালকে রাখবেন না। অতিরিক্ত দুর্বলতা, শ্বাসকষ্ট, অজ্ঞান হয়ে যাওয়া বা heat illness-এর লক্ষণ দেখা দিলে জরুরি veterinary care নিন।",
+    "emergency": true
+  },
+  {
+    "id": "faq_047",
+    "category": "food",
+    "question_en": "Can cats eat hilsa (ilish)?",
+    "question_bn": "বিড়াল কি ইলিশ মাছ খেতে পারে?",
+    "answer_en": "Plain, thoroughly cooked, boneless hilsa can be offered occasionally, but it should not become the main diet. Carefully remove all bones, and never give hilsa prepared with salt, chili, onion, garlic, or other spices.",
+    "answer_bn": "ভালোভাবে রান্না করা ও সম্পূর্ণ কাঁটামুক্ত ইলিশ মাঝে মাঝে দেওয়া যেতে পারে, তবে এটি প্রধান খাবার হওয়া উচিত নয়। সব কাঁটা ভালোভাবে সরিয়ে ফেলুন এবং লবণ, মরিচ, পেঁয়াজ, রসুন বা মসলা দিয়ে রান্না করা ইলিশ দেবেন না।",
+    "emergency": false
+  },
+  {
+    "id": "faq_048",
+    "category": "food",
+    "question_en": "Can cats eat shrimp?",
+    "question_bn": "বিড়াল কি চিংড়ি খেতে পারে?",
+    "answer_en": "A small amount of plain, thoroughly cooked shrimp can be an occasional treat for many cats. Remove the shell and avoid salt, spices, sauces, and fried preparations. Introduce any new food in a small amount.",
+    "answer_bn": "অল্প পরিমাণে ভালোভাবে রান্না করা, সাধারণ চিংড়ি অনেক বিড়ালের জন্য মাঝে মাঝে treat হিসেবে দেওয়া যেতে পারে। খোসা সরিয়ে দিন এবং লবণ, মসলা, sauce বা ভাজা চিংড়ি এড়িয়ে চলুন। নতুন খাবার অল্প পরিমাণে শুরু করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_049",
+    "category": "food",
+    "question_en": "Can I give my cat packaged human biscuits?",
+    "question_bn": "বিড়ালকে কি প্যাকেটজাত মানুষের বিস্কুট দিতে পারি?",
+    "answer_en": "It is better to avoid making biscuits a regular treat. They provide little benefit for cats and may contain sugar, salt, flavorings, or other unsuitable ingredients. Use cat-appropriate treats instead.",
+    "answer_bn": "নিয়মিত বিস্কুট treat হিসেবে না দেওয়াই ভালো। মানুষের বিস্কুট বিড়ালের জন্য তেমন পুষ্টিকর নয় এবং এতে চিনি, লবণ, flavoring বা অন্যান্য অনুপযুক্ত উপাদান থাকতে পারে। এর পরিবর্তে বিড়ালের উপযোগী treats দিন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_050",
+    "category": "safety",
+    "question_en": "What should I do if my cat is afraid of loud sounds or fireworks?",
+    "question_bn": "আমার বিড়াল জোরে শব্দ বা আতশবাজিতে ভয় পেলে কী করব?",
+    "answer_en": "Give your cat access to a quiet, secure hiding place. Close windows and curtains if appropriate, reduce noise, and let your cat hide without forcing interaction. Never punish fearful behavior. If your cat becomes extremely distressed, discuss the problem with a veterinarian.",
+    "answer_bn": "বিড়ালের জন্য শান্ত ও নিরাপদ একটি লুকানোর জায়গা রাখুন। সম্ভব হলে জানালা-পরদা বন্ধ করে শব্দ কমান এবং জোর করে বিড়ালকে বাইরে আনবেন না। ভয়ের আচরণের জন্য কখনো শাস্তি দেবেন না। বিড়াল অতিরিক্ত অস্থির হলে ভেটেরিনারিয়ানের সঙ্গে পরামর্শ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_051",
+    "category": "food",
+    "question_en": "Can I give my cat bones from fish or chicken?",
+    "question_bn": "বিড়ালকে মাছ বা মুরগির হাড় দিতে পারি?",
+    "answer_en": "No. Bones can cause choking, mouth or digestive-tract injuries, and other complications. Remove bones before giving meat or fish.",
+    "answer_bn": "না। হাড়ে শ্বাসরোধ, মুখ বা পরিপাকতন্ত্রে আঘাত এবং অন্যান্য জটিলতার ঝুঁকি থাকতে পারে। মাংস বা মাছ দেওয়ার আগে সব হাড় ও কাঁটা সরিয়ে ফেলুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_052",
+    "category": "safety",
+    "question_en": "My cat caught a bird. What should I do?",
+    "question_bn": "আমার বিড়াল একটি পাখি ধরেছে। কী করব?",
+    "answer_en": "Separate your cat from the bird safely. If the bird is injured, contact a local wildlife rescue organization or appropriate authority rather than attempting extensive treatment yourself. Prevent future hunting with supervised outdoor access and enrichment.",
+    "answer_bn": "নিরাপদে বিড়ালকে পাখিটি থেকে আলাদা করুন। পাখিটি আহত হলে নিজে দীর্ঘ চিকিৎসা করার চেষ্টা না করে স্থানীয় wildlife rescue organization বা উপযুক্ত কর্তৃপক্ষের সঙ্গে যোগাযোগ করুন। ভবিষ্যতে supervised outdoor access ও enrichment-এর মাধ্যমে শিকার করার সুযোগ কমানো যায়।",
+    "emergency": false
+  },
+  {
+    "id": "faq_053",
+    "category": "safety",
+    "question_en": "Can I use mosquito spray or mosquito coil near my cat?",
+    "question_bn": "বিড়ালের কাছে কি মশার স্প্রে বা মশার কয়েল ব্যবহার করা যাবে?",
+    "answer_en": "Be careful with insect-control products around cats. Some chemicals can be harmful if inhaled, ingested, or contacted. Keep your cat away during application and follow the product's safety instructions. If exposure occurs, contact a veterinarian.",
+    "answer_bn": "বিড়ালের আশেপাশে insect-control products ব্যবহারে সতর্ক থাকুন। কিছু রাসায়নিক শ্বাসের সঙ্গে গেলে, খেলে বা শরীরে লাগলে ক্ষতিকর হতে পারে। ব্যবহারের সময় বিড়ালকে দূরে রাখুন এবং product-এর safety instructions অনুসরণ করুন। সংস্পর্শে এলে ভেটেরিনারিয়ানের সঙ্গে যোগাযোগ করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_054",
+    "category": "safety",
+    "question_en": "Can I use dog shampoo or flea medicine on my cat?",
+    "question_bn": "বিড়ালের জন্য কি কুকুরের shampoo বা flea medicine ব্যবহার করা যাবে?",
+    "answer_en": "Not automatically. Cats process some chemicals differently from dogs, and certain dog flea products can be highly toxic to cats. Use only products specifically labeled for cats or recommended by a veterinarian.",
+    "answer_bn": "সবসময় নয়। বিড়ালের শরীর কিছু রাসায়নিক কুকুরের থেকে ভিন্নভাবে প্রক্রিয়া করে এবং কিছু dog flea product বিড়ালের জন্য অত্যন্ত বিষাক্ত হতে পারে। শুধু বিড়ালের জন্য নির্দিষ্ট বা ভেটেরিনারিয়ান সুপারিশ করা product ব্যবহার করুন।",
+    "emergency": false
+  },
+  {
+    "id": "faq_055",
+    "category": "safety",
+    "question_en": "What should I keep in my cat's emergency kit?",
+    "question_bn": "বিড়ালের emergency kit-এ কী কী রাখা উচিত?",
+    "answer_en": "Keep a secure carrier, clean towels, basic identification information, your vet's contact details, vaccination records, and any veterinarian-prescribed medicines your cat currently needs. Do not stock human medicines for treating your cat yourself.",
+    "answer_bn": "একটি নিরাপদ carrier, পরিষ্কার তোয়ালে, পরিচয়সংক্রান্ত তথ্য, ভেটেরিনারিয়ানের contact details, vaccination records এবং বর্তমানে ভেটেরিনারিয়ান নির্ধারিত প্রয়োজনীয় ওষুধ রাখুন। নিজে চিকিৎসা করার জন্য মানুষের ওষুধ emergency kit-এ রাখবেন না।",
+    "emergency": false
+  }
+]

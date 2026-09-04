@@ -29,6 +29,7 @@ class AppRoutes {
   static const String weightTrend = '/weight';
   static const String emergencyGuidance = '/emergency';
   static const String weeklyReport = '/weekly-report';
+  static const String faq = '/faq';
   static const String foodLabel = '/food-label';
   static const String grooming = '/grooming';
   static const String foodGuide = '/guides/food';
